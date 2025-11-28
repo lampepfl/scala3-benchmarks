@@ -51,3 +51,5 @@ class CompilationBenchmarks:
     s"mkdir -p $dir".!
 
   @Benchmark def helloWorld = scalac(Config.helloWorld)
+
+  @Benchmark def sourcecode = scalac(Config.sourcecode)
