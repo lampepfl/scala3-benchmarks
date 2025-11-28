@@ -38,6 +38,24 @@ results/
 
 ## Adding Benchmarks
 
+Benchmarks should:
+
+- compile with all version between Scala 3.3.4 and the latest
+- compile in ~100ms-10s range (after warmup)
+- not require complex setup
+- Ideally not require external dependencies
+
+Potential future benchmarks:
+
+- [scala-parallel-collections](https://github.com/scala/scala-parallel-collections) (6773 LOC)
+- [cats core](https://github.com/typelevel/cats/tree/main/core/src/main) (30,673 LOC)
+- [scalaz](https://github.com/scalaz/scalaz)
+- Dotty (waiting 3.8)
+- Scala Standard Library (waiting 3.8)
+- [quicklens](https://github.com/softwaremill/quicklens)  (waiting 3.8)
+
+To add a new benchmark:
+
 1. Add a `.scala` file or directory to `bench-sources/`
 2. Add a `@Benchmark` method in `CompilationBenchmark.scala`:
    ```scala
