@@ -1,3 +1,5 @@
+package tuple22Apply
+
 class Foo {
   val tup22: (Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int) = ???
   tup22.apply(0)

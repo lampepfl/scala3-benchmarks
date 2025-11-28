@@ -1,3 +1,4 @@
+package exhaustivityT
 
 sealed trait O
 object A extends O

@@ -1,3 +1,6 @@
+package exhaustivityS
+
+import scala.annotation.nowarn
 
 sealed trait O
 object A extends O
@@ -5,6 +8,7 @@ object B extends O
 
 object Test {
 
+  @nowarn("id=E029")
   def test(x: O) =
   (x, x, x, x, x, x, x, x, x, x, x, x, x, x) match {
     case (A, A, _, _, _, _, _, _, _, _, _, _, _, _) => 1

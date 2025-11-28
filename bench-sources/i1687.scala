@@ -1,3 +1,5 @@
+package i1687
+
 object O {
   def f: String = {
     "1" + 1 + "1" + 1 +

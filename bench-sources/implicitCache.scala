@@ -1,3 +1,5 @@
+package implicitCache
+
 class A
 object A {
   implicit def theA: A = new A

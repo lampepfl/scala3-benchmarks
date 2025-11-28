@@ -1,3 +1,8 @@
+package patmatexhaust
+
+import scala.annotation.nowarn
+
+@nowarn("id=E029")
 class TestSealedExhaustive { // compile only
   sealed abstract class Foo
 

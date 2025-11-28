@@ -1,3 +1,5 @@
+package findRef
+
 class MyInt(val x: Int) {
   def eq(that: MyInt): Boolean = this.x == that.x
 }

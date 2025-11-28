@@ -1,3 +1,5 @@
+package implicitNums
+
 object Test {
 
   trait Number

@@ -1,3 +1,5 @@
+package i1535
+
 object Example {
   case class C[H, T](h: H, t: T)
 

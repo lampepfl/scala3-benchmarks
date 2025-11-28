@@ -1,3 +1,5 @@
+package tuple22Tails
+
 class Foo {
 
   val tup1: Tuple1[Int] = ???

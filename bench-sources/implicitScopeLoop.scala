@@ -1,3 +1,5 @@
+package implicitScopeLoop
+
 trait Dummy[T]
 
 
