@@ -53,3 +53,5 @@ class CompilationBenchmarks:
   @Benchmark def helloWorld = scalac(Config.helloWorld)
 
   @Benchmark def sourcecode = scalac(Config.sourcecode)
+
+  @Benchmark def re2s = scalac(Config.re2s)
