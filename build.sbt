@@ -41,7 +41,7 @@ def generateBenchmarkConfig = Def.task {
 
 def benchmarkConfigs = Def.task {
   val benchSourcesDir = (benchSources / Compile / scalaSource).value
-  val classPath = (benchSources / Compile / fullClasspath).value
+  val classPath = (benchSources / Compile / dependencyClasspath).value
     .map(_.data.getAbsolutePath)
     .mkString(java.io.File.pathSeparator)
 
