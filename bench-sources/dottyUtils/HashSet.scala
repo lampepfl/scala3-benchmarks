@@ -1,6 +1,5 @@
 package dotty.tools.dotc.util
 
-import dotty.tools.uncheckedNN
 
 object HashSet:
 

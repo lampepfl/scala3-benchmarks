@@ -55,3 +55,5 @@ class CompilationBenchmarks:
   @Benchmark def sourcecode = scalac(Config.sourcecode)
 
   @Benchmark def re2s = scalac(Config.re2s)
+
+  @Benchmark def dottyUtils = scalac(Config.dottyUtils)

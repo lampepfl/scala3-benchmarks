@@ -1,7 +1,5 @@
 package dotty.tools.dotc.util
 
-import dotty.tools.uncheckedNN
-
 object EqHashSet:
 
   def from[T](xs: IterableOnce[T]): EqHashSet[T] =
