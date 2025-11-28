@@ -53,10 +53,11 @@ class CompilationBenchmarks:
   @Benchmark def helloWorld = scalac(Config.helloWorld)
 
   // Library benchmarks
-  @Benchmark def sourcecode = scalac(Config.sourcecode)
-  @Benchmark def re2s = scalac(Config.re2s)
   @Benchmark def dottyUtils = scalac(Config.dottyUtil)
+  @Benchmark def re2s = scalac(Config.re2s)
+  @Benchmark def scalaParserCombinators = scalac(Config.scalaParserCombinators)
   @Benchmark def scalaYaml = scalac(Config.scalaYaml)
+  @Benchmark def sourcecode = scalac(Config.sourcecode)
 
   // Benchmarks from previous suite
   @Benchmark def exhaustivityI = scalac(Config.exhaustivityI)
