@@ -23,13 +23,12 @@ import org.openjdk.jmh.annotations.{
 }
 
 @Fork(value = 1, jvmArgsPrepend = Array("-XX:+PrintCommandLineFlags", "-Xms8G", "-Xmx8G"))
-@Warmup(iterations = 0) // default, overridden below for some benchmarks
-@Measurement(iterations = 180) // default, overridden below for some benchmarks
+@Warmup(iterations = 0)
+@Measurement(iterations = 180)
 @BenchmarkMode(Array(org.openjdk.jmh.annotations.Mode.SingleShotTime))
 @State(Scope.Benchmark)
 @OutputTimeUnit(MILLISECONDS)
 class CompilationBenchmarks:
-  val scalaVersion = util.Properties.versionNumberString
   val outDir = "out"
 
   /** Launches `scalac` with the given arguments. */
