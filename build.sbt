@@ -1,5 +1,7 @@
 val compilerVersion = sys.props.get("compiler.version").getOrElse("3.7.4")
 
+ThisBuild / resolvers += Resolver.scalaNightlyRepository
+
 lazy val bench =
   project
     .in(file("bench"))
