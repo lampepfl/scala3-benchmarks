@@ -35,9 +35,11 @@ def load_all_data() -> pd.DataFrame:
                     "bench.CompilationBenchmarks.", ""
                 )
                 raw_data = bench["primaryMetric"]["rawData"]
-                # rawData is a list of lists (one per fork), flatten and take last N
-                measurements = [m for fork_data in raw_data for m in fork_data]
-                last_measurements = measurements[-LAST_N_MEASUREMENTS:]
+                # rawData is a list of lists (one per fork)
+                # Take last N measurements from each fork (JVM warms up separately per fork)
+                last_measurements = [
+                    m for fork_data in raw_data for m in fork_data[-LAST_N_MEASUREMENTS:]
+                ]
 
                 for i, value in enumerate(last_measurements):
                     rows.append(
