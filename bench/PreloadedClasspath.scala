@@ -1,15 +1,16 @@
 package bench
 
 import java.io.File
-import java.nio.file.{Files, Path}
+import java.net.URI
+import java.nio.file.{FileSystem, FileSystems, Files, Path}
 import java.util.zip.ZipFile
 import scala.jdk.CollectionConverters.*
 
 import dotty.tools.io.{AbstractFile, VirtualDirectory, VirtualFile}
-import dotty.tools.dotc.classpath.{AggregateClassPath, VirtualDirectoryClassPath, DirectoryClassPath, JrtClassPath}
+import dotty.tools.dotc.classpath.{AggregateClassPath, VirtualDirectoryClassPath, DirectoryClassPath}
 import dotty.tools.io.ClassPath
 
-/** Preloads classpath entries (jars) into memory as VirtualDirectories.
+/** Preloads classpath entries (jars and JRT) into memory as VirtualDirectories.
   *
   * This avoids repeated I/O and unzipping during compilation, which can
   * significantly reduce benchmark noise from filesystem operations.
@@ -30,9 +31,9 @@ object PreloadedClasspath:
       else
         throw new IllegalArgumentException(s"Unsupported classpath entry: $entry")
     }
-    // Include JRT classpath for java.lang.Object etc.
-    val jrtClasspath = JrtClassPath(release = None).toSeq
-    AggregateClassPath((jrtClasspath ++ classPathEntries).toIndexedSeq)
+    // Include preloaded JRT classpath for java.lang.Object etc.
+    val jrtVirtualDir = loadJrtToVirtualDirectory()
+    AggregateClassPath((VirtualDirectoryClassPath(jrtVirtualDir) +: classPathEntries).toIndexedSeq)
 
   /** Load a jar file completely into memory as a VirtualDirectory. */
   private def loadJarToVirtualDirectory(jarPath: String): VirtualDirectory =
@@ -66,3 +67,43 @@ object PreloadedClasspath:
       zipFile.close()
     root
 
+  /** Load the JRT (Java Runtime) filesystem into memory as a VirtualDirectory.
+    * This includes all classes from java.base and other JDK modules.
+    */
+  private def loadJrtToVirtualDirectory(): VirtualDirectory =
+    val root = new VirtualDirectory("jrt", None)
+    val fs = FileSystems.getFileSystem(URI.create("jrt:/"))
+    val modulesPath = fs.getPath("/modules")
+
+    // Iterate over all modules
+    Files.list(modulesPath).iterator().asScala.foreach { modulePath =>
+      // Walk all class files in this module
+      Files.walk(modulePath).iterator().asScala
+        .filter(p => Files.isRegularFile(p) && p.toString.endsWith(".class"))
+        .foreach { classPath =>
+          // Get relative path within module (e.g., "java/lang/Object.class")
+          val relativePath = modulePath.relativize(classPath).toString
+          val content = Files.readAllBytes(classPath)
+
+          // Create directory structure
+          val parts = relativePath.split("/")
+          var currentDir = root
+          for part <- parts.init do
+            currentDir.lookupName(part, directory = true) match
+              case null =>
+                currentDir = currentDir.subdirectoryNamed(part).asInstanceOf[VirtualDirectory]
+              case dir: VirtualDirectory =>
+                currentDir = dir
+              case other =>
+                throw new IllegalStateException(s"Expected directory but found: $other")
+
+          // Create the file (skip if already exists from another module)
+          val fileName = parts.last
+          if currentDir.lookupName(fileName, directory = false) == null then
+            val file = currentDir.fileNamed(fileName)
+            val out = file.output
+            try out.write(content)
+            finally out.close()
+        }
+    }
+    root
