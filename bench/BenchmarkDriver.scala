@@ -1,11 +1,13 @@
 package bench
 
 import dotty.tools.dotc.Driver
-import dotty.tools.dotc.core.Contexts.{Context, ContextBase}
 import dotty.tools.dotc.config.JavaPlatform
+import dotty.tools.dotc.core.Contexts.{Context, ContextBase}
 import dotty.tools.io.{AbstractFile, ClassPath, VirtualDirectory}
 
-/** A custom Driver that uses a preloaded classpath and virtual output directory. */
+/** A custom Driver that uses a preloaded classpath and virtual output
+ *  directory.
+ */
 class BenchmarkDriver(preloadedClasspath: ClassPath, outputDir: VirtualDirectory) extends Driver:
   override protected def initCtx: Context =
     val base = new ContextBase:
