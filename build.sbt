@@ -27,9 +27,10 @@ lazy val benchSources =
 def generateBenchmarkConfig = Def.task {
   val configFile = (Compile / sourceManaged).value / "bench" / "Config.scala"
   val benchmarks = benchmarkConfigs.value
-  val members = benchmarks.map { case (name, args) =>
+  val members = benchmarks.map { case (name, (classpath, args)) =>
     val argsSeq = args.map(a => s""""$a"""").mkString("Seq(", ", ", ")")
-    s"  val $name = $argsSeq"
+    s"""  val ${name}Classpath = \"\"\"$classpath\"\"\"
+       |  val ${name}Args = $argsSeq""".stripMargin
   }.mkString("\n")
   val content =
     s"""package bench
@@ -51,13 +52,13 @@ def benchmarkConfigs = Def.task {
     if (entry.isFile && entry.getName.endsWith(".scala")) {
       // Single .scala file: use filename (without extension) as benchmark name
       val name = entry.getName.stripSuffix(".scala")
-      Some(name -> Seq("-classpath", classPath, entry.getAbsolutePath))
+      Some(name -> (classPath, Seq(entry.getAbsolutePath)))
     } else if (entry.isDirectory) {
       // Directory: collect all .scala files inside recursively
       val sources = (entry ** "*.scala").get.map(_.getAbsolutePath)
       if (sources.nonEmpty) {
         val name = entry.getName
-        Some(name -> (Seq("-classpath", classPath) ++ sources))
+        Some(name -> (classPath, sources.toSeq))
       } else None
     } else None
   }
