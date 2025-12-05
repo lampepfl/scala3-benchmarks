@@ -66,6 +66,10 @@ To add a new benchmark:
 
 ## Using JMH's profilers
 
+Examples of using JMH's built-in profilers: [jmh/samples/JMHSample_35_Profilers.java](https://github.com/openjdk/jmh/blob/master/jmh-samples/src/main/java/org/openjdk/jmh/samples/JMHSample_35_Profilers.java).
+
+### Async Profiler
+
 Flame graphs can be generated using [async-profiler](https://github.com/async-profiler/async-profiler). Example command:
 
 ```bash
