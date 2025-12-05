@@ -1,5 +1,7 @@
 package sourcecode
 
+import java.util.concurrent.ConcurrentHashMap
+import java.nio.file.{Files, Path}
 import scala.language.implicitConversions
 import scala.quoted.*
 
@@ -64,7 +66,18 @@ trait ArgsMacros {
 }
 
 object Util{
-  def isSynthetic(using Quotes)(s: quotes.reflect.Symbol) = isSyntheticName(getName(s))
+  def isSynthetic(using Quotes)(s: quotes.reflect.Symbol) =
+    isSyntheticAlt(s)
+
+  def isSyntheticAlt(using Quotes)(s: quotes.reflect.Symbol) = {
+    import quotes.reflect.*
+    s.flags.is(Flags.Synthetic) || s.isClassConstructor || s.isLocalDummy || isScala2Macro(s)
+  }
+  def isScala2Macro(using Quotes)(s: quotes.reflect.Symbol) = {
+    import quotes.reflect.*
+    (s.flags.is(Flags.Macro) && s.owner.flags.is(Flags.Scala2x)) ||
+      (s.flags.is(Flags.Macro) && !s.flags.is(Flags.Inline))
+  }
   def isSyntheticName(name: String) = {
     name == "<init>" || (name.startsWith("<local ") && name.endsWith(">")) || name == "$anonfun" || name == "macro"
   }
@@ -78,7 +91,7 @@ object Macros {
 
   def findOwner(using Quotes)(owner: quotes.reflect.Symbol, skipIf: quotes.reflect.Symbol => Boolean): quotes.reflect.Symbol = {
     var owner0 = owner
-    while(skipIf(owner0)) owner0 = owner0.owner
+    while skipIf(owner0) do owner0 = owner0.owner
     owner0
   }
 
@@ -101,12 +114,12 @@ object Macros {
     import quotes.reflect.*
     val owner = actualOwner(Symbol.spliceOwner)
     val simpleName = Util.getName(owner)
-    '{Name(${Expr(simpleName)})}
+    '{new Name(${Expr(simpleName)})}
   }
 
   private def adjustName(s: String): String =
     // Required to get the same name from dotty
-    if (s.startsWith("<local ") && s.endsWith("$>"))
+    if s.startsWith("<local ") && s.endsWith("$>") then
       s.stripSuffix("$>") + ">"
     else
       s
@@ -115,7 +128,7 @@ object Macros {
     import quotes.reflect.*
     val owner = nonMacroOwner(Symbol.spliceOwner)
     val simpleName = adjustName(Util.getName(owner))
-    '{Name.Machine(${Expr(simpleName)})}
+    '{new Name.Machine(${Expr(simpleName)})}
   }
 
   def fullNameImpl(using Quotes): Expr[FullName] = {
@@ -131,7 +144,7 @@ object Macros {
         .filterNot(Util.isSyntheticName)
         .map(cleanChunk)
         .mkString(".")
-    '{FullName(${Expr(fullName)})}
+    '{new FullName(${Expr(fullName)})}
   }
 
   def fullNameMachineImpl(using Quotes): Expr[FullName.Machine] = {
@@ -142,34 +155,64 @@ object Macros {
       .map(_.stripPrefix("_$").stripSuffix("$")) // meh
       .map(adjustName)
       .mkString(".")
-    '{FullName.Machine(${Expr(fullName)})}
+    '{new FullName.Machine(${Expr(fullName)})}
+  }
+
+  private val filePrefix = "//SOURCECODE_ORIGINAL_FILE_PATH="
+  private val filePrefixCache = new ConcurrentHashMap[Any, Option[String]]()
+  private def findOriginalFile(contents: Option[String]): Option[String] = {
+    contents
+      .iterator
+      .flatMap(_.linesIterator)
+      .find(_.contains(filePrefix))
+      .flatMap(_.split(filePrefix).lastOption)
   }
 
   def fileImpl(using Quotes): Expr[sourcecode.File] = {
     import quotes.reflect.*
-    val file = quotes.reflect.Position.ofMacroExpansion.sourceFile.path
-    '{sourcecode.File(${Expr(file)})}
+    val sourceFile = quotes.reflect.Position.ofMacroExpansion.sourceFile
+    val file = filePrefixCache.computeIfAbsent(sourceFile, _ => findOriginalFile(sourceFile.content))
+      .getOrElse(sourceFile.path)
+    '{new sourcecode.File(${Expr(file)})}
   }
 
   def fileNameImpl(using Quotes): Expr[sourcecode.FileName] = {
-    val name = quotes.reflect.Position.ofMacroExpansion.sourceFile.path.split('/').last
-    '{sourcecode.FileName(${Expr(name)})}
+    val sourceFile = quotes.reflect.Position.ofMacroExpansion.sourceFile
+    val file = filePrefixCache.computeIfAbsent(sourceFile, _ => findOriginalFile(sourceFile.content))
+      .getOrElse(sourceFile.path)
+
+    val name = file.split('/').last
+
+    '{new sourcecode.FileName(${Expr(name)})}
   }
 
+  private val linePrefix = "//SOURCECODE_ORIGINAL_CODE_START_MARKER"
+  private val linePrefixCache = new ConcurrentHashMap[Any, Int]()
+  private def findLineNumber(contents: Option[String]) = {
+    contents
+      .iterator
+      .flatMap(_.linesIterator)
+      .indexWhere(_.contains(linePrefix)) match {
+      case -1 => 0
+      case n => n + 1
+    }
+  }
   def lineImpl(using Quotes): Expr[sourcecode.Line] = {
-    val line = quotes.reflect.Position.ofMacroExpansion.startLine + 1
-    '{sourcecode.Line(${Expr(line)})}
+    val sourceFile = quotes.reflect.Position.ofMacroExpansion.sourceFile
+    val offset = linePrefixCache.computeIfAbsent(sourceFile, _ => findLineNumber(sourceFile.content))
+    val line = quotes.reflect.Position.ofMacroExpansion.startLine + 1 - offset
+    '{new sourcecode.Line(${Expr(line)})}
   }
 
   def enclosingImpl(using Quotes): Expr[Enclosing] = {
     import quotes.reflect.*
     val path = enclosing(machine = false)(!Util.isSynthetic(_))
-    '{Enclosing(${Expr(path)})}
+    '{new Enclosing(${Expr(path)})}
   }
 
   def enclosingMachineImpl(using Quotes): Expr[Enclosing.Machine] = {
     val path = enclosing(machine = true)(_ => true)
-    '{Enclosing.Machine(${Expr(path)})}
+    '{new Enclosing.Machine(${Expr(path)})}
   }
 
   def pkgImpl(using Quotes): Expr[Pkg] = {
@@ -178,7 +221,7 @@ object Macros {
       case _ => false
     }
 
-    '{Pkg(${Expr(path)})}
+    '{new Pkg(${Expr(path)})}
   }
 
   def argsImpl(using qctx: Quotes): Expr[Args] = {
@@ -206,21 +249,21 @@ object Macros {
 
     val texts0 = param.map(_.foldRight('{List.empty[Text[?]]}) {
       case (vd @ ValDef(nme, _, _), l) =>
-        '{Text(${Ref(vd.symbol).asExpr}, ${Expr(nme)}) :: $l}
+        '{(new Text(${Ref(vd.symbol).asExpr}, ${Expr(nme)})) :: $l}
     })
     val texts = texts0.foldRight('{List.empty[List[Text[?]]]}) {
       case (l, acc) =>
         '{$l :: $acc}
     }
 
-    '{Args($texts)}
+    '{new Args($texts)}
   }
 
 
   def text[T: Type](v: Expr[T])(using Quotes): Expr[sourcecode.Text[T]] = {
     import quotes.reflect.*
     val txt = v.asTerm.pos.sourceCode.get
-    '{sourcecode.Text[T]($v, ${Expr(txt)})}
+    '{new sourcecode.Text[T]($v, ${Expr(txt)})}
   }
 
   sealed trait Chunk
@@ -235,13 +278,13 @@ object Macros {
     import quotes.reflect.*
 
     var current = Symbol.spliceOwner
-    if (!machine)
+    if !machine then
       current = actualOwner(current)
     else
       current = nonMacroOwner(current)
     var path = List.empty[Chunk]
-    while(current != Symbol.noSymbol && current != defn.RootPackage && current != defn.RootClass){
-      if (filter(current)) {
+    while current != Symbol.noSymbol && current != defn.RootPackage && current != defn.RootClass do {
+      if filter(current) then {
 
         val chunk = current match {
           case sym if

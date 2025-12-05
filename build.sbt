@@ -79,11 +79,13 @@ lazy val benchScalaYaml =
 lazy val benchFansi =
   project
     .in(file("bench-sources/fansi"))
-    .dependsOn(benchSourcecode)
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions,
-      libraryDependencies += "com.lihaoyi" %% "utest" % "0.8.5",
+      libraryDependencies ++= Seq(
+        "com.lihaoyi" %% "sourcecode" % "0.4.0",
+        "com.lihaoyi" %% "utest" % "0.8.5",
+      ),
       Compile / scalaSource := baseDirectory.value,
     )
 
