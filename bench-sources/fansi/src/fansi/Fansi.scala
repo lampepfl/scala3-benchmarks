@@ -391,7 +391,7 @@ object Str{
     }
     fromArrays(chars, colors)
   }
-  private[this] val ParseMap = {
+  private val ParseMap = {
     val pairs = for {
       cat <- Attr.categories
       color <- cat.all
@@ -580,7 +580,7 @@ object Attrs{
     }
 
     if (output.length == 1) output.head
-    else new Multiple(resetMask, applyMask, output.toArray.reverse:_*)
+    else new Multiple(resetMask, applyMask, output.toArray.reverse*)
   }
 
   class Multiple private[Attrs] (val resetMask: Long,
@@ -598,7 +598,7 @@ object Attrs{
 
     override def toString = s"Attrs(${attrs.mkString(",")})"
 
-    def ++(other: fansi.Attrs) = Attrs(attrs ++ toSeq(other):_*)
+    def ++(other: fansi.Attrs) = Attrs(attrs ++ toSeq(other)*)
   }
   def toSeq(attrs: Attrs) = attrs match{
     case m: Multiple => m.attrs
@@ -630,7 +630,7 @@ sealed trait Attr extends Attrs {
     * Combine this [[fansi.Attr]] with one or more other [[fansi.Attr]]s
     * so they can be passed around together
     */
-  def ++(other: fansi.Attrs): Attrs = Attrs(Array(this) ++ Attrs.toSeq(other):_*)
+  def ++(other: fansi.Attrs): Attrs = Attrs(Array(this) ++ Attrs.toSeq(other)*)
 }
 object Attr{
   /**
@@ -654,7 +654,7 @@ object Attr{
   * An [[Attr]] represented by an fansi escape sequence
   */
 case class EscapeAttr private[fansi](escape: String, resetMask: Long, applyMask: Long)
-                                    (implicit sourceName: sourcecode.Name) extends Attr{
+                                    (using sourceName: sourcecode.Name) extends Attr{
   val escapeOpt = Some(escape)
   val name = sourceName.value
   override def toString = escape + name + Console.RESET
@@ -664,7 +664,7 @@ case class EscapeAttr private[fansi](escape: String, resetMask: Long, applyMask:
   * An [[Attr]] for which no fansi escape sequence exists
   */
 case class ResetAttr private[fansi](resetMask: Long, applyMask: Long)
-                                   (implicit sourceName: sourcecode.Name) extends Attr{
+                                   (using sourceName: sourcecode.Name) extends Attr{
   val escapeOpt = None
   val name = sourceName.value
   override def toString = name
@@ -676,7 +676,7 @@ case class ResetAttr private[fansi](resetMask: Long, applyMask: Long)
   * Represents a set of [[fansi.Attr]]s all occupying the same bit-space
   * in the state `Int`
   */
-sealed abstract class Category(val offset: Int, val width: Int)(implicit catName: sourcecode.Name){
+sealed abstract class Category(val offset: Int, val width: Int)(using catName: sourcecode.Name){
   def mask = ((1 << width) - 1) << offset
   val all: Vector[Attr]
 
@@ -688,9 +688,9 @@ sealed abstract class Category(val offset: Int, val width: Int)(implicit catName
   def lookupAttr(applyState: Long) = lookupAttrTable((applyState >> offset).toInt)
 
   // Allows fast lookup of categories based on the desired applyState
-  protected[this] def lookupTableWidth = 1 << width
+  protected def lookupTableWidth = 1 << width
 
-  protected[this] lazy val lookupAttrTable = {
+  protected lazy val lookupAttrTable = {
     val arr = new Array[Attr](lookupTableWidth)
     for(attr <- all){
       arr((attr.applyMask >> offset).toInt) = attr
@@ -698,12 +698,12 @@ sealed abstract class Category(val offset: Int, val width: Int)(implicit catName
     arr
   }
 
-  def makeAttr(s: String, applyValue: Long)(implicit name: sourcecode.Name) = {
-    new EscapeAttr(s, mask, applyValue << offset)(catName.value + "." + name.value)
+  def makeAttr(s: String, applyValue: Long)(using name: sourcecode.Name) = {
+    new EscapeAttr(s, mask, applyValue << offset)(using sourcecode.Name(catName.value + "." + name.value))
   }
 
-  def makeNoneAttr(applyValue: Long)(implicit name: sourcecode.Name) = {
-    new ResetAttr(mask, applyValue << offset)(catName.value + "." + name.value)
+  def makeNoneAttr(applyValue: Long)(using name: sourcecode.Name) = {
+    new ResetAttr(mask, applyValue << offset)(using sourcecode.Name(catName.value + "." + name.value))
   }
 }
 
@@ -711,7 +711,7 @@ sealed abstract class Category(val offset: Int, val width: Int)(implicit catName
   * [[Attr]]s to turn text bold/bright or disable it
   */
 object Bold extends Category(offset = 0, width = 2){
-  val Faint = makeAttr("\u001b[2m",  2)("Faint")
+  val Faint = makeAttr("\u001b[2m",  2)(using sourcecode.Name("Faint"))
   val On  = makeAttr(Console.BOLD, 1)
   val Off = makeNoneAttr(          0)
   val all: Vector[Attr] = Vector(On, Off, Faint)
@@ -800,7 +800,7 @@ object Back extends ColorCategory(offset = 29, width = 25, colorCode = 48){
   * An string trie for quickly looking up values of type [[T]]
   * using string-keys. Used to speed up
   */
-private[this] final class Trie[T](strings: Seq[(String, T)]){
+private final class Trie[T](strings: Seq[(String, T)]){
 
   val (min, max, arr, value) = {
     strings.partition(_._1.isEmpty) match{
@@ -862,8 +862,8 @@ private[this] final class Trie[T](strings: Seq[(String, T)]){
   * 273 - 16 777 388 : 24 bit colors
   */
 abstract class ColorCategory(offset: Int, width: Int, val colorCode: Int)
-                            (implicit catName: sourcecode.Name)
-                             extends Category (offset, width)(catName){
+                            (using catName: sourcecode.Name)
+                             extends Category (offset, width){
 
 
 
@@ -872,10 +872,10 @@ abstract class ColorCategory(offset: Int, width: Int, val colorCode: Int)
     */
   val Full =
     for(x <- 0 until 256)
-    yield makeAttr(s"\u001b[$colorCode;5;${x}m", 17 + x)(s"Full($x)")
+    yield makeAttr(s"\u001b[$colorCode;5;${x}m", 17 + x)(using sourcecode.Name(s"Full($x)"))
 
-  private[this] def True0(r: Int, g: Int, b: Int, index: Int) = {
-    makeAttr(trueRgbEscape(r, g, b), 273 + index)("True(" + r + "," + g + "," + b +")")
+  private def True0(r: Int, g: Int, b: Int, index: Int) = {
+    makeAttr(trueRgbEscape(r, g, b), 273 + index)(using sourcecode.Name("True(" + r + "," + g + "," + b +")"))
   }
   def trueRgbEscape(r: Int, g: Int, b: Int) = {
     "\u001b[" + colorCode + ";2;" + r + ";" + g + ";" + b + "m"
@@ -922,6 +922,6 @@ abstract class ColorCategory(offset: Int, width: Int, val colorCode: Int)
     else True(index - 273)
 
   }
-  override protected[this] def lookupTableWidth = 273
+  override protected def lookupTableWidth = 273
 }
 

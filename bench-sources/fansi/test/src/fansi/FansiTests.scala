@@ -21,7 +21,7 @@ object FansiTests extends TestSuite{
     * ANSI escape sequence to reset text color
     */
   val RTC = fansi.Color.Reset.escape
-  val tests = TestSuite{
+  val tests = Tests{
     val rgbOps = s"+++$R---$G***$B///"
     val rgb = s"$R$G$B"
     test("parsing"){
