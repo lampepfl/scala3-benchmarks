@@ -37,3 +37,8 @@ jobs:
 
       - name: Run benchmarks (smoke test)
         run: sbt -Dcompiler.version=${{ matrix.scala }} "bench/Jmh/run -foe true -wi 1 -i 1 -f 1"
+
+      - name: Run tests
+        run: |
+          sbt -Dcompiler.version=${{ matrix.scala }} "benchSourcecode/runMain sourcecode.Main"
+          sbt -Dcompiler.version=${{ matrix.scala }} "benchFansi/runMain test.fansi.Main"
