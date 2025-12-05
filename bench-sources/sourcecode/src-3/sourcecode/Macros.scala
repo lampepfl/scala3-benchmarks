@@ -1,7 +1,7 @@
 package sourcecode
 
 import scala.language.implicitConversions
-import scala.quoted._
+import scala.quoted.*
 
 trait NameMacros {
   inline implicit def generate: Name =
