@@ -69,6 +69,10 @@ lazy val benchScalaYaml =
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions,
+      libraryDependencies ++= Seq(
+        "com.lihaoyi" %% "pprint" % "0.9.0",
+        "org.scalameta" %% "munit" % "1.0.0",
+      ),
       Compile / scalaSource := baseDirectory.value,
     )
 

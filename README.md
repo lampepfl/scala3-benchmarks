@@ -72,6 +72,18 @@ To add a new benchmark:
 
 `Config` is auto-generated at `bench/target/scala-*/src_managed/main/bench/Config.scala` with the `scalac` arguments (classpath and sources) for each benchmark.
 
+## Running Tests
+
+Some benchmarks (fansi, sourcecode, scalaYaml) include tests from their upstream repositories. To avoid a separate SBT test configuration, all source files (including tests) are compiled together under `Compile`, and test entry points are provided as main classes:
+
+```bash
+sbt "benchSourcecode/runMain sourcecode.Main"
+sbt "benchFansi/runMain test.fansi.Main"
+sbt "benchScalaYaml/runMain org.virtuslab.yaml.test.TestRunner"
+```
+
+See individual benchmark READMEs for details.
+
 ## Using JMH's profilers
 
 Examples of using JMH's built-in profilers: [jmh/samples/JMHSample_35_Profilers.java](https://github.com/openjdk/jmh/blob/master/jmh-samples/src/main/java/org/openjdk/jmh/samples/JMHSample_35_Profilers.java).
