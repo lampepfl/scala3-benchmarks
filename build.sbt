@@ -70,8 +70,8 @@ lazy val benchScalaYaml =
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions,
       libraryDependencies ++= Seq(
-        "com.lihaoyi" %% "pprint" % "0.9.0",
-        "org.scalameta" %% "munit" % "1.0.0",
+        "com.lihaoyi" %% "pprint" % "0.9.4",
+        "org.scalameta" %% "munit" % "1.2.0",
       ),
       Compile / scalaSource := baseDirectory.value,
     )
@@ -84,7 +84,7 @@ lazy val benchFansi =
       scalacOptions ++= sharedScalacOptions,
       libraryDependencies ++= Seq(
         "com.lihaoyi" %% "sourcecode" % "0.4.0",
-        "com.lihaoyi" %% "utest" % "0.8.5",
+        "com.lihaoyi" %% "utest" % "0.8.3",
       ),
       Compile / scalaSource := baseDirectory.value,
     )
