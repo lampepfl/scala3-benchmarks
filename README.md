@@ -4,14 +4,18 @@ JMH benchmarks for measuring Scala 3 compiler performance.
 
 ## Benchmarks
 
-**Real-world code** (multi-file):
-- [dottyUtil](https://github.com/scala/scala3/tree/main/compiler/src/dotty/tools/dotc/util): some utility code extracted from the Scala 3 compiler
-- [fansi](https://github.com/com-lihaoyi/fansi): library for ANSI colored strings
-- [re2s](https://github.com/twitter/rsc/tree/1d2b8962604206b1328e94257885117fd252bd23/examples/re2s/src/main/scala/java/util/regex): a regex implementation, originally used to test [reasonable-scala](https://github.com/twitter/reasonable-scala/)
-- [scala-parser-combinators](https://github.com/scala/scala-parser-combinators)
-- [scala-yaml](https://github.com/VirtusLab/scala-yaml)
-- [sourcecode](https://github.com/com-lihaoyi/sourcecode)
+**Real-world code** (multi-file): Sources are vendored (copied directly into this repository) and fixed to compile without errors or warnings across all Scala versions from 3.3.7 to nightly. Fixed versions ensure comparable benchmark results.
 
+| Project | Version | LOC | Dependencies | Tests | Features |
+|---------|---------|----:|--------------|:-----:|----------|
+| [dottyUtil](https://github.com/scala/scala3/tree/main/compiler/src/dotty/tools/dotc/util) | 6462d7d7 | 2209 | none | no | inline |
+| [fansi](https://github.com/com-lihaoyi/fansi) | 0.5.1 | 960 | sourcecode, utest 0.8.5 | yes | implicits |
+| [re2s](https://github.com/twitter/rsc/tree/1d2b8962604206b1328e94257885117fd252bd23/examples/re2s/src/main/scala/java/util/regex) | 1d2b8962 | 9021 | none | no | implicits |
+| [scala-parser-combinators](https://github.com/scala/scala-parser-combinators) | 2.4.0 | 1107 | none | no | implicits |
+| [scala-yaml](https://github.com/VirtusLab/scala-yaml) | 0.3.1 | 6473 | pprint 0.9.0, munit 1.0.0 | yes | macros, implicits |
+| [sourcecode](https://github.com/com-lihaoyi/sourcecode) | 0.4.4 | 638 | none | yes | macros, inline, implicits |
+
+LOC = lines of Scala code (reported by [cloc](https://github.com/AlDanial/cloc)). Features = notable usage of: inline, macros, implicits, match types, tuples.
 
 **Synthetic benchmarks** (single-file): The remaining benchmarks target specific compiler aspects (pattern matching, implicit resolution, inlining, etc.). Most are adapted from the previous benchmark suite.
 
