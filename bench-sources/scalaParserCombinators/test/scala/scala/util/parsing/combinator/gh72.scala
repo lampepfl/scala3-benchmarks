@@ -21,8 +21,8 @@ import org.junit.Assert.assertEquals
 class gh72 {
   class TestParsers extends Parsers {
     type Elem = Char
-    val left: Parser[String] = 'a' ~ 'b' ~ 'c' ^^^ "left" withFailureMessage "failure on left"
-    val right: Parser[String] = 'a' ~ 'b' ~ 'c' ^^^ "right" withFailureMessage "failure on right"
+    val left: Parser[String] = ('a' ~ 'b' ~ 'c' ^^^ "left").withFailureMessage("failure on left")
+    val right: Parser[String] = ('a' ~ 'b' ~ 'c' ^^^ "right").withFailureMessage("failure on right")
     def p: Parser[String] = left ||| right
   }
 

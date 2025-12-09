@@ -35,7 +35,7 @@ class T5514 extends Parsers {
 
 
   type Elem = String
-  def startsWith(prefix: String) = acceptIf(_ startsWith prefix)("Error: " + _)
+  def startsWith(prefix: String) = acceptIf(_.startsWith(prefix))("Error: " + _)
   
   @Test
   def test: Unit = {
