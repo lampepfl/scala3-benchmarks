@@ -8,12 +8,13 @@ JMH benchmarks for measuring Scala 3 compiler performance.
 
 | Project | Version | LOC | Dependencies | Tests | Features |
 |---------|---------|----:|--------------|:-----:|----------|
-| [dottyUtil](https://github.com/scala/scala3/tree/main/compiler/src/dotty/tools/dotc/util) | 6462d7d7 | 2209 | none | no | inline |
+| [dotty util](https://github.com/scala/scala3/tree/main/compiler/src/dotty/tools/dotc/util) | 6462d7d7 | 2'209 | none | no | inline |
 | [fansi](https://github.com/com-lihaoyi/fansi) | 0.5.1 | 960 | sourcecode, utest | yes | implicits |
-| [re2s](https://github.com/twitter/rsc/tree/1d2b8962604206b1328e94257885117fd252bd23/examples/re2s/src/main/scala/java/util/regex) | 1d2b8962 | 9021 | none | no | implicits |
-| [scala-parser-combinators](https://github.com/scala/scala-parser-combinators) | 2.4.0 | 1107 | junit | yes | implicits |
-| [scala-yaml](https://github.com/VirtusLab/scala-yaml) | 0.3.1 | 6473 | pprint, munit | yes | macros, implicits |
+| [re2s](https://github.com/twitter/rsc/tree/1d2b8962604206b1328e94257885117fd252bd23/examples/re2s/src/main/scala/java/util/regex) | 1d2b8962 | 9'021 | none | no | implicits |
+| [scala-parser-combinators](https://github.com/scala/scala-parser-combinators) | 2.4.0 | 1'107 | junit | yes | implicits |
+| [scala-yaml](https://github.com/VirtusLab/scala-yaml) | 0.3.1 | 6'473 | pprint, munit | yes | macros, implicits |
 | [sourcecode](https://github.com/com-lihaoyi/sourcecode) | 0.4.4 | 638 | none | yes | macros, inline, implicits |
+| [stdlib 2.1.3](https://github.com/dotty-staging/scala213/tree/3f6bdaeafde17d790023cc3f299b81eaaf876ca3/src/library) | 3f6bdae | 47'072 | none | yes | implicits |
 
 LOC = lines of Scala code (reported by [cloc](https://github.com/AlDanial/cloc)). Features = notable usage of: inline, macros, implicits, match types, tuples.
 

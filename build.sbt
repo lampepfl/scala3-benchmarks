@@ -42,7 +42,7 @@ lazy val benchStdlib213=
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions ++ Seq("-nowarn", "-language:implicitConversions", "-source", "3.3"),
-      Compile / scalaSource := baseDirectory.value / "library",
+      Compile / scalaSource := baseDirectory.value / "src" / "library",
     )
 
 lazy val benchRe2s =
