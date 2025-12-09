@@ -1,6 +1,7 @@
 package scalaz
 
 import reflect.ClassTag
+import scala.annotation.unchecked.uncheckedVariance
 import scala.collection.immutable.IndexedSeq
 import scala.collection.mutable.{ArrayBuilder, Builder}
 import collection.IndexedSeqOptimized
@@ -12,7 +13,7 @@ import syntax.Ops
  * @tparam A type of the elements of the array
  */
 sealed abstract class ImmutableArray[+A] {
-  protected[this] def elemTag: ClassTag[A]
+  protected[this] def elemTag: ClassTag[A @uncheckedVariance]
 
   @deprecated("removed in scalaz 7.3: not total", since = "7.2.19")
   def apply(index: Int): A
@@ -260,9 +261,9 @@ object ImmutableArray extends ImmutableArrayInstances {
     def apply(index: Int) = value(index)
     def length = value.length
 
-    protected[this] def arrayBuilder: Builder[A, ImmutableArray[A]]
+    protected[this] def arrayBuilder: Builder[A @uncheckedVariance, ImmutableArray[A]]
 
-    override protected[this] def newBuilder: Builder[A, WrappedImmutableArray[A]] = arrayBuilder.mapResult(wrapArray)
+    override protected[this] def newBuilder: Builder[A @uncheckedVariance, WrappedImmutableArray[A]] = arrayBuilder.mapResult(wrapArray)
   }
 
   object WrappedImmutableArray {
@@ -272,13 +273,13 @@ object ImmutableArray extends ImmutableArrayInstances {
     }
 
     abstract class ofImmutableArray1[+A](val immArray: ImmutableArray1[A]) extends WrappedImmutableArray[A](immArray) {
-      protected[this] def elemTag: ClassTag[A]
+      protected[this] def elemTag: ClassTag[A @uncheckedVariance]
 
-      override protected[this] def arrayBuilder = ImmutableArray.newBuilder[A](elemTag)
+      override protected[this] def arrayBuilder = ImmutableArray.newBuilder[A @uncheckedVariance](elemTag)
     }
 
     final class ofRef[+A <: AnyRef](array: IA.ofRef[A]) extends ofImmutableArray1[A](array) {
-      protected[this] lazy val elemTag = ClassTag[A](array.componentType)
+      protected[this] lazy val elemTag = ClassTag[A @uncheckedVariance](array.componentType)
     }
 
     final class ofByte(array: IA.ofByte) extends ofImmutableArray1[Byte](array) {
