@@ -36,7 +36,7 @@ lazy val benchDottyUtil =
       Compile / scalaSource := baseDirectory.value,
     )
 
-lazy val benchStdlib213=
+lazy val benchStdlib213 =
   project
     .in(file("bench-sources/stdlib213"))
     .settings(
@@ -123,7 +123,7 @@ def bigBenchmarkConfig(project: Project) = Def.task {
     .map(_.data.getAbsolutePath)
     .mkString(java.io.File.pathSeparator)
   val sources = (dir ** "*.scala").get.map(_.getAbsolutePath)
-  name -> (Seq("-classpath", classPath) ++ sources)
+  name -> (Seq("-classpath", classPath) ++ (project / Compile / scalacOptions).value ++ sources)
 }
 
 def benchmarkConfigs = Def.task {
@@ -133,10 +133,11 @@ def benchmarkConfigs = Def.task {
     .map(_.data.getAbsolutePath)
     .mkString(java.io.File.pathSeparator)
 
+  val smallScalacOptions = (benchSmall / Compile / scalacOptions).value
   val smallEntries = smallDir.listFiles.toSeq.flatMap { entry =>
     if (entry.isFile && entry.getName.endsWith(".scala")) {
       val name = entry.getName.stripSuffix(".scala")
-      Some(name -> Seq("-classpath", smallClassPath, entry.getAbsolutePath))
+      Some(name -> (Seq("-classpath", smallClassPath) ++ smallScalacOptions ++ Seq(entry.getAbsolutePath)))
     } else None
   }
 
