@@ -55,13 +55,7 @@ lazy val benchScalaParserCombinators =
         "junit" % "junit" % "4.13.2",
         "com.github.sbt" % "junit-interface" % "0.13.3",
       ),
-      Compile / unmanagedSourceDirectories := Seq(
-        baseDirectory.value / "shared" / "src" / "main" / "scala",
-        baseDirectory.value / "shared" / "src" / "main" / "scala-2.13+",
-        baseDirectory.value / "jvm" / "src" / "main" / "scala",
-        baseDirectory.value / "test",
-      ),
-      Compile / unmanagedResourceDirectories := Seq(),
+      Compile / scalaSource := baseDirectory.value,
     )
 
 lazy val benchSourcecode =
