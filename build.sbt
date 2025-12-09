@@ -45,6 +45,16 @@ lazy val benchDottyUtil =
 //      Compile / scalaSource := baseDirectory.value / "src" / "library",
 //    )
 
+lazy val benchScalaz =
+  project
+    .in(file("bench-sources/scalaz"))
+    .settings(
+      scalaVersion := compilerVersion,
+      scalacOptions ++= sharedScalacOptions ++ Seq("-source", "3.1", "-Xkind-projector", "-language:implicitConversions"),
+      Compile / scalaSource := baseDirectory.value,
+    )
+
+
 lazy val benchRe2s =
   project
     .in(file("bench-sources/re2s"))

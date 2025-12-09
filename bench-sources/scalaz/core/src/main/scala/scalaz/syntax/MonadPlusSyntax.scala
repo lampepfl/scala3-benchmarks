@@ -1,0 +1,57 @@
+package scalaz
+package syntax
+
+/** Wraps a value `self` and provides methods related to `MonadPlus` */
+final class MonadPlusOps[F[_],A] private[syntax](val self: F[A])(implicit val F: MonadPlus[F]) extends Ops[F[A]] {
+  ////
+  import Leibniz.===
+
+  def filter(f: A => Boolean): F[A] =
+    F.filter(self)(f)
+
+  def withFilter(f: A => Boolean): F[A] =
+    filter(f)
+
+  final def uniteU[T](implicit T: Unapply[Foldable, A]): F[T.A] =
+    F.uniteU(self)(T)
+
+  def unite[T[_], B](implicit ev: A === T[B], T: Foldable[T]): F[B] = {
+    val ftb: F[T[B]] = ev.subst(self)
+    F.unite[T, B](ftb)
+  }
+
+  final def lefts[G[_, _], B, C](implicit ev: A === G[B, C], G: Bifoldable[G]): F[B] =
+    F.bind(ev.subst(self))(b => G.leftFoldable.foldMap(b)(F.point(_))(F.monoid[B]))
+
+  final def rights[G[_, _], B, C](implicit ev: A === G[B, C], G: Bifoldable[G]): F[C] =
+    F.bind(ev.subst(self))(c => G.rightFoldable.foldMap(c)(F.point(_))(F.monoid[C]))
+
+  final def separate[G[_, _], B, C](implicit ev: A === G[B, C], G: Bifoldable[G]): (F[B], F[C]) =
+    F.separate(ev.subst(self))
+
+  ////
+}
+
+sealed trait ToMonadPlusOps0 {
+  implicit def ToMonadPlusOpsUnapply[FA](v: FA)(implicit F0: Unapply[MonadPlus, FA]): MonadPlusOps[F0.M, F0.A] =
+    new MonadPlusOps[F0.M, F0.A](F0(v))(F0.TC)
+
+}
+
+trait ToMonadPlusOps extends ToMonadPlusOps0 with ToMonadOps with ToApplicativePlusOps {
+  implicit def ToMonadPlusOps[F[_], A](v: F[A])(implicit F0: MonadPlus[F]): MonadPlusOps[F, A] =
+    new MonadPlusOps[F, A](v)
+
+  ////
+
+  ////
+}
+
+trait MonadPlusSyntax[F[_]] extends MonadSyntax[F] with ApplicativePlusSyntax[F] {
+  implicit def ToMonadPlusOps[A](v: F[A]): MonadPlusOps[F, A] = new MonadPlusOps[F,A](v)(MonadPlusSyntax.this.F)
+
+  def F: MonadPlus[F]
+  ////
+
+  ////
+}
