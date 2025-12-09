@@ -2,7 +2,7 @@ package bench
 
 import org.openjdk.jmh.annotations.Benchmark
 
-abstract class CompilationBenchmarksBig extends CompilationBenchmarks:
+class CompilationBenchmarksBig extends CompilationBenchmarks:
   @Benchmark def dottyUtils = scalac(Config.dottyUtil)
   @Benchmark def fansi = scalac(Config.fansi)
   @Benchmark def re2s = scalac(Config.re2s)
