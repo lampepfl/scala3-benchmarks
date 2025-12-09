@@ -22,8 +22,8 @@ class RegexParsersTest {
       def sign = "-"
       def number = "\\d+".r
       type ResultType = Option[String] ~ String
-      def p: Parser[ResultType] = sign.? ~ number withErrorMessage  "Number expected!"
-      def q: Parser[ResultType] = sign.? ~! number withErrorMessage  "Number expected!"
+      def p: Parser[ResultType] = (sign.? ~ number).withErrorMessage("Number expected!")
+      def q: Parser[ResultType] = (sign.? ~! number).withErrorMessage("Number expected!")
     }
     import parser._
     def extractResult(r: ParseResult[ResultType]): ResultType = r match {
@@ -83,8 +83,8 @@ class RegexParsersTest {
       val keywords = Set("if", "false")
       def word: Parser[String] = "\\w+".r
 
-      def keyword: Parser[String] = word filter (keywords.contains)
-      def ident: Parser[String] = word filter(!keywords.contains(_))
+      def keyword: Parser[String] = word.filter(keywords.contains)
+      def ident: Parser[String] = word.filter(!keywords.contains(_))
 
       def test: Parser[String ~ String] = keyword ~ ident
     }

@@ -27,7 +27,7 @@ class gh45 {
       val g = new grammar
       val p = g.phrase(g.script)
       val parseResult = p(new g.lexical.Scanner(rd))
-      assertTrue(parseResult.isInstanceOf[g.Success[_]])
+      assertTrue(parseResult.isInstanceOf[g.Success[?]])
     }
 
     val str = "x once y"
