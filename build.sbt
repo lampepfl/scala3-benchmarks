@@ -50,7 +50,7 @@ lazy val benchScalaz =
     .in(file("bench-sources/scalaz"))
     .settings(
       scalaVersion := compilerVersion,
-      scalacOptions ++= sharedScalacOptions ++ Seq("-source", "3.0", "-Xkind-projector", "-language:implicitConversions"),
+      scalacOptions ++= sharedScalacOptions ++ Seq("-nowarn", "-source", "3.0", "-Xkind-projector", "-language:implicitConversions"),
       Compile / scalaSource := baseDirectory.value,
     )
 

@@ -12,7 +12,7 @@ abstract class ImmutableArrayInstances1 {
         ImmutableArray.newBuilder(m)
 
       def fromSpecific(from: ImmutableArray[_])(it: IterableOnce[T]): ImmutableArray[T] =
-        ImmutableArray.fromArray(it.toArray)
+        ImmutableArray.fromArray(it.iterator.toArray)
     }
 
   implicit val buildFromChar: BuildFrom[ImmutableArray[_], Char, ImmutableArray[Char]] =

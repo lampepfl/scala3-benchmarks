@@ -33,10 +33,10 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
 
     def parApply[Z](f: (A, B, C) => Z)(implicit ap: Apply.Par[M]): M[Z] =
       Tag.unwrap(ap.apply3(
-                   Tag[M[A], Parallel](a),
-                   Tag[M[B], Parallel](b),
-                   Tag[M[C], Parallel](c)
-                 )(f))
+        Tag[M[A], Parallel](a),
+        Tag[M[B], Parallel](b),
+        Tag[M[C], Parallel](c),
+      )(f))
 
     def parTupled(implicit ap: Apply.Par[M]): M[(A, B, C)] =
       parApply(Tuple3.apply)
@@ -52,18 +52,18 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
         val e = ee
       }
 
-    def |@|[E](ee: M[E]): ApplicativeBuilder5[E] = ⊛(ee)
+      def |@|[E](ee: M[E]): ApplicativeBuilder5[E] = ⊛(ee)
 
-    def parApply[Z](f: (A, B, C, D) => Z)(implicit ap: Apply.Par[M]): M[Z] =
-      Tag.unwrap(ap.apply4(
-                   Tag[M[A], Parallel](a),
-                   Tag[M[B], Parallel](b),
-                   Tag[M[C], Parallel](c),
-                   Tag[M[D], Parallel](d)
-                 )(f))
+      def parApply[Z](f: (A, B, C, D) => Z)(implicit ap: Apply.Par[M]): M[Z] =
+        Tag.unwrap(ap.apply4(
+          Tag[M[A], Parallel](a),
+          Tag[M[B], Parallel](b),
+          Tag[M[C], Parallel](c),
+          Tag[M[D], Parallel](d),
+        )(f))
 
-    def parTupled(implicit ap: Apply.Par[M]): M[(A, B, C, D)] =
-      parApply(Tuple4.apply)
+      def parTupled(implicit ap: Apply.Par[M]): M[(A, B, C, D)] =
+        parApply(Tuple4.apply)
 
       sealed abstract class ApplicativeBuilder5[E] {
         val e: M[E]
@@ -80,12 +80,12 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
 
         def parApply[Z](f: (A, B, C, D, E) => Z)(implicit ap: Apply.Par[M]): M[Z] =
           Tag.unwrap(ap.apply5(
-                       Tag[M[A], Parallel](a),
-                       Tag[M[B], Parallel](b),
-                       Tag[M[C], Parallel](c),
-                       Tag[M[D], Parallel](d),
-                       Tag[M[E], Parallel](e)
-                     )(f))
+            Tag[M[A], Parallel](a),
+            Tag[M[B], Parallel](b),
+            Tag[M[C], Parallel](c),
+            Tag[M[D], Parallel](d),
+            Tag[M[E], Parallel](e),
+          )(f))
 
         def parTupled(implicit ap: Apply.Par[M]): M[(A, B, C, D, E)] =
           parApply(Tuple5.apply)
@@ -105,13 +105,13 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
 
           def parApply[Z](f: (A, B, C, D, E, F) => Z)(implicit ap: Apply.Par[M]): M[Z] =
             Tag.unwrap(ap.apply6(
-                         Tag[M[A], Parallel](a),
-                         Tag[M[B], Parallel](b),
-                         Tag[M[C], Parallel](c),
-                         Tag[M[D], Parallel](d),
-                         Tag[M[E], Parallel](e),
-                         Tag[M[F], Parallel](ff)
-                       )(f))
+              Tag[M[A], Parallel](a),
+              Tag[M[B], Parallel](b),
+              Tag[M[C], Parallel](c),
+              Tag[M[D], Parallel](d),
+              Tag[M[E], Parallel](e),
+              Tag[M[F], Parallel](ff),
+            )(f))
 
           def parTupled(implicit ap: Apply.Par[M]): M[(A, B, C, D, E, F)] =
             parApply(Tuple6.apply)
@@ -119,7 +119,8 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
           sealed abstract class ApplicativeBuilder7[G] {
             val g: M[G]
 
-            def apply[H](f: (A, B, C, D, E, F, G) => H)(implicit ap: Apply[M]): M[H] = ap.apply7(a, b, c, d, e, ff, g)(f)
+            def apply[H](f: (A, B, C, D, E, F, G) => H)(implicit ap: Apply[M]): M[H] =
+              ap.apply7(a, b, c, d, e, ff, g)(f)
 
             def tupled(implicit ap: Apply[M]): M[(A, B, C, D, E, F, G)] = apply(Tuple7.apply)
 
@@ -131,14 +132,14 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
 
             def parApply[Z](f: (A, B, C, D, E, F, G) => Z)(implicit ap: Apply.Par[M]): M[Z] =
               Tag.unwrap(ap.apply7(
-                           Tag[M[A], Parallel](a),
-                           Tag[M[B], Parallel](b),
-                           Tag[M[C], Parallel](c),
-                           Tag[M[D], Parallel](d),
-                           Tag[M[E], Parallel](e),
-                           Tag[M[F], Parallel](ff),
-                           Tag[M[G], Parallel](g)
-                         )(f))
+                Tag[M[A], Parallel](a),
+                Tag[M[B], Parallel](b),
+                Tag[M[C], Parallel](c),
+                Tag[M[D], Parallel](d),
+                Tag[M[E], Parallel](e),
+                Tag[M[F], Parallel](ff),
+                Tag[M[G], Parallel](g),
+              )(f))
 
             def parTupled(implicit ap: Apply.Par[M]): M[(A, B, C, D, E, F, G)] =
               parApply(Tuple7.apply)
@@ -146,7 +147,8 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
             sealed abstract class ApplicativeBuilder8[H] {
               val h: M[H]
 
-              def apply[I](f: (A, B, C, D, E, F, G, H) => I)(implicit ap: Apply[M]): M[I] = ap.apply8(a, b, c, d, e, ff, g, h)(f)
+              def apply[I](f: (A, B, C, D, E, F, G, H) => I)(implicit ap: Apply[M]): M[I] =
+                ap.apply8(a, b, c, d, e, ff, g, h)(f)
 
               def tupled(implicit ap: Apply[M]): M[(A, B, C, D, E, F, G, H)] = apply(Tuple8.apply)
 
@@ -158,15 +160,15 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
 
               def parApply[Z](f: (A, B, C, D, E, F, G, H) => Z)(implicit ap: Apply.Par[M]): M[Z] =
                 Tag.unwrap(ap.apply8(
-                             Tag[M[A], Parallel](a),
-                             Tag[M[B], Parallel](b),
-                             Tag[M[C], Parallel](c),
-                             Tag[M[D], Parallel](d),
-                             Tag[M[E], Parallel](e),
-                             Tag[M[F], Parallel](ff),
-                             Tag[M[G], Parallel](g),
-                             Tag[M[H], Parallel](h)
-                           )(f))
+                  Tag[M[A], Parallel](a),
+                  Tag[M[B], Parallel](b),
+                  Tag[M[C], Parallel](c),
+                  Tag[M[D], Parallel](d),
+                  Tag[M[E], Parallel](e),
+                  Tag[M[F], Parallel](ff),
+                  Tag[M[G], Parallel](g),
+                  Tag[M[H], Parallel](h),
+                )(f))
 
               def parTupled(implicit ap: Apply.Par[M]): M[(A, B, C, D, E, F, G, H)] =
                 parApply(Tuple8.apply)
@@ -174,7 +176,8 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
               sealed abstract class ApplicativeBuilder9[I] {
                 val i: M[I]
 
-                def apply[J](f: (A, B, C, D, E, F, G, H, I) => J)(implicit ap: Apply[M]): M[J] = ap.apply9(a, b, c, d, e, ff, g, h, i)(f)
+                def apply[J](f: (A, B, C, D, E, F, G, H, I) => J)(implicit ap: Apply[M]): M[J] =
+                  ap.apply9(a, b, c, d, e, ff, g, h, i)(f)
 
                 def tupled(implicit ap: Apply[M]): M[(A, B, C, D, E, F, G, H, I)] = apply(Tuple9.apply)
 
@@ -186,16 +189,16 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
 
                 def parApply[Z](f: (A, B, C, D, E, F, G, H, I) => Z)(implicit ap: Apply.Par[M]): M[Z] =
                   Tag.unwrap(ap.apply9(
-                               Tag[M[A], Parallel](a),
-                               Tag[M[B], Parallel](b),
-                               Tag[M[C], Parallel](c),
-                               Tag[M[D], Parallel](d),
-                               Tag[M[E], Parallel](e),
-                               Tag[M[F], Parallel](ff),
-                               Tag[M[G], Parallel](g),
-                               Tag[M[H], Parallel](h),
-                               Tag[M[I], Parallel](i)
-                             )(f))
+                    Tag[M[A], Parallel](a),
+                    Tag[M[B], Parallel](b),
+                    Tag[M[C], Parallel](c),
+                    Tag[M[D], Parallel](d),
+                    Tag[M[E], Parallel](e),
+                    Tag[M[F], Parallel](ff),
+                    Tag[M[G], Parallel](g),
+                    Tag[M[H], Parallel](h),
+                    Tag[M[I], Parallel](i),
+                  )(f))
 
                 def parTupled(implicit ap: Apply.Par[M]): M[(A, B, C, D, E, F, G, H, I)] =
                   parApply(Tuple9.apply)
@@ -203,7 +206,8 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
                 sealed abstract class ApplicativeBuilder10[J] {
                   val j: M[J]
 
-                  def apply[K](f: (A, B, C, D, E, F, G, H, I, J) => K)(implicit ap: Apply[M]): M[K] = ap.apply10(a, b, c, d, e, ff, g, h, i, j)(f)
+                  def apply[K](f: (A, B, C, D, E, F, G, H, I, J) => K)(implicit ap: Apply[M]): M[K] =
+                    ap.apply10(a, b, c, d, e, ff, g, h, i, j)(f)
 
                   def tupled(implicit ap: Apply[M]): M[(A, B, C, D, E, F, G, H, I, J)] = apply(Tuple10.apply)
 
@@ -215,17 +219,17 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
 
                   def parApply[Z](f: (A, B, C, D, E, F, G, H, I, J) => Z)(implicit ap: Apply.Par[M]): M[Z] =
                     Tag.unwrap(ap.apply10(
-                                 Tag[M[A], Parallel](a),
-                                 Tag[M[B], Parallel](b),
-                                 Tag[M[C], Parallel](c),
-                                 Tag[M[D], Parallel](d),
-                                 Tag[M[E], Parallel](e),
-                                 Tag[M[F], Parallel](ff),
-                                 Tag[M[G], Parallel](g),
-                                 Tag[M[H], Parallel](h),
-                                 Tag[M[I], Parallel](i),
-                                 Tag[M[J], Parallel](j)
-                               )(f))
+                      Tag[M[A], Parallel](a),
+                      Tag[M[B], Parallel](b),
+                      Tag[M[C], Parallel](c),
+                      Tag[M[D], Parallel](d),
+                      Tag[M[E], Parallel](e),
+                      Tag[M[F], Parallel](ff),
+                      Tag[M[G], Parallel](g),
+                      Tag[M[H], Parallel](h),
+                      Tag[M[I], Parallel](i),
+                      Tag[M[J], Parallel](j),
+                    )(f))
 
                   def parTupled(implicit ap: Apply.Par[M]): M[(A, B, C, D, E, F, G, H, I, J)] =
                     parApply(Tuple10.apply)
@@ -246,18 +250,18 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
 
                     def parApply[Z](f: (A, B, C, D, E, F, G, H, I, J, K) => Z)(implicit ap: Apply.Par[M]): M[Z] =
                       Tag.unwrap(ap.apply11(
-                                   Tag[M[A], Parallel](a),
-                                   Tag[M[B], Parallel](b),
-                                   Tag[M[C], Parallel](c),
-                                   Tag[M[D], Parallel](d),
-                                   Tag[M[E], Parallel](e),
-                                   Tag[M[F], Parallel](ff),
-                                   Tag[M[G], Parallel](g),
-                                   Tag[M[H], Parallel](h),
-                                   Tag[M[I], Parallel](i),
-                                   Tag[M[J], Parallel](j),
-                                   Tag[M[K], Parallel](k)
-                                 )(f))
+                        Tag[M[A], Parallel](a),
+                        Tag[M[B], Parallel](b),
+                        Tag[M[C], Parallel](c),
+                        Tag[M[D], Parallel](d),
+                        Tag[M[E], Parallel](e),
+                        Tag[M[F], Parallel](ff),
+                        Tag[M[G], Parallel](g),
+                        Tag[M[H], Parallel](h),
+                        Tag[M[I], Parallel](i),
+                        Tag[M[J], Parallel](j),
+                        Tag[M[K], Parallel](k),
+                      )(f))
 
                     def parTupled(implicit ap: Apply.Par[M]): M[(A, B, C, D, E, F, G, H, I, J, K)] =
                       parApply(Tuple11.apply)
@@ -272,19 +276,19 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
 
                       def parApply[Z](f: (A, B, C, D, E, F, G, H, I, J, K, L) => Z)(implicit ap: Apply.Par[M]): M[Z] =
                         Tag.unwrap(ap.apply12(
-                                     Tag[M[A], Parallel](a),
-                                     Tag[M[B], Parallel](b),
-                                     Tag[M[C], Parallel](c),
-                                     Tag[M[D], Parallel](d),
-                                     Tag[M[E], Parallel](e),
-                                     Tag[M[F], Parallel](ff),
-                                     Tag[M[G], Parallel](g),
-                                     Tag[M[H], Parallel](h),
-                                     Tag[M[I], Parallel](i),
-                                     Tag[M[J], Parallel](j),
-                                     Tag[M[K], Parallel](k),
-                                     Tag[M[L], Parallel](l)
-                                   )(f))
+                          Tag[M[A], Parallel](a),
+                          Tag[M[B], Parallel](b),
+                          Tag[M[C], Parallel](c),
+                          Tag[M[D], Parallel](d),
+                          Tag[M[E], Parallel](e),
+                          Tag[M[F], Parallel](ff),
+                          Tag[M[G], Parallel](g),
+                          Tag[M[H], Parallel](h),
+                          Tag[M[I], Parallel](i),
+                          Tag[M[J], Parallel](j),
+                          Tag[M[K], Parallel](k),
+                          Tag[M[L], Parallel](l),
+                        )(f))
 
                       def parTupled(implicit ap: Apply.Par[M]): M[(A, B, C, D, E, F, G, H, I, J, K, L)] =
                         parApply(Tuple12.apply)
@@ -314,7 +318,8 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
 // outside of ApplicativeBuilder for bincompat
 object ApplicativeBuilder {
   implicit final class ApplicativeBuilderOps2[M[_], A, B](
-      val self: ApplicativeBuilder[M, A, B]) extends AnyVal {
+      val self: ApplicativeBuilder[M, A, B],
+  ) extends AnyVal {
     def parApply[C](f: (A, B) => C)(implicit ap: Apply.Par[M]): M[C] =
       Tag.unwrap(ap.apply2(Tag[M[A], Parallel](self.a), Tag[M[B], Parallel](self.b))(f))
 
