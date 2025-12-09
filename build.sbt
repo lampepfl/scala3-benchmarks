@@ -89,7 +89,7 @@ lazy val benchTastyQuery =
     .in(file("bench-sources/tastyQuery"))
     .settings(
       scalaVersion := compilerVersion,
-      scalacOptions ++= sharedScalacOptions ++ Seq("-Yexplicit-nulls", "-Wsafe-init", "-Wconf:msg=Unnecessary .nn:s"),
+      scalacOptions ++= sharedScalacOptions ++ Seq("-Yexplicit-nulls", "-Wconf:msg=Unnecessary .nn:s"),
       Compile / scalaSource := baseDirectory.value / "tasty-query",
     )
 
