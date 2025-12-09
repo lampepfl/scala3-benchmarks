@@ -175,8 +175,10 @@ def benchmarkConfigs = Def.task {
     bigBenchmarkConfig(benchRe2s).value,
     bigBenchmarkConfig(benchScalaParserCombinators).value,
     bigBenchmarkConfig(benchScalaYaml).value,
+    bigBenchmarkConfig(benchScalaz).value,
     bigBenchmarkConfig(benchSourcecode).value,
     //bigBenchmarkConfig(benchStdlib213).value,
+    bigBenchmarkConfig(benchTastyQuery).value,
   )
 
   (smallEntries ++ bigEntries).toMap
