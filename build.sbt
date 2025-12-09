@@ -33,7 +33,12 @@ lazy val benchStdlib =
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions ++ Seq("-nowarn", "-unchecked", "-encoding", "UTF8", "-language:implicitConversions", "-Yexplicit-nulls", "-Wsafe-init", "-Yno-stdlib-patches"),
-      Compile / scalaSource := baseDirectory.value,
+      autoScalaLibrary := false,
+      Compile / scalaSource := baseDirectory.value / "library" / "src",
+      Compile / compile / scalacOptions ++= Seq(
+        // Needed so that the library sources are visible when `dotty.tools.dotc.core.Definitions#init` is called
+        "-sourcepath", (Compile / scalaSource).value.getAbsolutePath,
+      ),
     )
 
 lazy val benchDottyUtil =
