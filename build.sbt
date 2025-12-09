@@ -1,4 +1,4 @@
-val compilerVersion = sys.props.get("compiler.version").getOrElse("3.7.4")
+val compilerVersion = sys.props.get("compiler.version").getOrElse("3.8.1-RC1-bin-20251209-07883c1-NIGHTLY")
 
 val sharedScalacOptions = Seq("-feature", "-Werror", "-deprecation")
 
@@ -36,14 +36,14 @@ lazy val benchDottyUtil =
       Compile / scalaSource := baseDirectory.value,
     )
 
-lazy val benchStdlib213 =
-  project
-    .in(file("bench-sources/stdlib213"))
-    .settings(
-      scalaVersion := compilerVersion,
-      scalacOptions ++= sharedScalacOptions ++ Seq("-nowarn", "-language:implicitConversions", "-source", "3.3"),
-      Compile / scalaSource := baseDirectory.value / "src" / "library",
-    )
+//lazy val benchStdlib213 =
+//  project
+//    .in(file("bench-sources/stdlib213"))
+//    .settings(
+//      scalaVersion := compilerVersion,
+//      scalacOptions ++= sharedScalacOptions ++ Seq("-nowarn", "-language:implicitConversions", "-source", "3.3"),
+//      Compile / scalaSource := baseDirectory.value / "src" / "library",
+//    )
 
 lazy val benchRe2s =
   project
@@ -149,7 +149,7 @@ def benchmarkConfigs = Def.task {
     bigBenchmarkConfig(benchScalaParserCombinators).value,
     bigBenchmarkConfig(benchScalaYaml).value,
     bigBenchmarkConfig(benchSourcecode).value,
-    bigBenchmarkConfig(benchStdlib213).value,
+    //bigBenchmarkConfig(benchStdlib213).value,
   )
 
   (smallEntries ++ bigEntries).toMap
