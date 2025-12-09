@@ -52,7 +52,7 @@ private[scalaz] trait ApplicativeBuilder[M[_], A, B] {
         val e = ee
       }
 
-      def |@|[E](ee: M[E]): ApplicativeBuilder5[E] = ⊛(ee)
+    def |@|[E](ee: M[E]): ApplicativeBuilder5[E] = ⊛(ee)
 
     def parApply[Z](f: (A, B, C, D) => Z)(implicit ap: Apply.Par[M]): M[Z] =
       Tag.unwrap(ap.apply4(
