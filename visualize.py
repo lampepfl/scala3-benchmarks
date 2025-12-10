@@ -93,6 +93,10 @@ def main():
         action="store_true",
         help="Start y-axis at 0",
     )
+    parser.add_argument(
+        "--filter",
+        help="Filter benchmarks to those containing this substring (e.g., 'Big', 'implicit')",
+    )
     args = parser.parse_args()
 
     versions = args.versions
@@ -102,6 +106,10 @@ def main():
 
     # Filter to only requested versions
     df = df[df["version"].isin(versions)]
+
+    # Filter benchmarks by substring if specified
+    if args.filter:
+        df = df[df["benchmark"].str.contains(args.filter, case=False)]
 
     print(f"Loaded {len(df)} data points")
     print(f"Versions: {versions} (baseline: {baseline_version})")
