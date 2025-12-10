@@ -7,7 +7,7 @@ class SemanticVersionTest extends munit.FunSuite:
     import fastparse.{parse => fpParse, *}, NoWhitespace.*
     import Version.parser
 
-    assertEquals(fpParse("123", parser.number(_)), Parsed.Success(123L, 3))
+    assertEquals(fpParse("123", parser.number(using _)), Parsed.Success(123L, 3))
     assertEquals(Version.parse("1.0.0", "1.0.0"), Right(Version(Vector(1, 0, 0), original = "1.0.0")))
   }
 

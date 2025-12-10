@@ -126,7 +126,7 @@ class Http(config: Config, ds: DataSource, projectsRepo: ProjectWithLatestReleas
     NettySyncServer()
       .host("0.0.0.0")
       .port(config.port)
-      .addEndpoint(staticResourcesGetServerEndpoint("static")(classOf[App].getClassLoader(), "static/"))
+      .addEndpoint(staticResourcesGetServerEndpoint("static")(classOf[Http].getClassLoader(), "static/"))
       .addEndpoint(paging)
       .addEndpoint(searchEndpoint)
       .addEndpoint(vote)
