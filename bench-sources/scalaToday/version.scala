@@ -98,12 +98,12 @@ object Version:
           Version(mainVersionNums.toVector, preRelease, buildMetadata, original)
       }
 
-    def parse(s: String): Parsed[Version] = fpParse(s, parseVersion(s)(_))
+    def parse(s: String): Parsed[Version] = fpParse(s, parseVersion(s)(using _))
 
   end parser
 
   def parse(version: String, original: String): Either[Exception, Version] = Try {
-    fpParse(version, parser.parseVersion(original)(_)) match
+    fpParse(version, parser.parseVersion(original)(using _)) match
       case Parsed.Success(version, _) => version
       case Parsed.Failure(expected, failIndex, extra) =>
         throw ParseException(
