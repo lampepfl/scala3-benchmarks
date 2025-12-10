@@ -31,9 +31,7 @@ def load_all_data() -> pd.DataFrame:
                 benchmarks = json.load(f)
 
             for bench in benchmarks:
-                benchmark_name = bench["benchmark"].replace(
-                    "bench.CompilationBenchmarks.", ""
-                )
+                benchmark_name = bench["benchmark"]
                 raw_data = bench["primaryMetric"]["rawData"]
                 # rawData is a list of lists (one per fork)
                 # Take last N measurements from each fork (JVM warms up separately per fork)
@@ -120,6 +118,9 @@ def main():
     # Filter benchmarks by substring if specified
     if args.filter:
         df = df[df["benchmark"].str.contains(args.filter, case=False)]
+
+    # Simplify benchmark names to just the method name (after last dot)
+    df["benchmark"] = df["benchmark"].apply(lambda x: x.rsplit(".", 1)[-1])
 
     print(f"Loaded {len(df)} data points")
     print(f"Versions: {versions} (baseline: {baseline_version})")
