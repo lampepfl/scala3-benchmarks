@@ -13,6 +13,7 @@ JMH benchmarks for measuring Scala 3 compiler performance.
 | [fansi](https://github.com/com-lihaoyi/fansi) | 0.5.1 | 960 | sourcecode, utest | yes |
 | [indigo](https://github.com/PurpleKingdomGames/indigo) ⚡ | 0.22.0 | 25'270 | scalajs-dom, ultraviolet | no |
 | [re2s](https://github.com/twitter/rsc/tree/1d2b8962604206b1328e94257885117fd252bd23/examples/re2s/src/main/scala/java/util/regex) | 1d2b8962 | 9'021 | none | no |
+| [scala-parallel-collections](https://github.com/scala/scala-parallel-collections) | 8acd6e6 | 11'512 | none | no |
 | [scala-parser-combinators](https://github.com/scala/scala-parser-combinators) | 2.4.0 | 2'325 | junit | yes |
 | [scala.today](https://github.com/VirtusLab/scala.today) | 2dd97e7 | 1'103 | tapir, ox, magnum, etc. | no |
 | [scala-yaml](https://github.com/VirtusLab/scala-yaml) | 0.3.1 | 6'473 | pprint, munit | yes |
@@ -48,6 +49,7 @@ bench-sources/
   fansi/
   indigo/               # Scala.js benchmark (3.6.4+)
   re2s/
+  scalaParallelCollections/
   scalaParserCombinators/
   scalaYaml/
   sourcecode/
@@ -69,7 +71,6 @@ Benchmarks should:
 
 Potential future benchmarks:
 
-- [scala-parallel-collections](https://github.com/scala/scala-parallel-collections) (6773 LOC)
 - [quicklens](https://github.com/softwaremill/quicklens)  (waiting 3.8)
 - advent of code solutions (various authors, various sizes)
 
