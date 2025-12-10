@@ -1,6 +1,6 @@
 val compilerVersion = sys.props.get("compiler.version").getOrElse("3.8.1-RC1-bin-20251209-07883c1-NIGHTLY")
 
-val sharedScalacOptions = Seq("-feature", "-Werror", "-deprecation")
+val sharedScalacOptions = Seq("-feature", "-deprecation", "-Werror")
 
 ThisBuild / resolvers += Resolver.scalaNightlyRepository
 
@@ -25,6 +25,24 @@ lazy val benchSmall =
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions,
       Compile / scalaSource := baseDirectory.value,
+    )
+
+lazy val benchStdlib =
+  project
+    .in(file("bench-sources/stdlib"))
+    .settings(
+      scalaVersion := compilerVersion,
+      scalacOptions ++= sharedScalacOptions ++ Seq("-nowarn", "-unchecked", "-encoding", "UTF8", "-language:implicitConversions", "-Yexplicit-nulls", "-Wsafe-init", "-Yno-stdlib-patches"),
+      autoScalaLibrary := false,
+      Compile / scalaSource := baseDirectory.value / "library" / "src",
+      Compile / compile / scalacOptions ++= Seq(
+        // Needed so that the library sources are visible when `dotty.tools.dotc.core.Definitions#init` is called
+        "-sourcepath", (Compile / scalaSource).value.getAbsolutePath,
+      ),
+      Compile / excludeFilter := {
+        if (isBeforeScala38(compilerVersion)) "AnyVal.scala"
+        else NothingFilter
+      },
     )
 
 lazy val benchDottyUtil =
@@ -202,6 +220,12 @@ def kindProjectorFlag(scalaVersion: String): String =
       scalaVersion.startsWith("3.4")) "-Ykind-projector"
   else "-Xkind-projector"
 
+def isBeforeScala38(version: String): Boolean =
+  version.startsWith("3.0") || version.startsWith("3.1") ||
+  version.startsWith("3.2") || version.startsWith("3.3") ||
+  version.startsWith("3.4") || version.startsWith("3.5") ||
+  version.startsWith("3.6") || version.startsWith("3.7")
+
 def generateBenchmarkConfig = Def.task {
   val configFile = (Compile / sourceManaged).value / "bench" / "Config.scala"
   val benchmarks = benchmarkConfigs.value
@@ -254,6 +278,7 @@ def benchmarkConfigs = Def.task {
     bigBenchmarkConfig(benchDottyUtil).value,
     bigBenchmarkConfig(benchFansi, includeTests = true).value,
     bigBenchmarkConfig(benchRe2s).value,
+    bigBenchmarkConfig(benchStdlib).value,
     bigBenchmarkConfig(benchScalaParserCombinators, includeTests = true).value,
     bigBenchmarkConfig(benchScalaToday).value,
     bigBenchmarkConfig(benchScalaYaml, includeTests = true).value,
