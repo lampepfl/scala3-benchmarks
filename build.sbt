@@ -93,6 +93,15 @@ lazy val benchScalaParserCombinators =
       Test / scalaSource := baseDirectory.value / "test" / "scala",
     )
 
+lazy val benchScalaParallelCollections =
+  project
+    .in(file("bench-sources/scalaParallelCollections"))
+    .settings(
+      scalaVersion := compilerVersion,
+      scalacOptions ++= sharedScalacOptions ++ Seq("-Wconf:msg=Implicit parameters should be provided:s"),
+      Compile / scalaSource := baseDirectory.value / "scala",
+    )
+
 lazy val benchSourcecode =
   project
     .in(file("bench-sources/sourcecode"))
@@ -305,6 +314,7 @@ def benchmarkConfigs = Def.task {
     bigBenchmarkConfig(benchFansi, includeTests = true).value,
     bigBenchmarkConfig(benchIndigo).value, // Requires Scala 3.6.4+
     bigBenchmarkConfig(benchRe2s).value,
+    bigBenchmarkConfig(benchScalaParallelCollections).value,
     bigBenchmarkConfig(benchScalaParserCombinators, includeTests = true).value,
     bigBenchmarkConfig(benchScalaToday).value,
     bigBenchmarkConfig(benchScalaYaml, includeTests = true).value,
