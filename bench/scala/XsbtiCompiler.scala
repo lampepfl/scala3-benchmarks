@@ -1,10 +1,11 @@
 package bench
 
 import java.io.{File, InputStream}
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{Files, Path}
 import java.util.{Optional, ServiceLoader}
 import java.util.function.Supplier
 
+import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.*
 
 import xsbti.{AnalysisCallback2, Logger, Problem, Reporter, VirtualFile, VirtualFileRef}
@@ -15,21 +16,19 @@ import xsbti.compile.{CompileProgress, CompilerInterface2, DependencyChanges, Si
   *
   * This is the same interface that sbt/bloop/scala-cli use to invoke scalac.
   */
-class XsbtiCompiler(outputDir: Path):
-  import XsbtiCompiler.*
-
-  private val compilerInterface: CompilerInterface2 =
-    ServiceLoader.load(classOf[CompilerInterface2]).iterator().asScala.toList.last
-
-  private val output = SimpleOutput(outputDir)
-
+object XsbtiCompiler:
   /** Compiles the given source files with the given options.
     *
     * @param sourceFiles paths to .scala or .java files
     * @param options compiler options (excluding -d, which is set from outputDir)
+    * @param outputDir directory where compiled classes will be written
     */
-  def compile(sourceFiles: Seq[Path], options: Seq[String]): Unit =
+  def compile(sourceFiles: Seq[Path], options: Seq[String], outputDir: Path): Unit =
+    val compilerInterface: CompilerInterface2 =
+      ServiceLoader.load(classOf[CompilerInterface2]).iterator().asScala.toList.last
+
     val sources: Array[VirtualFile] = sourceFiles.map(SourceFile(_)).toArray
+    val output = SimpleOutput(outputDir)
     val reporter = ErrorCollectingReporter()
 
     compilerInterface.run(
@@ -47,9 +46,6 @@ class XsbtiCompiler(outputDir: Path):
       val errors = reporter.problems().map(p => s"  ${p.position().sourcePath().orElse("?")}: ${p.message()}").mkString("\n")
       throw new CompilationFailedException(s"Compilation failed with ${reporter.problems().length} errors:\n$errors")
 
-class CompilationFailedException(message: String) extends Exception(message)
-
-object XsbtiCompiler:
   /** A PathBasedFile implementation for source files. */
   private class SourceFile(path: Path) extends xsbti.PathBasedFile:
     private val content = Files.readAllBytes(path)
@@ -113,12 +109,12 @@ object XsbtiCompiler:
 
   /** Reporter that collects errors. */
   private class ErrorCollectingReporter extends Reporter:
-    private var errors: List[Problem] = Nil
-    private var warnings: List[Problem] = Nil
+    private val errors = ArrayBuffer[Problem]()
+    private val warnings = ArrayBuffer[Problem]()
 
     def reset(): Unit =
-      errors = Nil
-      warnings = Nil
+      errors.clear()
+      warnings.clear()
 
     def hasErrors(): Boolean = errors.nonEmpty
     def hasWarnings(): Boolean = warnings.nonEmpty
@@ -127,8 +123,8 @@ object XsbtiCompiler:
 
     def log(problem: Problem): Unit =
       problem.severity() match
-        case xsbti.Severity.Error => errors = problem :: errors
-        case xsbti.Severity.Warn => warnings = problem :: warnings
+        case xsbti.Severity.Error => errors += problem
+        case xsbti.Severity.Warn => warnings += problem
         case _ => ()
 
     def comment(pos: xsbti.Position, msg: String): Unit = ()
@@ -137,3 +133,5 @@ object XsbtiCompiler:
   private object NoopProgress extends CompileProgress:
     override def startUnit(phase: String, unitPath: String): Unit = ()
     override def advance(current: Int, total: Int, prevPhase: String, nextPhase: String): Boolean = true
+
+class CompilationFailedException(message: String) extends Exception(message)

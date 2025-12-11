@@ -24,9 +24,7 @@ import org.openjdk.jmh.annotations.{
 @State(Scope.Benchmark)
 @OutputTimeUnit(MILLISECONDS)
 abstract class CompilationBenchmarks:
-  val outDir = "out"
-
-  private val compiler = XsbtiCompiler(Paths.get(outDir))
+  val outDir = Paths.get("out")
 
   /** Launches `scalac` with the given arguments.
     * @param args Compiler arguments including source files
@@ -42,14 +40,14 @@ abstract class CompilationBenchmarks:
       assert(sourceFiles.size == expectedSources,
         s"Expected $expectedSources sources but found ${sourceFiles.size}")
 
-    compiler.compile(sourceFiles.map(Paths.get(_)), options)
+    XsbtiCompiler.compile(sourceFiles.map(Paths.get(_)), options, outDir)
 
   @Setup(Level.Iteration)
   def setup(): Unit =
     removeAndCreateDir(outDir)
 
   /** Removes and creates a directory. */
-  def removeAndCreateDir(dir: String) =
+  def removeAndCreateDir(dir: Path) =
     // Using `rm` instead of Java's API because it is better at removing the
     // whole directory atomically. Got occasional `DirectoryNotEmptyException`
     // exceptions with the Java's API.
