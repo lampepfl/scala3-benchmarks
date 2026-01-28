@@ -22,9 +22,8 @@ JMH benchmarks for measuring Scala 3 compiler performance.
 | [tasty-query](https://github.com/scalacenter/tasty-query) | v1.6.1 | 13'482 | none | no |
 | [tictactoe](https://github.com/katlasik/scala3-tictactoe) | 6873dfd | 441 | cats-effect, cats-core | yes |
 
-⚡ = Scala.js benchmark (requires Scala 3.6.4+)
-
-LOC = lines of Scala code (reported by [cloc](https://github.com/AlDanial/cloc)). Features = notable usage of: inline, macros, implicits, match types, tuples.
+⚡ = Scala.js benchmark (requires Scala 3.6.4+)  
+LOC = lines of Scala code (reported by [cloc](https://github.com/AlDanial/cloc))
 
 **Synthetic benchmarks** (single-file): The remaining benchmarks target specific compiler aspects (pattern matching, implicit resolution, inlining, etc.). Most are adapted from the previous benchmark suite.
 
