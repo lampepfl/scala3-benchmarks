@@ -1,4 +1,4 @@
-val compilerVersion = sys.props.get("compiler.version").getOrElse("3.8.1-RC1-bin-20251209-07883c1-NIGHTLY")
+val compilerVersion = sys.props.get("compiler.version").getOrElse("3.8.1")
 
 val sharedScalacOptions = Seq("-feature", "-Werror", "-deprecation")
 
