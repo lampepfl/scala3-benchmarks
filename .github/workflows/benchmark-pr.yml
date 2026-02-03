@@ -1,0 +1,97 @@
+name: Benchmark PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "Dotty PR number"
+        required: true
+        type: string
+      jvm:
+        description: "JVM to use"
+        required: false
+        default: "temurin:25"
+        type: string
+      runs:
+        description: "Number of runs per version"
+        required: false
+        default: "1"
+        type: string
+      filter:
+        description: "JMH benchmark filter (regex pattern)"
+        required: false
+        default: ""
+        type: string
+  workflow_call:
+    inputs:
+      pr:
+        description: "Dotty PR number"
+        required: true
+        type: string
+      jvm:
+        description: "JVM to use"
+        required: false
+        default: "temurin:25"
+        type: string
+      runs:
+        description: "Number of runs per version"
+        required: false
+        default: "1"
+        type: string
+      filter:
+        description: "JMH benchmark filter (regex pattern)"
+        required: false
+        default: ""
+        type: string
+
+jobs:
+  benchmark-pr:
+    runs-on: [self-hosted, benchmarks]
+    steps:
+      - name: Checkout dotty PR
+        uses: actions/checkout@v4
+        with:
+          repository: scala/scala3
+          ref: refs/pull/${{ inputs.pr }}/merge
+          path: dotty
+
+      - name: Setup Coursier
+        uses: coursier/setup-action@v1
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
+
+      - name: Publish dotty locally
+        working-directory: dotty
+        env:
+          NIGHTLYBUILD: "yes"
+        run: sbt prepareCommunityBuild
+
+      - name: Get published version
+        id: version
+        working-directory: dotty
+        run: |
+          VERSION=$(cat scala3-bootstrapped.version)
+          echo "Published version: $VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout benchmarks
+        uses: actions/checkout@v4
+        with:
+          path: benchmarks
+
+      - name: Run benchmarks
+        working-directory: benchmarks
+        run: |
+          args=(--versions "${{ steps.version.outputs.version }}" --jvm "${{ inputs.jvm }}" --runs "${{ inputs.runs }}")
+          if [ -n "${{ inputs.filter }}" ]; then
+            args+=(--filter "${{ inputs.filter }}")
+          fi
+          bash run.sh "${args[@]}"
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: benchmarks/results/
