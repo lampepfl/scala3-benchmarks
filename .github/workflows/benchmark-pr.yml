@@ -13,7 +13,7 @@ on:
         default: "temurin:25"
         type: string
       runs:
-        description: "Number of runs per version"
+        description: "Number of runs"
         required: false
         default: "1"
         type: string
@@ -34,7 +34,7 @@ on:
         default: "temurin:25"
         type: string
       runs:
-        description: "Number of runs per version"
+        description: "Number of runs"
         required: false
         default: "1"
         type: string
