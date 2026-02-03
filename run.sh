@@ -100,8 +100,13 @@ for version in "${RUN_ORDER[@]}"; do
   echo "[$CURRENT/$TOTAL] Running benchmarks for Scala $version..."
   echo "  Results will be written to: $RESULTS_FILE_ABS"
 
-  sbt -Dcompiler.version="$version" \
-    "clean; bench / Jmh / run -gc true -foe true -rf json -rff $RESULTS_FILE_ABS $FILTER"
+  # Build JMH command with optional filter
+  JMH_CMD="clean; bench / Jmh / run -gc true -foe true -rf json -rff $RESULTS_FILE_ABS"
+  if [ -n "$FILTER" ]; then
+    JMH_CMD="$JMH_CMD $FILTER"
+  fi
+
+  sbt -Dcompiler.version="$version" "$JMH_CMD"
 
   echo "  Completed: $RESULTS_FILE_ABS"
   echo ""
