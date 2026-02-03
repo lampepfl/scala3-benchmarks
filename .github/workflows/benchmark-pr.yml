@@ -66,7 +66,10 @@ jobs:
       - name: Publish dotty locally
         working-directory: dotty
         env:
+          # Makes a unique version based on commit hash
           NIGHTLYBUILD: "yes"
+        # Publish dotty locally and write the published version to
+        # `community-build/scala3-bootstrapped.version`
         run: sbt community-build/prepareCommunityBuild
 
       - name: Get published version
@@ -77,6 +80,12 @@ jobs:
           echo "Published version: $VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
+  # Note: This relies on the PR compiler being published into the local machine cache
+  # (Ivy/Coursier) and the subsequent benchmark job running on the same self-hosted
+  # runner machine. GitHub does not guarantee runner affinity between jobs.
+  # If/when multiple runners share the [self-hosted, benchmarks] label, we’ll need a
+  # different way to make the published artifacts available (or merge publish+benchmark
+  # into one job / use a remote repository / use concurrency + single runner).
   benchmark:
     needs: publish-pr
     uses: ./.github/workflows/benchmark.yml
