@@ -43,7 +43,7 @@ while [[ $# -gt 0 ]]; do
       echo "  --jvm       JVM version (default: temurin:21)"
       echo "  --runs      Number of runs per version (default: 1)"
       echo "  --machine   Machine name for results directory (default: hostname)"
-      echo "  --filter    JMH benchmark name filter (regex). Matches against benchmark method names."
+      echo "  --filter    JMH benchmark name filter (Java regex). Matches against benchmark method names."
       echo "              Examples: 'helloWorld', '.*World', 'hello.*', 'implicit.*'"
       echo ""
       echo "Examples:"
