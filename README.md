@@ -33,6 +33,9 @@ LOC = lines of Scala code (reported by [cloc](https://github.com/AlDanial/cloc))
 # Run benchmarks for multiple versions with interleaved runs
 ./run.sh --versions 3.3.4 3.7.4 --jvm temurin:21 --runs 3
 
+# Run only specific benchmarks using a filter
+./run.sh --versions 3.3.4 --jvm temurin:21 --runs 1 --filter helloWorld
+
 # Or run manually with sbt
 sbt -Dcompiler.version=3.3.4 "clean; bench / Jmh / run -gc true -foe true"
 ```
