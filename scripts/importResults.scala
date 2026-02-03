@@ -35,6 +35,16 @@ def metricStats(metric: Option[JmhMetric]): (Double, Double, Double) =
     case None =>
       throw Exception(s"Metric not found")
 
+def formatSigFigs(d: Double, sigFigs: Int = 4): String =
+  if d == 0.0 then "0"
+  else
+    // Calculate decimal places needed for desired significant figures
+    // Note: We use 'f' format instead of 'g' to avoid scientific notation
+    val digits = sigFigs - 1 - Math.floor(Math.log10(Math.abs(d))).toInt
+    s"%.${Math.max(digits, 0)}f".format(d)
+      .replaceAll("0+$", "") // Strip trailing zeros
+      .replaceAll("\\.$", "") // Strip trailing decimal point
+
 def importResults(
     jsonPath: os.Path,
     dataRepoPath: os.Path,
@@ -112,7 +122,7 @@ def importResults(
       bench.benchmark,
       bench.warmupIterations.toString,
       bench.measurementIterations.toString,
-    ) ++ times.map(_.toString) ++ Seq(
+    ) ++ times.map(formatSigFigs(_)) ++ Seq(
       allocsMB._1,
       allocsMB._2,
       allocsMB._3,
@@ -122,7 +132,7 @@ def importResults(
       compMin,
       compAvg,
       compMax,
-    ).map(_.toString))
+    ).map(formatSigFigs(_)))
   
   writer.close()
 
