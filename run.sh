@@ -43,11 +43,13 @@ while [[ $# -gt 0 ]]; do
       echo "  --jvm       JVM version (default: temurin:21)"
       echo "  --runs      Number of runs per version (default: 1)"
       echo "  --machine   Machine name for results directory (default: hostname)"
-      echo "  --filter    JMH benchmark filter pattern (regex, e.g., 'helloWorld', '.*World', 'hello.*')"
+      echo "  --filter    JMH benchmark name filter (regex). Matches against benchmark method names."
+      echo "              Examples: 'helloWorld', '.*World', 'hello.*', 'implicit.*'"
       echo ""
       echo "Examples:"
       echo "  $0 --versions 3.3.4 3.7.4 3.8.0-RC2 --jvm temurin:21 --runs 3"
       echo "  $0 --versions 3.3.4 --jvm temurin:21 --runs 1 --filter helloWorld"
+      echo "  $0 --versions 3.3.4 --jvm temurin:21 --runs 1 --filter '.*fansi.*'"
       exit 1
       ;;
   esac
