@@ -37,8 +37,17 @@ while [[ $# -gt 0 ]]; do
     *)
       echo "Unknown option: $1"
       echo "Usage: $0 --versions <v1> <v2> ... --jvm <jvm> --runs <n> [--machine <name>] [--filter <pattern>]"
-      echo "Example: $0 --versions 3.3.4 3.7.4 3.8.0-RC2 --jvm temurin:21 --runs 3"
-      echo "Example: $0 --versions 3.3.4 --jvm temurin:21 --runs 1 --filter helloWorld"
+      echo ""
+      echo "Options:"
+      echo "  --versions  Scala versions to benchmark (required)"
+      echo "  --jvm       JVM version (default: temurin:21)"
+      echo "  --runs      Number of runs per version (default: 1)"
+      echo "  --machine   Machine name for results directory (default: hostname)"
+      echo "  --filter    JMH benchmark filter pattern (regex, e.g., 'helloWorld', '.*World', 'hello.*')"
+      echo ""
+      echo "Examples:"
+      echo "  $0 --versions 3.3.4 3.7.4 3.8.0-RC2 --jvm temurin:21 --runs 3"
+      echo "  $0 --versions 3.3.4 --jvm temurin:21 --runs 1 --filter helloWorld"
       exit 1
       ;;
   esac
