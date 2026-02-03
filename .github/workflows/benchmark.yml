@@ -98,7 +98,7 @@ jobs:
           for json_file in results/*/*/*/*.json; do
             if [ -f "$json_file" ]; then
               echo "Importing $json_file"
-              scala scripts/importResults.scala -- \
+              scala --server=false scripts/importResults.scala -- \
                 "$json_file" \
                 data-repo \
                 "${{ inputs.branch }}"
