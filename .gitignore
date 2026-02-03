@@ -3,6 +3,7 @@
 .metals
 metals.sbt
 target
+.scala-build
 out
 results
 sbt

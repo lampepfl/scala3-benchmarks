@@ -1,0 +1,29 @@
+name: Benchmark Nightly
+
+on:
+  schedule:
+    - cron: "37 4 * * *" # every day at 4:37 UTC
+  workflow_dispatch:
+
+jobs:
+  get-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.nightly.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: coursier/setup-action@v1
+
+      - name: Get latest nightly version
+        id: nightly
+        run: |
+          VERSION=$(scala scripts/lastNightly.sc)
+          echo "Latest nightly: $VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+  benchmark:
+    needs: get-version
+    uses: ./.github/workflows/benchmark.yml
+    with:
+      versions: ${{ needs.get-version.outputs.version }}
