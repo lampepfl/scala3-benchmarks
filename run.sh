@@ -6,6 +6,7 @@ VERSIONS=()
 JVM="temurin:21"
 RUNS=1
 MACHINE=$(hostname)
+FILTER=""
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -29,10 +30,15 @@ while [[ $# -gt 0 ]]; do
       MACHINE="$2"
       shift 2
       ;;
+    --filter)
+      FILTER="$2"
+      shift 2
+      ;;
     *)
       echo "Unknown option: $1"
-      echo "Usage: $0 --versions <v1> <v2> ... --jvm <jvm> --runs <n> [--machine <name>]"
+      echo "Usage: $0 --versions <v1> <v2> ... --jvm <jvm> --runs <n> [--machine <name>] [--filter <pattern>]"
       echo "Example: $0 --versions 3.3.4 3.7.4 3.8.0-RC2 --jvm temurin:21 --runs 3"
+      echo "Example: $0 --versions 3.3.4 --jvm temurin:21 --runs 1 --filter helloWorld"
       exit 1
       ;;
   esac
@@ -62,6 +68,9 @@ echo "  Versions: ${VERSIONS[*]}"
 echo "  JVM: $JVM"
 echo "  Runs: $RUNS"
 echo "  Machine: $MACHINE"
+if [ -n "$FILTER" ]; then
+  echo "  Filter: $FILTER"
+fi
 echo "  Results: $RESULTS_BASE/<version>/<timestamp>.json"
 echo ""
 
@@ -92,7 +101,7 @@ for version in "${RUN_ORDER[@]}"; do
   echo "  Results will be written to: $RESULTS_FILE_ABS"
 
   sbt -Dcompiler.version="$version" \
-    "clean; bench / Jmh / run -gc true -foe true -rf json -rff $RESULTS_FILE_ABS"
+    "clean; bench / Jmh / run -gc true -foe true -rf json -rff $RESULTS_FILE_ABS $FILTER"
 
   echo "  Completed: $RESULTS_FILE_ABS"
   echo ""
