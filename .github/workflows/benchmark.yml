@@ -116,41 +116,13 @@ jobs:
       - name: Commit and push to data repository
         working-directory: data-repo
         run: |
-          echo "Checking repository state..."
-          git status
-
-          echo ""
-          echo "Files in raw/ directory:"
-          if [ -d raw/ ]; then
-            find raw/ -type f | head -20
-          else
-            echo "WARNING: raw/ directory does not exist!"
-            echo "Creating raw/ directory..."
-            mkdir -p raw
-          fi
-
-          echo ""
-          echo "Staging changes..."
-          git add -v raw/
-
-          echo ""
-          echo "Checking what will be committed..."
-          git status
-
+          git add raw/
           if git diff --staged --quiet; then
-            echo ""
-            echo "ERROR: No changes to commit!"
-            echo "This means no files were created in the raw/ directory."
-            exit 1
+            echo "No new files to commit"
           else
-            echo ""
-            echo "Committing changes..."
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git commit -m "Add benchmark results from ${{ github.run_id }}"
-
-            echo ""
-            echo "Pushing to remote..."
             git push
             echo "Successfully pushed results!"
           fi
