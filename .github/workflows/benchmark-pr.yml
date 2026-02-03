@@ -65,13 +65,13 @@ jobs:
         working-directory: dotty
         env:
           NIGHTLYBUILD: "yes"
-        run: sbt prepareCommunityBuild
+        run: sbt community-build/prepareCommunityBuild
 
       - name: Get published version
         id: version
         working-directory: dotty
         run: |
-          VERSION=$(cat scala3-bootstrapped.version)
+          VERSION=$(cat community-build/scala3-bootstrapped.version)
           echo "Published version: $VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
