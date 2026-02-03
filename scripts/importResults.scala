@@ -36,12 +36,22 @@ def metricStats(metric: Option[JmhMetric]): (Double, Double, Double) =
 def importResults(
     jsonPath: os.Path,
     dataRepoPath: os.Path,
-    scalaVersion: String,
     branch: String,
-    machine: String,
-    jvm: String,
 ): Unit =
   println(s"Reading JMH results from: $jsonPath")
+
+  // Extract machine, jvm, version from path: results/<machine>/<jvm>/<version>/<timestamp>/<file>.json
+  val pathSegments = jsonPath.segments.toSeq
+  val resultsIndex = pathSegments.indexOf("results")
+  assert(resultsIndex >= 0, s"Path must contain 'results' directory: $jsonPath")
+  assert(pathSegments.size >= resultsIndex + 5, s"Invalid path structure: $jsonPath")
+
+  val machine = pathSegments(resultsIndex + 1)
+  val jvm = pathSegments(resultsIndex + 2)
+  val scalaVersion = pathSegments(resultsIndex + 3)
+
+  println(s"Extracted from path: machine=$machine, jvm=$jvm, version=$scalaVersion")
+
   val benchmarks = read[Seq[JmhBenchmark]](os.read(jsonPath))
 
   if benchmarks.isEmpty then
@@ -119,13 +129,10 @@ def importResults(
 @main def run(
     jsonPathStr: String,
     dataRepoPathStr: String,
-    scalaVersion: String,
     branch: String,
-    machine: String,
-    jvm: String,
 ): Unit =
   val jsonPath = os.Path(jsonPathStr, os.pwd)
   val dataRepoPath = os.Path(dataRepoPathStr, os.pwd)
   assert(os.exists(jsonPath), s"JSON file not found: $jsonPath")
   assert(os.exists(dataRepoPath), s"Data repository not found: $dataRepoPath")
-  importResults(jsonPath, dataRepoPath, scalaVersion, branch, machine, jvm)
+  importResults(jsonPath, dataRepoPath, branch)

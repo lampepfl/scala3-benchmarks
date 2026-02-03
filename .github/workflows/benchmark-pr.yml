@@ -45,8 +45,10 @@ on:
         type: string
 
 jobs:
-  benchmark-pr:
+  publish-pr:
     runs-on: [self-hosted, benchmarks]
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout dotty PR
         uses: actions/checkout@v4
@@ -75,23 +77,13 @@ jobs:
           echo "Published version: $VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Checkout benchmarks
-        uses: actions/checkout@v4
-        with:
-          path: benchmarks
-
-      - name: Run benchmarks
-        working-directory: benchmarks
-        run: |
-          args=(--versions "${{ steps.version.outputs.version }}" --jvm "${{ inputs.jvm }}" --runs "${{ inputs.runs }}")
-          if [ -n "${{ inputs.filter }}" ]; then
-            args+=(--filter "${{ inputs.filter }}")
-          fi
-          bash run.sh "${args[@]}"
-
-      - name: Upload results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: benchmark-results
-          path: benchmarks/results/
+  benchmark:
+    needs: publish-pr
+    uses: ./.github/workflows/benchmark.yml
+    with:
+      versions: ${{ needs.publish-pr.outputs.version }}
+      jvm: ${{ inputs.jvm }}
+      runs: ${{ inputs.runs }}
+      filter: ${{ inputs.filter }}
+      branch: pr${{ inputs.pr }}
+    secrets: inherit

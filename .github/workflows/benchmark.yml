@@ -22,6 +22,11 @@ on:
         required: false
         default: ""
         type: string
+      branch:
+        description: "Branch name for data repo (main or pr<n>)"
+        required: false
+        default: "main"
+        type: string
   workflow_call:
     inputs:
       versions:
@@ -42,6 +47,11 @@ on:
         description: "JMH benchmark filter (regex pattern)"
         required: false
         default: ""
+        type: string
+      branch:
+        description: "Branch name for data repo (main or pr<n>)"
+        required: false
+        default: "main"
         type: string
 
 jobs:
@@ -64,6 +74,41 @@ jobs:
             args+=(--filter "${{ inputs.filter }}")
           fi
           bash run.sh "${args[@]}"
+
+      - name: Checkout data repository
+        if: always()
+        uses: actions/checkout@v4
+        with:
+          repository: lampepfl/scala3-benchmarks-data
+          path: data-repo
+          token: ${{ secrets.DATA_REPO_TOKEN }}
+
+      - name: Import results to data repository
+        if: always()
+        run: |
+          for json_file in results/*/*/*/*/*.json; do
+            if [ -f "$json_file" ]; then
+              echo "Importing $json_file"
+              scala scripts/importResults.scala -- \
+                "$json_file" \
+                data-repo \
+                "${{ inputs.branch }}"
+            fi
+          done
+
+      - name: Commit and push to data repository
+        if: always()
+        working-directory: data-repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add raw/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Add benchmark results from ${{ github.run_id }}"
+            git push
+          fi
 
       - name: Upload results
         if: always()
