@@ -1,10 +1,10 @@
 package bench
 
 import bench.compilers.DottyCompiler
-import org.openjdk.jmh.annotations.{Benchmark, Measurement}
+import org.openjdk.jmh.annotations.{Benchmark, Warmup}
 
 class CompilationBenchmarksBig36 extends CompilationBenchmarks:
-  @Measurement(iterations = 60)
+  @Warmup(iterations = 60)
   @Benchmark
   def indigo =
     assert(Config.indigo.sources.size == 223)

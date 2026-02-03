@@ -1,7 +1,7 @@
 package bench
 
 import bench.compilers.{DottyCompiler, XsbtiCompiler}
-import org.openjdk.jmh.annotations.{Benchmark, Measurement}
+import org.openjdk.jmh.annotations.{Benchmark, Warmup}
 
 class CompilationBenchmarksBig extends CompilationBenchmarks:
   @Benchmark
@@ -24,13 +24,13 @@ class CompilationBenchmarksBig extends CompilationBenchmarks:
     assert(Config.re2s.sources.size == 17)
     DottyCompiler.compile(Config.re2s.sources, Config.re2s.options, outDir)
 
-  @Measurement(iterations = 100)
+  @Warmup(iterations = 100)
   @Benchmark
   def scalaParserCombinators =
     assert(Config.scalaParserCombinators.sources.size == 50)
     DottyCompiler.compile(Config.scalaParserCombinators.sources, Config.scalaParserCombinators.options, outDir)
 
-  @Measurement(iterations = 80)
+  @Warmup(iterations = 80)
   @Benchmark
   def scalaParallelCollections =
     assert(Config.scalaParallelCollections.sources.size == 86)
@@ -41,13 +41,13 @@ class CompilationBenchmarksBig extends CompilationBenchmarks:
     assert(Config.scalaToday.sources.size == 9)
     DottyCompiler.compile(Config.scalaToday.sources, Config.scalaToday.options, outDir)
 
-  @Measurement(iterations = 80)
+  @Warmup(iterations = 80)
   @Benchmark
   def scalaYaml =
     assert(Config.scalaYaml.sources.size == 57)
     DottyCompiler.compile(Config.scalaYaml.sources, Config.scalaYaml.options, outDir)
 
-  @Measurement(iterations = 60)
+  @Warmup(iterations = 60)
   @Benchmark
   def scalaz =
     assert(Config.scalaz.sources.size == 292)
@@ -58,7 +58,7 @@ class CompilationBenchmarksBig extends CompilationBenchmarks:
     assert(Config.sourcecode.sources.size == 20)
     DottyCompiler.compile(Config.sourcecode.sources, Config.sourcecode.options, outDir)
 
-  @Measurement(iterations = 60)
+  @Warmup(iterations = 60)
   @Benchmark
   def tastyQuery =
     assert(Config.tastyQuery.sources.size == 49)
@@ -69,7 +69,7 @@ class CompilationBenchmarksBig extends CompilationBenchmarks:
     assert(Config.tictactoe.sources.size == 16)
     DottyCompiler.compile(Config.tictactoe.sources, Config.tictactoe.options, outDir)
 
-  @Measurement(iterations = 60)
+  @Warmup(iterations = 60)
   @Benchmark
   def xsbtiTastyQuery =
     assert(Config.tastyQuery.sources.size == 49)
