@@ -116,7 +116,7 @@ jobs:
       - name: Commit and push to data repository
         working-directory: data-repo
         run: |
-          git add raw/
+          git add raw/ aggregated/
           if git diff --staged --quiet; then
             echo "No new files to commit"
           else
