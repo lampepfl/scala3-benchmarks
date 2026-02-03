@@ -114,7 +114,7 @@ for version in "${RUN_ORDER[@]}"; do
   echo "  Results will be written to: $RESULTS_FILE_ABS"
 
   # Build JMH command with optional filter
-  JMH_CMD="clean; bench / Jmh / run -gc true -foe true -prof cl -prof comp -prof gc -rf json -rff $RESULTS_FILE_ABS"
+  JMH_CMD="clean; bench / Jmh / run -gc true -foe true -prof comp -prof gc -rf json -rff $RESULTS_FILE_ABS"
   if [ -n "$FILTER" ]; then
     # Properly escape filter for safe inclusion in command string
     ESCAPED_FILTER=$(printf '%q' "$FILTER")
