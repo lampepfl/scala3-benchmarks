@@ -1,0 +1,73 @@
+name: Benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      versions:
+        description: "Scala versions (space separated)"
+        required: true
+        type: string
+      jvm:
+        description: "JVM to use"
+        required: false
+        default: "temurin:25"
+        type: string
+      runs:
+        description: "Number of runs per version"
+        required: false
+        default: "1"
+        type: string
+      filter:
+        description: "JMH benchmark filter (regex pattern)"
+        required: false
+        default: ""
+        type: string
+  workflow_call:
+    inputs:
+      versions:
+        description: "Scala versions (space separated)"
+        required: true
+        type: string
+      jvm:
+        description: "JVM to use"
+        required: false
+        default: "temurin:25"
+        type: string
+      runs:
+        description: "Number of runs per version"
+        required: false
+        default: "1"
+        type: string
+      filter:
+        description: "JMH benchmark filter (regex pattern)"
+        required: false
+        default: ""
+        type: string
+
+jobs:
+  benchmark:
+    runs-on: [self-hosted, benchmarks]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Coursier
+        uses: coursier/setup-action@v1
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
+
+      - name: Run benchmarks
+        run: |
+          read -ra vers <<< "${{ inputs.versions }}"
+          args=(--versions "${vers[@]}" --jvm "${{ inputs.jvm }}" --runs "${{ inputs.runs }}")
+          if [ -n "${{ inputs.filter }}" ]; then
+            args+=(--filter "${{ inputs.filter }}")
+          fi
+          bash run.sh "${args[@]}"
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: results/
