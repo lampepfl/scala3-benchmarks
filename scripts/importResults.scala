@@ -167,7 +167,7 @@ def importResults(
 
     val aggregatePath = dataRepoPath / "aggregated" / machine / jvm / branch / patchVersion
     val timeStats = metricStats(bench.primaryMetric)
-    appendStats(aggregatePath / "times" / s"$shortBenchmark.csv", version, timeStats)
+    appendStats(aggregatePath / "time" / s"$shortBenchmark.csv", version, timeStats)
     appendStats(aggregatePath / "allocs" / s"$shortBenchmark.csv", version, allocsStats)
     appendStats(aggregatePath / "gc" / s"$shortBenchmark.csv", version, gcStats)
     appendStats(aggregatePath / "comp" / s"$shortBenchmark.csv", version, compStats)
