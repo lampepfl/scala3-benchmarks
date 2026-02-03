@@ -6,6 +6,7 @@ VERSIONS=()
 JVM="temurin:21"
 RUNS=1
 MACHINE=$(hostname)
+FILTER=""
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -29,10 +30,28 @@ while [[ $# -gt 0 ]]; do
       MACHINE="$2"
       shift 2
       ;;
+    --filter)
+      FILTER="$2"
+      shift 2
+      ;;
     *)
       echo "Unknown option: $1"
-      echo "Usage: $0 --versions <v1> <v2> ... --jvm <jvm> --runs <n> [--machine <name>]"
-      echo "Example: $0 --versions 3.3.4 3.7.4 3.8.0-RC2 --jvm temurin:21 --runs 3"
+      echo "Usage: $0 --versions <v1> <v2> ... --jvm <jvm> --runs <n> [--machine <name>] [--filter <pattern>]"
+      echo ""
+      echo "Options:"
+      echo "  --versions  Scala versions to benchmark (required)"
+      echo "  --jvm       JVM version (default: temurin:21)"
+      echo "  --runs      Number of runs per version (default: 1)"
+      echo "  --machine   Machine name for results directory (default: hostname)"
+      echo "  --filter    JMH benchmark filter (regex pattern). Matches any substring of the fully qualified"
+      echo "              method name (e.g., 'bench.CompilationBenchmarksSmall.helloWorld')."
+      echo "              Plain strings work as substring matches; use regex for complex patterns."
+      echo "              Examples: 'helloWorld', '.*World', 'Small.*hello', 'implicit.*'"
+      echo ""
+      echo "Examples:"
+      echo "  $0 --versions 3.3.4 3.7.4 3.8.0-RC2 --jvm temurin:21 --runs 3"
+      echo "  $0 --versions 3.3.4 --jvm temurin:21 --runs 1 --filter helloWorld"
+      echo "  $0 --versions 3.3.4 --jvm temurin:21 --runs 1 --filter '.*fansi.*'"
       exit 1
       ;;
   esac
@@ -62,6 +81,9 @@ echo "  Versions: ${VERSIONS[*]}"
 echo "  JVM: $JVM"
 echo "  Runs: $RUNS"
 echo "  Machine: $MACHINE"
+if [ -n "$FILTER" ]; then
+  echo "  Filter: $FILTER"
+fi
 echo "  Results: $RESULTS_BASE/<version>/<timestamp>.json"
 echo ""
 
@@ -91,8 +113,15 @@ for version in "${RUN_ORDER[@]}"; do
   echo "[$CURRENT/$TOTAL] Running benchmarks for Scala $version..."
   echo "  Results will be written to: $RESULTS_FILE_ABS"
 
-  sbt -Dcompiler.version="$version" \
-    "clean; bench / Jmh / run -gc true -foe true -rf json -rff $RESULTS_FILE_ABS"
+  # Build JMH command with optional filter
+  JMH_CMD="clean; bench / Jmh / run -gc true -foe true -rf json -rff $RESULTS_FILE_ABS"
+  if [ -n "$FILTER" ]; then
+    # Properly escape filter for safe inclusion in command string
+    ESCAPED_FILTER=$(printf '%q' "$FILTER")
+    JMH_CMD="$JMH_CMD $ESCAPED_FILTER"
+  fi
+
+  sbt -Dcompiler.version="$version" "$JMH_CMD"
 
   echo "  Completed: $RESULTS_FILE_ABS"
   echo ""
