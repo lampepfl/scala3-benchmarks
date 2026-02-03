@@ -63,6 +63,8 @@ jobs:
 
       - name: Setup Coursier
         uses: coursier/setup-action@v1
+        with:
+          apps: scala
 
       - name: Setup sbt
         uses: sbt/setup-sbt@v1
