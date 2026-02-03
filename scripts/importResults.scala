@@ -40,11 +40,11 @@ def importResults(
 ): Unit =
   println(s"Reading JMH results from: $jsonPath")
 
-  // Extract machine, jvm, version from path: results/<machine>/<jvm>/<version>/<timestamp>/<file>.json
+  // Extract machine, jvm, version from path: results/<machine>/<jvm>/<version>/<timestamp>.json
   val pathSegments = jsonPath.segments.toSeq
   val resultsIndex = pathSegments.indexOf("results")
   assert(resultsIndex >= 0, s"Path must contain 'results' directory: $jsonPath")
-  assert(pathSegments.size >= resultsIndex + 5, s"Invalid path structure: $jsonPath")
+  assert(pathSegments.size >= resultsIndex + 4, s"Invalid path structure: $jsonPath (expected results/<machine>/<jvm>/<version>/<file>.json)")
 
   val machine = pathSegments(resultsIndex + 1)
   val jvm = pathSegments(resultsIndex + 2)
