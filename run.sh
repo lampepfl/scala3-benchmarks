@@ -45,6 +45,7 @@ while [[ $# -gt 0 ]]; do
       echo "  --machine   Machine name for results directory (default: hostname)"
       echo "  --filter    JMH benchmark filter (Java regex). Matches any substring of the fully qualified"
       echo "              benchmark name (e.g., 'bench.CompilationBenchmarksSmall.helloWorld')."
+      echo "              Plain strings work as substring matches; use regex for complex patterns."
       echo "              Examples: 'helloWorld', '.*World', 'Small.*hello', 'implicit.*'"
       echo ""
       echo "Examples:"
@@ -115,7 +116,9 @@ for version in "${RUN_ORDER[@]}"; do
   # Build JMH command with optional filter
   JMH_CMD="clean; bench / Jmh / run -gc true -foe true -rf json -rff $RESULTS_FILE_ABS"
   if [ -n "$FILTER" ]; then
-    JMH_CMD="$JMH_CMD $FILTER"
+    # Properly escape filter for safe inclusion in command string
+    ESCAPED_FILTER=$(printf '%q' "$FILTER")
+    JMH_CMD="$JMH_CMD $ESCAPED_FILTER"
   fi
 
   sbt -Dcompiler.version="$version" "$JMH_CMD"
