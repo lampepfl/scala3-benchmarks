@@ -77,11 +77,17 @@ jobs:
 
       - name: Checkout data repository
         if: always()
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Checkout data repository
+        if: always()
         uses: actions/checkout@v4
         with:
           repository: lampepfl/scala3-benchmarks-data
           path: data-repo
-          token: ${{ secrets.DATA_REPO_TOKEN }}
+          ssh-key: ${{ secrets.DATA_REPO_DEPLOY_KEY }}
 
       - name: Import results to data repository
         if: always()
