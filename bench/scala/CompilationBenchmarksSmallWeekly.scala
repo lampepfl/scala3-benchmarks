@@ -1,9 +1,10 @@
 package bench
 
-import bench.compilers.{DottyCompiler, XsbtiCompiler}
+import bench.compilers.DottyCompiler
 import org.openjdk.jmh.annotations.Benchmark
 
-class CompilationBenchmarksSmall extends CompilationBenchmarks:
+class CompilationBenchmarksSmallWeekly extends CompilationBenchmarks:
+
   @Benchmark def exhaustivityI =
     assert(Config.exhaustivityI.sources.size == 1)
     DottyCompiler.compile(Config.exhaustivityI.sources, Config.exhaustivityI.options, outDir)
@@ -23,10 +24,6 @@ class CompilationBenchmarksSmall extends CompilationBenchmarks:
   @Benchmark def findRef =
     assert(Config.findRef.sources.size == 1)
     DottyCompiler.compile(Config.findRef.sources, Config.findRef.options, outDir)
-
-  @Benchmark def helloWorld =
-    assert(Config.helloWorld.sources.size == 1)
-    DottyCompiler.compile(Config.helloWorld.sources, Config.helloWorld.options, outDir)
 
   @Benchmark def i1535 =
     assert(Config.i1535.sources.size == 1)
@@ -51,10 +48,6 @@ class CompilationBenchmarksSmall extends CompilationBenchmarks:
   @Benchmark def implicitScopeLoop =
     assert(Config.implicitScopeLoop.sources.size == 1)
     DottyCompiler.compile(Config.implicitScopeLoop.sources, Config.implicitScopeLoop.options, outDir)
-
-  @Benchmark def matchTypeBubbleSort =
-    assert(Config.matchTypeBubbleSort.sources.size == 1)
-    DottyCompiler.compile(Config.matchTypeBubbleSort.sources, Config.matchTypeBubbleSort.options, outDir)
 
   @Benchmark def patmatexhaust =
     assert(Config.patmatexhaust.sources.size == 1)
@@ -83,7 +76,3 @@ class CompilationBenchmarksSmall extends CompilationBenchmarks:
   @Benchmark def tuple22Tails =
     assert(Config.tuple22Tails.sources.size == 1)
     DottyCompiler.compile(Config.tuple22Tails.sources, Config.tuple22Tails.options, outDir)
-
-  @Benchmark def xsbtiHelloWorld =
-    assert(Config.helloWorld.sources.size == 1)
-    XsbtiCompiler.compile(Config.helloWorld.sources, Config.helloWorld.options, outDir)

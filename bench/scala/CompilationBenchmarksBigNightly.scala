@@ -1,9 +1,10 @@
 package bench
 
-import bench.compilers.{DottyCompiler, XsbtiCompiler}
+import bench.compilers.DottyCompiler
 import org.openjdk.jmh.annotations.{Benchmark, Warmup}
 
-class CompilationBenchmarksBig extends CompilationBenchmarks:
+class CompilationBenchmarksBigNightly extends CompilationBenchmarks:
+
   @Benchmark
   def caskApp =
     assert(Config.caskApp.sources.size == 1)
@@ -19,16 +20,11 @@ class CompilationBenchmarksBig extends CompilationBenchmarks:
     assert(Config.fansi.sources.size == 2)
     DottyCompiler.compile(Config.fansi.sources, Config.fansi.options, outDir)
 
+  @Warmup(iterations = 100)
   @Benchmark
   def re2s =
     assert(Config.re2s.sources.size == 17)
     DottyCompiler.compile(Config.re2s.sources, Config.re2s.options, outDir)
-
-  @Warmup(iterations = 100)
-  @Benchmark
-  def scalaParserCombinators =
-    assert(Config.scalaParserCombinators.sources.size == 50)
-    DottyCompiler.compile(Config.scalaParserCombinators.sources, Config.scalaParserCombinators.options, outDir)
 
   @Warmup(iterations = 80)
   @Benchmark
@@ -47,12 +43,7 @@ class CompilationBenchmarksBig extends CompilationBenchmarks:
     assert(Config.scalaYaml.sources.size == 57)
     DottyCompiler.compile(Config.scalaYaml.sources, Config.scalaYaml.options, outDir)
 
-  @Warmup(iterations = 60)
-  @Benchmark
-  def scalaz =
-    assert(Config.scalaz.sources.size == 292)
-    DottyCompiler.compile(Config.scalaz.sources, Config.scalaz.options, outDir)
-
+  @Warmup(iterations = 170)
   @Benchmark
   def sourcecode =
     assert(Config.sourcecode.sources.size == 20)
@@ -68,9 +59,3 @@ class CompilationBenchmarksBig extends CompilationBenchmarks:
   def tictactoe =
     assert(Config.tictactoe.sources.size == 16)
     DottyCompiler.compile(Config.tictactoe.sources, Config.tictactoe.options, outDir)
-
-  @Warmup(iterations = 60)
-  @Benchmark
-  def xsbtiTastyQuery =
-    assert(Config.tastyQuery.sources.size == 49)
-    XsbtiCompiler.compile(Config.tastyQuery.sources, Config.tastyQuery.options, outDir)

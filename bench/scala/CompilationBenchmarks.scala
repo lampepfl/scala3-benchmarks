@@ -13,16 +13,20 @@ import org.openjdk.jmh.annotations.{
   Scope,
   Setup,
   State,
-  Warmup
+  Warmup,
 }
 
-@Fork(value = 1, jvmArgsPrepend = Array("-XX:+PrintCommandLineFlags", "-Xms8G", "-Xmx8G", "--sun-misc-unsafe-memory-access=allow"))
+@Fork(
+  value = 1,
+  jvmArgsPrepend = Array("-XX:+PrintCommandLineFlags", "-Xms8G", "-Xmx8G", "--sun-misc-unsafe-memory-access=allow"),
+)
 @Warmup(iterations = 150)
 @Measurement(iterations = 10)
 @BenchmarkMode(Array(org.openjdk.jmh.annotations.Mode.SingleShotTime))
 @State(Scope.Benchmark)
 @OutputTimeUnit(MILLISECONDS)
 abstract class CompilationBenchmarks:
+
   val outDir = "out"
 
   @Setup(Level.Iteration)

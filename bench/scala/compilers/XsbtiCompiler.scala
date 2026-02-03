@@ -13,9 +13,9 @@ import xsbti.api.{ClassLike, DependencyContext}
 import xsbti.compile.{CompileProgress, CompilerInterface2, DependencyChanges, SingleOutput}
 
 /** Compiler using the xsbti.compile.CompilerInterface2 bridge.
-  *
-  * This is the same interface that sbt/bloop/scala-cli use to invoke scalac.
-  */
+ *
+ *  This is the same interface that sbt/bloop/scala-cli use to invoke scalac.
+ */
 object XsbtiCompiler extends Compiler:
   def compile(sources: Seq[String], options: Seq[String], outputDir: String): Unit =
     val compilerInterface: CompilerInterface2 =
@@ -33,11 +33,12 @@ object XsbtiCompiler extends Compiler:
       NoopAnalysisCallback,
       reporter,
       NoopProgress,
-      NoopLogger
+      NoopLogger,
     )
 
     if reporter.hasErrors() then
-      val errors = reporter.problems().map(p => s"  ${p.position().sourcePath().orElse("?")}: ${p.message()}").mkString("\n")
+      val errors =
+        reporter.problems().map(p => s"  ${p.position().sourcePath().orElse("?")}: ${p.message()}").mkString("\n")
       throw new CompilationFailedException(s"Compilation failed with ${reporter.problems().length} errors:\n$errors")
 
   /** A PathBasedFile implementation for source files. */
@@ -65,27 +66,67 @@ object XsbtiCompiler extends Compiler:
     def modifiedLibraries(): Array[VirtualFileRef] = Array.empty
     def modifiedClasses(): Array[String] = Array.empty
 
-  /** No-op AnalysisCallback2 - we don't need incremental analysis for benchmarks. */
+  /** No-op AnalysisCallback2 - we don't need incremental analysis for
+   *  benchmarks.
+   */
   private object NoopAnalysisCallback extends AnalysisCallback2:
     // Deprecated File-based methods
     override def startSource(source: File): Unit = ()
-    override def binaryDependency(onBinaryEntry: File, onBinaryClassName: String, fromClassName: String, fromSourceFile: File, context: xsbti.api.DependencyContext): Unit = ()
-    override def generatedNonLocalClass(source: File, classFile: File, binaryClassName: String, srcClassName: String): Unit = ()
+    override def binaryDependency(
+        onBinaryEntry: File,
+        onBinaryClassName: String,
+        fromClassName: String,
+        fromSourceFile: File,
+        context: xsbti.api.DependencyContext,
+    ): Unit = ()
+    override def generatedNonLocalClass(
+        source: File,
+        classFile: File,
+        binaryClassName: String,
+        srcClassName: String,
+    ): Unit = ()
     override def generatedLocalClass(source: File, classFile: File): Unit = ()
     override def api(sourceFile: File, classApi: ClassLike): Unit = ()
     override def mainClass(sourceFile: File, className: String): Unit = ()
     // Path-based methods
     override def startSource(source: VirtualFile): Unit = ()
     override def classDependency(onClassName: String, sourceClassName: String, context: DependencyContext): Unit = ()
-    override def binaryDependency(onBinaryEntry: Path, onBinaryClassName: String, fromClassName: String, fromSourceFile: VirtualFileRef, context: DependencyContext): Unit = ()
-    override def generatedNonLocalClass(source: VirtualFileRef, classFile: Path, binaryClassName: String, srcClassName: String): Unit = ()
+    override def binaryDependency(
+        onBinaryEntry: Path,
+        onBinaryClassName: String,
+        fromClassName: String,
+        fromSourceFile: VirtualFileRef,
+        context: DependencyContext,
+    ): Unit = ()
+    override def generatedNonLocalClass(
+        source: VirtualFileRef,
+        classFile: Path,
+        binaryClassName: String,
+        srcClassName: String,
+    ): Unit = ()
     override def generatedLocalClass(source: VirtualFileRef, classFile: Path): Unit = ()
     override def api(sourceFile: VirtualFileRef, classApi: ClassLike): Unit = ()
     override def mainClass(sourceFile: VirtualFileRef, className: String): Unit = ()
     override def usedName(className: String, name: String, useScopes: java.util.EnumSet[xsbti.UseScope]): Unit = ()
-    override def problem(what: String, pos: xsbti.Position, msg: String, severity: xsbti.Severity, reported: Boolean): Unit = ()
+    override def problem(
+        what: String,
+        pos: xsbti.Position,
+        msg: String,
+        severity: xsbti.Severity,
+        reported: Boolean,
+    ): Unit = ()
     // AnalysisCallback2 method
-    override def problem2(what: String, pos: xsbti.Position, msg: String, severity: xsbti.Severity, reported: Boolean, rendered: Optional[String], diagnosticCode: Optional[xsbti.DiagnosticCode], diagnosticRelatedInformation: java.util.List[xsbti.DiagnosticRelatedInformation], actions: java.util.List[xsbti.Action]): Unit = ()
+    override def problem2(
+        what: String,
+        pos: xsbti.Position,
+        msg: String,
+        severity: xsbti.Severity,
+        reported: Boolean,
+        rendered: Optional[String],
+        diagnosticCode: Optional[xsbti.DiagnosticCode],
+        diagnosticRelatedInformation: java.util.List[xsbti.DiagnosticRelatedInformation],
+        actions: java.util.List[xsbti.Action],
+    ): Unit = ()
     override def dependencyPhaseCompleted(): Unit = ()
     override def apiPhaseCompleted(): Unit = ()
     override def enabled(): Boolean = false

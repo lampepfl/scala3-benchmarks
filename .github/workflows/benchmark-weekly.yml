@@ -1,8 +1,8 @@
-name: Benchmark Nightly
+name: Benchmark Weekly
 
 on:
   schedule:
-    - cron: "37 5 * * *" # every day at 5:37 UTC
+    - cron: "24 9 * * 0" # every Sunday at 9:24 UTC
   workflow_dispatch:
 
 jobs:
@@ -27,4 +27,4 @@ jobs:
     uses: ./.github/workflows/benchmark.yml
     with:
       versions: ${{ needs.get-version.outputs.version }}
-      filter: ".*Nightly.*"
+      filter: ".*Weekly.*"
