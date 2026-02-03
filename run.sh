@@ -32,6 +32,12 @@ while [[ $# -gt 0 ]]; do
       ;;
     --filter)
       FILTER="$2"
+      # Validate filter contains only safe characters for regex patterns
+      # Allowed: letters, numbers, dots, stars, plus, question mark, brackets, parens, pipe, dash, caret, dollar
+      if [[ ! "$FILTER" =~ ^[a-zA-Z0-9.*+?(){}\[\]|^$_-]+$ ]]; then
+        echo "Error: Filter contains invalid characters. Allowed: alphanumeric, dots, stars, and common regex metacharacters."
+        exit 1
+      fi
       shift 2
       ;;
     *)
@@ -43,7 +49,7 @@ while [[ $# -gt 0 ]]; do
       echo "  --jvm       JVM version (default: temurin:21)"
       echo "  --runs      Number of runs per version (default: 1)"
       echo "  --machine   Machine name for results directory (default: hostname)"
-      echo "  --filter    JMH benchmark filter (Java regex). Matches any substring of the fully qualified"
+      echo "  --filter    JMH benchmark filter (regex pattern). Matches any substring of the fully qualified"
       echo "              benchmark name (e.g., 'bench.CompilationBenchmarksSmall.helloWorld')."
       echo "              Plain strings work as substring matches; use regex for complex patterns."
       echo "              Examples: 'helloWorld', '.*World', 'Small.*hello', 'implicit.*'"
