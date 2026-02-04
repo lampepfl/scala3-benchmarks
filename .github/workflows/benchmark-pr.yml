@@ -91,7 +91,7 @@ jobs:
           for COMMIT in ${{ steps.commits.outputs.commits }}; do
             echo "=== Publishing commit $COMMIT ==="
             git checkout "$COMMIT"
-            sbt clean community-build/prepareCommunityBuild
+            sbt --no-colors clean community-build/prepareCommunityBuild
             VERSION=$(cat community-build/scala3-bootstrapped.version)
             echo "Published version: $VERSION"
             VERSIONS="$VERSIONS $VERSION"

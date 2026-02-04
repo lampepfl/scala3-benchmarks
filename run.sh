@@ -119,7 +119,7 @@ for version in "${RUN_ORDER[@]}"; do
     JMH_CMD="$JMH_CMD $FILTER"
   fi
 
-  sbt -Dcompiler.version="$version" "$JMH_CMD"
+  sbt --no-colors -Dcompiler.version="$version" "$JMH_CMD"
 
   echo "  Completed: $RESULTS_FILE_ABS"
   echo ""
