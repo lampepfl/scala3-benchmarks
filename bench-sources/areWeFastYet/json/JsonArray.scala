@@ -22,7 +22,6 @@
 package json
 
 import som.Vector
-import scala.Int
 
 /**
  * Represents a JSON array, an ordered collection of JSON values.

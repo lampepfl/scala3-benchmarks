@@ -22,8 +22,6 @@
 package json
 
 import som.Vector
-import java.lang.String
-import scala.{Int, Boolean, Unit, Array}
 
 /**
  * Represents a JSON object, a set of name/value pairs, where the names are strings and the values

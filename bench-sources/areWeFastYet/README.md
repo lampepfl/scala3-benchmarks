@@ -9,5 +9,10 @@ Runtime benchmarks from the "Are We Fast Yet?" family of benchmarks.
 - **brainfuck**: Brainfuck interpreter.
 - **cd**: Aircraft collision detection simulation.
 - **gcbench**: Garbage collector stress benchmark (balanced binary trees).
+- **json**: JSON parsing of a large input.
+- **list**: List processing / recursive tail benchmark.
+- **permute**: List permutations.
+- **kmeans**: K-means clustering.
+- **tracer**: Ray tracing.
 
 Source: https://github.com/sjrd/scalajs-benchmarks

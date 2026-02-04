@@ -21,9 +21,6 @@
  ******************************************************************************/
 package json;
 
-import java.lang.String
-import scala.Int
-
 /**
  * An unchecked exception to indicate that an input does not qualify as valid JSON.
  */

@@ -1,6 +1,6 @@
 package kmeans
 
-import scala.collection._
+import scala.collection.mutable
 import scala.util.Random
 
 class Point(val x: Double, val y: Double, val z: Double) {
@@ -13,8 +13,7 @@ class Point(val x: Double, val y: Double, val z: Double) {
     "(" + round(x) + "}, " + round(y) + ", " + round(z) + ")"
 }
 
-object KmeansBenchmark extends communitybench.Benchmark {
-  def inputOutput: (String, String) = ("100000", "true")
+object KmeansBenchmark {
 
   def generatePoints(k: Int, num: Int): scala.collection.Seq[Point] = {
     val randx = new Random(1)
@@ -27,12 +26,12 @@ object KmeansBenchmark extends communitybench.Benchmark {
         val z = ((i + 7) % k) * 1.0 / k + randz.nextDouble() * 0.5
         new Point(x, y, z)
       })
-    mutable.ArrayBuffer(points: _*)
+    mutable.ArrayBuffer.from(points)
   }
 
-  def initializeMeans(k: Int, points: Seq[Point]): Seq[Point] = {
+  def initializeMeans(k: Int, points: scala.collection.Seq[Point]): scala.collection.Seq[Point] = {
     val rand = new Random(7)
-    mutable.ArrayBuffer((0 until k).map(_ => points(rand.nextInt(points.length))): _*)
+    mutable.ArrayBuffer.from((0 until k).map(_ => points(rand.nextInt(points.length))))
   }
 
   def findClosest(p: Point, means: scala.collection.Seq[Point]): Point = {
@@ -87,7 +86,7 @@ object KmeansBenchmark extends communitybench.Benchmark {
     (oldMeans zip newMeans)
       .map({
         case (oldMean, newMean) =>
-          oldMean squareDistance newMean
+          oldMean.squareDistance(newMean)
       })
       .forall(_ <= eta)
   }
@@ -96,7 +95,7 @@ object KmeansBenchmark extends communitybench.Benchmark {
       points: scala.collection.Seq[Point],
       means: scala.collection.Seq[Point],
       eta: Double
-  ): scala.collection.Seq[Point] = {
+    ): scala.collection.Seq[Point] = {
     val classifiedPoints = classify(points, means)
 
     val newMeans = update(classifiedPoints, means)
@@ -108,13 +107,11 @@ object KmeansBenchmark extends communitybench.Benchmark {
     }
   }
 
-  def run(input: String): Boolean = {
-    val numPoints = input.toInt
+  def run(numPoints: Int): Boolean = {
     val eta = 0.01
     val k = 32
     val points = generatePoints(k, numPoints)
     val means = initializeMeans(k, points)
-    var centers: scala.collection.Seq[Point] = null
     val result = kMeans(points, means, eta)
     var sum = 0d
     result.foreach { p =>

@@ -11,6 +11,11 @@ import bounce.BounceBenchmark
 import brainfuck.BrainfuckBenchmark
 import cd.CDBenchmark
 import gcbench.GCBenchBenchmark
+import json.JsonBenchmark
+import list.ListBenchmark
+import permute.PermuteBenchmark
+import kmeans.KmeansBenchmark
+import org.scalajs.benchmark.tracer.Tracer
 
 class RuntimeBenchmarksNightly extends RuntimeBenchmarks:
 
@@ -40,3 +45,18 @@ class RuntimeBenchmarksNightly extends RuntimeBenchmarks:
 
   @Benchmark def gcbench: Unit =
     assert(GCBenchBenchmark.run())
+
+  @Benchmark def json: Unit =
+    assert(JsonBenchmark.run(JsonBenchmark.input) == 156)
+
+  @Benchmark def list: Unit =
+    assert(ListBenchmark.run(5) == 10)
+
+  @Benchmark def permute: Unit =
+    assert(PermuteBenchmark.run(6) == 720)
+
+  @Benchmark def kmeans: Unit =
+    assert(KmeansBenchmark.run(100000))
+
+  @Benchmark def tracer: Unit =
+    Tracer.run()

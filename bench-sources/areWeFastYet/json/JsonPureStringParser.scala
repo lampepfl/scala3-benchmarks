@@ -21,9 +21,6 @@
  ******************************************************************************/
 package json
 
-import java.lang.String
-import scala.Boolean
-
 final class JsonPureStringParser(input: String) {
   var index           = -1
   var line            = 1
@@ -71,11 +68,13 @@ final class JsonPureStringParser(input: String) {
     if (readChar("]")) {
       return array
     }
-    do {
+    var hasNext = true
+    while (hasNext) {
       skipWhiteSpace()
       array.add(readValue())
       skipWhiteSpace()
-    } while (readChar(","))
+      hasNext = readChar(",")
+    }
     if (!readChar("]")) {
       throw expected("',' or ']'")
     }
@@ -89,7 +88,8 @@ final class JsonPureStringParser(input: String) {
     if (readChar("}")) {
       return object_
     }
-    do {
+    var hasNext = true
+    while (hasNext) {
       skipWhiteSpace()
       val name = readName()
       skipWhiteSpace()
@@ -99,7 +99,8 @@ final class JsonPureStringParser(input: String) {
       skipWhiteSpace()
       object_.add(name, readValue())
       skipWhiteSpace()
-    } while (readChar(","))
+      hasNext = readChar(",")
+    }
 
     if (!readChar("}")) {
       throw expected("',' or '}'")

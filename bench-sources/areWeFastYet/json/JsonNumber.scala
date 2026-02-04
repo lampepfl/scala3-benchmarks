@@ -21,7 +21,6 @@
  ******************************************************************************/
 package json
 
-import java.lang.String
 
 final class JsonNumber(val string: String) extends JsonValue {
   if (string == null) {

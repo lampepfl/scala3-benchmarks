@@ -21,7 +21,6 @@
  ******************************************************************************/
 package json
 
-import java.lang.String
 
 final class JsonString(val string: String) extends JsonValue {
   override def isString() = true

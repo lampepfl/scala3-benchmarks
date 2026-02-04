@@ -16,7 +16,7 @@
 
 package org.scalajs.benchmark.tracer
 
-object Tracer extends org.scalajs.benchmark.Benchmark with App {
+object Tracer {
 
   val config = EngineConfiguration(
     imageWidth = 100,
@@ -30,10 +30,7 @@ object Tracer extends org.scalajs.benchmark.Benchmark with App {
     renderReflections = true
   )
 
-  override def prefix = "Tracer"
-
-  def run(): Unit = {
+  def run(): Unit =
     new RenderScene().renderScene(config, null)
-  }
 
 }

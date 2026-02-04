@@ -22,12 +22,7 @@
  */
 package list
 
-import scala.{Int, Boolean, Any}
-import java.lang.String
-import scala.Predef.augmentString
-
-object ListBenchmark extends communitybench.Benchmark {
-  val inputOutput: (String, String) = ("5", "10")
+object ListBenchmark {
 
   final class Element(var value: Any, var next: Element = null) {
     def length(): Int = {
@@ -39,11 +34,9 @@ object ListBenchmark extends communitybench.Benchmark {
     }
   }
 
-  def run(input: String): Int = {
-    val n      = input.toInt
+  def run(n: Int): Int =
     val result = tail(makeList(n * 3), makeList(n * 2), makeList(n))
     result.length()
-  }
 
   def makeList(length: Int): Element = {
     if (length == 0) { return null } else {

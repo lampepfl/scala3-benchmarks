@@ -13,7 +13,7 @@ class CompilationBenchmarksBigWeekly extends CompilationBenchmarks:
 
   @Benchmark
   def areWeFastYet =
-    assert(Config.areWeFastYet.sources.size == 22)
+    assert(Config.areWeFastYet.sources.size == 44)
     DottyCompiler.compile(Config.areWeFastYet.sources, Config.areWeFastYet.options, outDir)
 
   @Warmup(iterations = 60)
