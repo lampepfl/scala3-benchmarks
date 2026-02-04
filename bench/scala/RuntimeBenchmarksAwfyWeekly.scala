@@ -1,20 +1,19 @@
 package bench
 
-import org.openjdk.jmh.annotations.Benchmark
-
-import queens.QueensBenchmark
-import deltablue.DeltaBlue
-import richards.Richards
-import nbody.NbodyBenchmark
-import mandelbrot.MandelbrotBenchmark
 import bounce.BounceBenchmark
 import brainfuck.BrainfuckBenchmark
 import cd.CDBenchmark
+import deltablue.DeltaBlue
 import gcbench.GCBenchBenchmark
 import json.JsonBenchmark
-import list.ListBenchmark
-import permute.PermuteBenchmark
 import kmeans.KmeansBenchmark
+import list.ListBenchmark
+import mandelbrot.MandelbrotBenchmark
+import nbody.NbodyBenchmark
+import org.openjdk.jmh.annotations.Benchmark
+import permute.PermuteBenchmark
+import queens.QueensBenchmark
+import richards.Richards
 import tracer.Tracer
 
 class RuntimeBenchmarksAwfyWeekly extends RuntimeBenchmarks:

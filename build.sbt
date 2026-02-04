@@ -7,7 +7,7 @@ ThisBuild / resolvers += Resolver.scalaNightlyRepository
 lazy val bench =
   project
     .in(file("bench"))
-    .dependsOn(benchAreWeFastYet)
+    .dependsOn(benchAreWeFastYet, benchScalaYaml, benchScalaParserCombinators, benchFansi)
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions,
