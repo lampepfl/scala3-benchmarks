@@ -170,6 +170,10 @@ def importResults(
   writer.close()
   println(s"Wrote results to: $outputPath")
 
+  // Append filename to INDEX
+  val indexPath = outputDir / "INDEX"
+  os.write.append(indexPath, s"$runDatetime.csv\n", createFolders = true)
+
 @main def run(
     jsonPathStr: String,
     dataRepoPathStr: String,
