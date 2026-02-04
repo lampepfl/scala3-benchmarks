@@ -86,9 +86,7 @@ object DeltaBlue {
     for (i <- 0 until 100) {
       first.value = i
       plan.execute()
-      if (last.value != i) {
-        print("Chain test failed.\n{last.value)\n{i}")
-      }
+      assert(last.value == i, s"Chain test failed: last.value=${last.value}, i=$i")
     }
   }
 
@@ -114,16 +112,16 @@ object DeltaBlue {
       new ScaleConstraint(src, scale, offset, dst, REQUIRED)
     }
     change(src, 17)
-    if (dst.value != 1170) print("Projection 1 failed")
+    assert(dst.value == 1170, "Projection 1 failed")
     change(dst, 1050)
-    if (src.value != 5) print("Projection 2 failed")
+    assert(src.value == 5, "Projection 2 failed")
     change(scale, 5)
     for (i <- 0 until n - 1) {
-      if (dests(i).value != i * 5 + 1000) print("Projection 3 failed")
+      assert(dests(i).value == i * 5 + 1000, "Projection 3 failed")
     }
     change(offset, 2000)
     for (i <- 0 until n - 1) {
-      if (dests(i).value != i * 5 + 2000) print("Projection 4 failed")
+      assert(dests(i).value == i * 5 + 2000, "Projection 4 failed")
     }
   }
 
@@ -209,7 +207,7 @@ abstract class Constraint(val strength: Strength)(implicit planner: Planner) {
     chooseMethod(mark)
     if (!isSatisfied()) {
       if (strength == REQUIRED) {
-        print("Could not satisfy a required constraint!")
+        throw new RuntimeException("Could not satisfy a required constraint!")
       }
       null
     } else {
@@ -220,7 +218,7 @@ abstract class Constraint(val strength: Strength)(implicit planner: Planner) {
         overridden.markUnsatisfied()
       out.determinedBy = this
       if (!planner.addPropagate(this, mark))
-        print("Cycle encountered")
+        throw new RuntimeException("Cycle encountered")
       out.mark = mark
       overridden
     }

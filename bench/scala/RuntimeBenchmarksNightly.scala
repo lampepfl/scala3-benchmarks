@@ -2,19 +2,25 @@ package bench
 
 import org.openjdk.jmh.annotations.Benchmark
 
+import queens.QueensBenchmark
+import deltablue.DeltaBlue
+import richards.Richards
+import nbody.NbodyBenchmark
+import mandelbrot.MandelbrotBenchmark
+
 class RuntimeBenchmarksNightly extends RuntimeBenchmarks:
 
-  @Benchmark def queens =
-    _root_.queens.QueensBenchmark.run()
+  @Benchmark def queens: Unit =
+    assert(QueensBenchmark.run())
 
-  @Benchmark def deltablue =
-    _root_.deltablue.DeltaBlue.run()
+  @Benchmark def deltablue: Unit =
+    DeltaBlue.run()
 
-  @Benchmark def richards =
-    _root_.richards.Richards.run()
+  @Benchmark def richards: Unit =
+    Richards.run()
 
-  @Benchmark def nbody =
-    _root_.nbody.NbodyBenchmark.run(250000)
+  @Benchmark def nbody: Unit =
+    assert(NbodyBenchmark.run(250000))
 
-  @Benchmark def mandelbrot =
-    _root_.mandelbrot.MandelbrotBenchmark.run(750)
+  @Benchmark def mandelbrot: Unit =
+    assert(MandelbrotBenchmark.run(750) == 50)
