@@ -1,8 +1,5 @@
 package cd
 
-import scala.{Int, Unit, Boolean}
-import som._
-import java.lang.Comparable
 
 final class RedBlackTree[K <: Comparable[K], V] {
   import RedBlackTree._

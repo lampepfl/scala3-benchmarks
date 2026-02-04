@@ -1,7 +1,5 @@
 package som
 
-import scala.{Int, Unit}
-
 class Random {
   private var seed = 74755
 

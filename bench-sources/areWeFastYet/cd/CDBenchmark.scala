@@ -21,23 +21,14 @@
  */
 package cd
 
-import som._
-import scala.Predef.augmentString
-import scala.Predef.intWrapper
-import scala.{Int, Boolean}
-import java.lang.String
-
-object CDBenchmark extends communitybench.Benchmark {
-  val inputOutput: (String, String) = ("100", "4305")
-
-  def run(input: String): Int = {
-    val numAircrafts     = input.toInt
+object CDBenchmark {
+  def run(numAircrafts: Int): Int = {
     val numFrames        = 200
     val simulator        = new Simulator(numAircrafts)
     val detector         = new CollisionDetector()
     var actualCollisions = 0
 
-    (0 until numFrames).map { i =>
+    (0 until numFrames).foreach { i =>
       val time       = i / 10.0
       val collisions = detector.handleNewFrame(simulator.simulate(time))
       actualCollisions += collisions.size()

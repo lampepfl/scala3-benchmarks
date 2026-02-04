@@ -1,10 +1,6 @@
 package som
 
 import java.util.Arrays
-import java.util.Comparator
-
-import scala.Predef.intWrapper
-import scala.{Int, Unit, Boolean, AnyRef, Array}
 
 class Vector[E <: AnyRef](initialSize: Int) {
   def this() = this(50)
@@ -51,20 +47,20 @@ class Vector[E <: AnyRef](initialSize: Int) {
     }
 
   def hasSome(f: E => Boolean): Boolean = {
-    (firstIdx until lastIdx).foreach { i =>
-      if (f(storage(i).asInstanceOf[E])) {
-        return true
-      }
+    var i = firstIdx
+    while (i < lastIdx) {
+      if (f(storage(i).asInstanceOf[E])) return true
+      i += 1
     }
     false
   }
 
   def getOne(f: E => Boolean): E = {
-    (firstIdx until lastIdx).foreach { i =>
+    var i = firstIdx
+    while (i < lastIdx) {
       val e = storage(i).asInstanceOf[E]
-      if (f(e)) {
-        return e
-      }
+      if (f(e)) return e
+      i += 1
     }
     null.asInstanceOf[E]
   }

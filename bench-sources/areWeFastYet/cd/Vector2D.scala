@@ -1,8 +1,5 @@
 package cd
 
-import scala.{Double, Int}
-import java.lang.Comparable
-
 final class Vector2D(val x: Double, val y: Double)
     extends Comparable[Vector2D] {
   import Vector2D._

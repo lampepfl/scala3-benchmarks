@@ -7,6 +7,9 @@ import deltablue.DeltaBlue
 import richards.Richards
 import nbody.NbodyBenchmark
 import mandelbrot.MandelbrotBenchmark
+import bounce.BounceBenchmark
+import brainfuck.BrainfuckBenchmark
+import cd.CDBenchmark
 
 class RuntimeBenchmarksNightly extends RuntimeBenchmarks:
 
@@ -24,3 +27,12 @@ class RuntimeBenchmarksNightly extends RuntimeBenchmarks:
 
   @Benchmark def mandelbrot: Unit =
     assert(MandelbrotBenchmark.run(750) == 50)
+
+  @Benchmark def bounce: Unit =
+    assert(BounceBenchmark.run(100) == 1331)
+
+  @Benchmark def brainfuck: Unit =
+    assert(BrainfuckBenchmark.run() == 11359)
+
+  @Benchmark def cd: Unit =
+    assert(CDBenchmark.run(100) == 4305)

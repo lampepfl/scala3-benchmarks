@@ -1,8 +1,5 @@
 package cd
 
-import java.lang.Boolean.{TRUE, FALSE}
-import scala.{Int, Boolean, Unit}
-import scala.Predef.intWrapper
 import som._
 
 final class CollisionDetector {
@@ -139,7 +136,7 @@ object CollisionDetector {
       return
     }
 
-    if (seen.put(nextVoxel, true) == TRUE) {
+    if (seen.put(nextVoxel, true) == true) {
       return
     }
 

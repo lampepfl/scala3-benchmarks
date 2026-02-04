@@ -23,15 +23,8 @@
 package bounce
 
 import som.Random
-import scala.Predef.augmentString
-import scala.Predef.intWrapper
-import scala.Predef.genericArrayOps
-import scala.{Int, Boolean, Array}
-import java.lang.{Math, String}
 
-object BounceBenchmark extends communitybench.Benchmark {
-  val inputOutput: (String, String) = ("100", "1331")
-
+object BounceBenchmark {
   private class Ball(random: Random) {
     private var x: Int    = random.next()  % 500
     private var y: Int    = random.next()  % 500
@@ -58,13 +51,11 @@ object BounceBenchmark extends communitybench.Benchmark {
     }
   }
 
-  def run(input: String): Int = {
+  def run(numBalls: Int): Int = {
     val random = new Random()
 
-    val ballCount = input.toInt
     var bounces   = 0
-    val balls     = Array.fill(ballCount)(new Ball(random))
-
+    val balls     = Array.fill(numBalls)(new Ball(random))
     (0 to 49).foreach { i =>
       balls.foreach { ball =>
         if (ball.bounce()) {
