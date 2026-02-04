@@ -45,25 +45,16 @@ bench-sources/
     helloWorld.scala
     ...
   dottyUtil/            # Real-world multi-file benchmarks (each is an SBT subproject)
-  fansi/
-  indigo/               # Scala.js benchmark (3.6.4+)
-  re2s/
-  scalaParallelCollections/
-  scalaParserCombinators/
-  scalaYaml/
-  sourcecode/
-  tictactoe/
-bench/
-  CompilationBenchmarks.scala  # JMH suite
-results/
-  <machine>/<jvm>/<version>/<timestamp>.json
+  ...
+bench/scala/
+  CompilationBenchmarksSmallNightly.scala
 ```
 
 ## Adding Benchmarks
 
 Benchmarks should:
 
-- compile with all version between Scala 3.3.4 and the latest
+- compile with all version between Scala 3.3.2 and the latest
 - compile in ~100ms-10s range (after warmup)
 - not require complex setup
 - Ideally not require external dependencies
