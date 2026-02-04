@@ -11,6 +11,11 @@ class CompilationBenchmarksBigWeekly extends CompilationBenchmarks:
     assert(Config.scalaParserCombinators.sources.size == 50)
     DottyCompiler.compile(Config.scalaParserCombinators.sources, Config.scalaParserCombinators.options, outDir)
 
+  @Benchmark
+  def areWeFastYet =
+    assert(Config.areWeFastYet.sources.size == 7)
+    DottyCompiler.compile(Config.areWeFastYet.sources, Config.areWeFastYet.options, outDir)
+
   @Warmup(iterations = 60)
   @Benchmark
   def scalaz =
