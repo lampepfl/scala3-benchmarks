@@ -15,7 +15,7 @@ import json.JsonBenchmark
 import list.ListBenchmark
 import permute.PermuteBenchmark
 import kmeans.KmeansBenchmark
-import org.scalajs.benchmark.tracer.Tracer
+import tracer.Tracer
 
 class RuntimeBenchmarksAwfyWeekly extends RuntimeBenchmarks:
 

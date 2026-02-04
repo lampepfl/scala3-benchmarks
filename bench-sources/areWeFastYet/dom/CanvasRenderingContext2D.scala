@@ -1,4 +1,4 @@
-package org.scalajs.benchmark.dom
+package dom
 
 trait CanvasRenderingContext2D:
   var fillStyle: String
