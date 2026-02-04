@@ -31,3 +31,4 @@ jobs:
     with:
       versions: ${{ needs.get-version.outputs.version }}
       filter: ".*Nightly.*"
+    secrets: inherit
