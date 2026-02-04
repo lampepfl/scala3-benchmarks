@@ -13,8 +13,8 @@ import org.openjdk.jmh.annotations.{
 }
 
 @Fork(value = 1, jvmArgsPrepend = Array("-Xms2G", "-Xmx2G"))
-@Warmup(iterations = 50)
-@Measurement(iterations = 10)
+@Warmup(iterations = 60)
+@Measurement(iterations = 20)
 @BenchmarkMode(Array(org.openjdk.jmh.annotations.Mode.SingleShotTime))
 @State(Scope.Benchmark)
 @OutputTimeUnit(MILLISECONDS)
