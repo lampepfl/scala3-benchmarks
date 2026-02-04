@@ -99,7 +99,6 @@ def formatSigFigs(d: Double, sigFigs: Int = 4): String =
 def importResults(
     jsonPath: os.Path,
     dataRepoPath: os.Path,
-    branch: String,
 ): Unit =
 
   // Extract from results/<machine>/<jvm>/<version>/<timestamp>.json
@@ -115,8 +114,8 @@ def importResults(
   val formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")
   val runDatetime = formatter.format(Instant.now().atZone(ZoneId.of("UTC")))
 
-  // Create output directory: raw/<machine>/<jvm>/<branch>/<version>/
-  val outputDir = dataRepoPath / "raw" / machine / jvm / branch / patchVersion / version
+  // Create output directory: raw/<machine>/<jvm>/<patchVersion>/<version>/
+  val outputDir = dataRepoPath / "raw" / machine / jvm / patchVersion / version
   os.makeDir.all(outputDir)
 
   val outputPath = outputDir / s"$runDatetime.csv"
@@ -160,7 +159,7 @@ def importResults(
       compStats.max,
     ).map(formatSigFigs(_)))
 
-    val aggregatePath = dataRepoPath / "aggregated" / machine / jvm / branch / patchVersion
+    val aggregatePath = dataRepoPath / "aggregated" / machine / jvm / patchVersion
     val timeStats = metricStats(bench.primaryMetric)
     appendStats(aggregatePath / "time" / s"$shortBenchmark.csv", version, timeStats)
     appendStats(aggregatePath / "allocs" / s"$shortBenchmark.csv", version, allocsStats)
@@ -177,10 +176,9 @@ def importResults(
 @main def run(
     jsonPathStr: String,
     dataRepoPathStr: String,
-    branch: String,
 ): Unit =
   val jsonPath = os.Path(jsonPathStr, os.pwd)
   val dataRepoPath = os.Path(dataRepoPathStr, os.pwd)
   assert(os.exists(jsonPath), s"JSON file not found: $jsonPath")
   assert(os.exists(dataRepoPath), s"Data repository not found: $dataRepoPath")
-  importResults(jsonPath, dataRepoPath, branch)
+  importResults(jsonPath, dataRepoPath)

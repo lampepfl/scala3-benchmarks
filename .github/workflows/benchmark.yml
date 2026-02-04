@@ -22,11 +22,6 @@ on:
         required: false
         default: ""
         type: string
-      branch:
-        description: "Branch name for data repo"
-        required: false
-        default: "main"
-        type: string
   workflow_call:
     inputs:
       versions:
@@ -47,11 +42,6 @@ on:
         description: "JMH benchmark filter (regex pattern)"
         required: false
         default: ""
-        type: string
-      branch:
-        description: "Branch name for data repo"
-        required: false
-        default: "main"
         type: string
 
 jobs:
@@ -101,8 +91,7 @@ jobs:
               echo "Importing $json_file"
               scala --server=false scripts/importResults.scala -- \
                 "$json_file" \
-                data-repo \
-                "${{ inputs.branch }}"
+                data-repo
               found=$((found + 1))
             fi
           done

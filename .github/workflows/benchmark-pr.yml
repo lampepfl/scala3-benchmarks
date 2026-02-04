@@ -85,13 +85,13 @@ jobs:
         id: publish
         working-directory: dotty
         env:
-          NIGHTLYBUILD: "yes"
+          BENCHMARKBUILD: "yes"
         run: |
           VERSIONS=""
           for COMMIT in ${{ steps.commits.outputs.commits }}; do
             echo "=== Processing commit $COMMIT ==="
-            SHORT_HASH=$(git rev-parse --short=7 "$COMMIT")
-            EXISTING=$(find ~/.ivy2/local/org.scala-lang/scala3-compiler_3/ -maxdepth 1 -name "*-$SHORT_HASH-*" -type d 2>/dev/null | head -1)
+            FULL_HASH=$(git rev-parse "$COMMIT")
+            EXISTING=$(find ~/.ivy2/local/org.scala-lang/scala3-compiler_3/ -maxdepth 1 -name "*-$FULL_HASH-*" -type d 2>/dev/null | head -1)
             if [ -n "$EXISTING" ]; then
               VERSION=$(basename "$EXISTING")
               echo "Already published: $VERSION, skipping"
@@ -120,5 +120,4 @@ jobs:
       versions: ${{ needs.publish-pr.outputs.versions }}
       runs: ${{ inputs.runs }}
       filter: ${{ inputs.filter }}
-      branch: pr${{ inputs.pr }}
     secrets: inherit
