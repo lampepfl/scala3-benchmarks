@@ -37,7 +37,7 @@ LOC = lines of Scala code (reported by [cloc](https://github.com/AlDanial/cloc))
 sbt -Dcompiler.version=3.3.4 "clean; bench / Jmh / run -gc true -foe true"
 ```
 
-## Structure
+## Structure of this Repository
 
 ```
 bench-sources/
@@ -48,7 +48,44 @@ bench-sources/
   ...
 bench/scala/
   CompilationBenchmarksSmallNightly.scala
+  ...
 ```
+
+## Results structure
+
+Results are stored as CSV files in the [scala3-benchmarks-data](https://github.com/lampepfl/scala3-benchmarks-data) repository. The [scripts/importResults.scala](scripts/importResults.scala) script converts JMH JSON output into two forms: raw data (one file per run) and aggregated summaries (one file per metric/benchmark pair, for use by the visualizer).
+
+### Raw Data
+
+`raw/<machine>/<jvm>/<patch_version>/<version>/<run_datetime>.csv`
+
+Each CSV file contains one row per benchmark from a single JMH run. An `INDEX` file in each leaf directory lists all run files.
+
+Columns:
+
+- `benchmark`: unqualified `@Benchmark` method name (e.g. `helloWorld`).
+- `warmup_iterations`: number of warmup iterations before measurement.
+- `times`: space-separated measurement times in milliseconds (one per iteration). The number of values is the number of measurement iterations. Benchmarks use `SingleShotTime` mode, so each value is a single invocation. See [JMH @BenchmarkMode](https://javadoc.io/doc/org.openjdk.jmh/jmh-core/latest/org/openjdk/jmh/annotations/BenchmarkMode.html).
+- `allocs_min`, `allocs_avg`, `allocs_max`: total allocation per operation in MB, from the `gc.alloc.rate.norm` secondary metric of JMH's [`-prof gc` (GcProfiler)](https://github.com/Valloric/jmh-playground/blob/d91560bfea6c18cd065b4bf9be9e2da14864cbf1/src/jmh/java/org/openjdk/jmh/samples/JMHSample_35_Profilers.java#L170-L212). The raw value (bytes) is divided by 1e6.
+- `gc_min`, `gc_avg`, `gc_max`: number of GC events during measurement, from the `gc.count` secondary metric of `-prof gc`.
+- `comp_min`, `comp_avg`, `comp_max`: JVM JIT compilation time in milliseconds during the measurement window, from the `compiler.time.profiled` secondary metric of [`-prof comp` (CompilerProfiler)](https://github.com/Valloric/jmh-playground/blob/d91560bfea6c18cd065b4bf9be9e2da14864cbf1/src/jmh/java/org/openjdk/jmh/samples/JMHSample_35_Profilers.java#L306-L318). High values indicate the JIT was still active during measurement, which can interfere with results. In practice this represents 10-20% of total measured time. Its reliability is uncertain.
+
+### Aggregated Data
+
+`aggregated/<machine>/<jvm>/<patch_version>/<metric>/<benchmark>.csv`
+
+Pre-computed summaries derived from raw data, organized per metric and benchmark for direct use by the visualiser. Each `<metric>` is one of `time`, `allocs`, `gc`, or `comp`.
+
+Columns:
+
+- `version`: Scala version string.
+- `count`: total number of measurement iterations across all runs for this version.
+- `min`: minimum value across all iterations.
+- `avg`: weighted average across all iterations.
+- `max`: maximum value across all iterations.
+
+When multiple runs exist for the same version, stats are merged incrementally (combined average weighted by count, min/max taken across all runs).
+
 
 ## Adding Benchmarks
 
