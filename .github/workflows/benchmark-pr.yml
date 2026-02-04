@@ -89,11 +89,18 @@ jobs:
         run: |
           VERSIONS=""
           for COMMIT in ${{ steps.commits.outputs.commits }}; do
-            echo "=== Publishing commit $COMMIT ==="
-            git checkout "$COMMIT"
-            sbt --no-colors clean community-build/prepareCommunityBuild
-            VERSION=$(cat community-build/scala3-bootstrapped.version)
-            echo "Published version: $VERSION"
+            echo "=== Processing commit $COMMIT ==="
+            SHORT_HASH=$(git rev-parse --short=7 "$COMMIT")
+            EXISTING=$(find ~/.ivy2/local/org.scala-lang/scala3-compiler_3/ -maxdepth 1 -name "*-$SHORT_HASH-*" -type d 2>/dev/null | head -1)
+            if [ -n "$EXISTING" ]; then
+              VERSION=$(basename "$EXISTING")
+              echo "Already published: $VERSION, skipping"
+            else
+              git checkout "$COMMIT"
+              sbt --no-colors clean community-build/prepareCommunityBuild
+              VERSION=$(cat community-build/scala3-bootstrapped.version)
+              echo "Published version: $VERSION"
+            fi
             VERSIONS="$VERSIONS $VERSION"
           done
           VERSIONS=$(echo "$VERSIONS" | xargs)
