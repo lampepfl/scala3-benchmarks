@@ -93,7 +93,7 @@ def formatSigFigs(d: Double, sigFigs: Int = 4): String =
     // Note: We use 'f' format instead of 'g' to avoid scientific notation
     val digits = sigFigs - 1 - Math.floor(Math.log10(Math.abs(d))).toInt
     s"%.${Math.max(digits, 0)}f".format(d)
-      .replaceAll("0+$", "") // Strip trailing zeros
+      .replaceAll("(\\.\\d*?)0+$", "$1") // Strip trailing zeros after decimal point
       .replaceAll("\\.$", "") // Strip trailing decimal point
 
 def importResults(
