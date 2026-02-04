@@ -7,7 +7,7 @@ ThisBuild / resolvers += Resolver.scalaNightlyRepository
 lazy val bench =
   project
     .in(file("bench"))
-    .dependsOn(benchAreWeFastYet, benchScalaYaml, benchParserCombinators, benchFansi)
+    .dependsOn(benchAreWeFastYet, benchScalaYaml, benchParserCombinators, benchFansi, benchAdventOfCode)
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions,
@@ -256,6 +256,15 @@ lazy val benchIndigo =
 lazy val benchAreWeFastYet =
   project
     .in(file("bench-sources/areWeFastYet"))
+    .settings(
+      scalaVersion := compilerVersion,
+      scalacOptions ++= sharedScalacOptions,
+      Compile / scalaSource := baseDirectory.value,
+    )
+
+lazy val benchAdventOfCode =
+  project
+    .in(file("bench-sources/adventOfCode"))
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions,
