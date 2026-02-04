@@ -35,7 +35,7 @@ class RuntimeBenchmarksNightly extends RuntimeBenchmarks:
     assert(MandelbrotBenchmark.run(750) == 50)
 
   @Benchmark def bounce: Unit =
-    assert(BounceBenchmark.run(100) == 1331)
+    assert(BounceBenchmark.run(100000) == 1278008)
 
   @Benchmark def brainfuck: Unit =
     assert(BrainfuckBenchmark.run() == 11359)
@@ -50,10 +50,10 @@ class RuntimeBenchmarksNightly extends RuntimeBenchmarks:
     assert(JsonBenchmark.run(JsonBenchmark.input) == 156)
 
   @Benchmark def list: Unit =
-    assert(ListBenchmark.run(5) == 10)
+    assert(ListBenchmark.run(9) == 18)
 
   @Benchmark def permute: Unit =
-    assert(PermuteBenchmark.run(6) == 720)
+    assert(PermuteBenchmark.run(10) == 3628800)
 
   @Benchmark def kmeans: Unit =
     assert(KmeansBenchmark.run(100000))
