@@ -10,10 +10,7 @@ import java.time.format.DateTimeFormatter
 import com.github.tototoshi.csv.{CSVWriter, CSVReader}
 import upickle.default.{read, ReadWriter}
 
-// Parse JMH JSON result
-case class JmhMetric(
-    rawData: Seq[Seq[Double]],
-) derives ReadWriter
+case class JmhMetric(rawData: Seq[Seq[Double]]) derives ReadWriter
 
 case class JmhBenchmark(
     benchmark: String,
