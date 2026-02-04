@@ -116,9 +116,7 @@ for version in "${RUN_ORDER[@]}"; do
   # Build JMH command with optional filter
   JMH_CMD="clean; bench / Jmh / run -gc true -foe true -prof comp -prof gc -rf json -rff $RESULTS_FILE_ABS"
   if [ -n "$FILTER" ]; then
-    # Properly escape filter for safe inclusion in command string
-    ESCAPED_FILTER=$(printf '%q' "$FILTER")
-    JMH_CMD="$JMH_CMD $ESCAPED_FILTER"
+    JMH_CMD="$JMH_CMD $FILTER"
   fi
 
   sbt -Dcompiler.version="$version" "$JMH_CMD"
