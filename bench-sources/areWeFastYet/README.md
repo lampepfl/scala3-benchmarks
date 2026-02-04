@@ -8,5 +8,6 @@ Runtime benchmarks from the "Are We Fast Yet?" family of benchmarks.
 - **bounce**: Ball bouncing simulation.
 - **brainfuck**: Brainfuck interpreter.
 - **cd**: Aircraft collision detection simulation.
+- **gcbench**: Garbage collector stress benchmark (balanced binary trees).
 
 Source: https://github.com/sjrd/scalajs-benchmarks

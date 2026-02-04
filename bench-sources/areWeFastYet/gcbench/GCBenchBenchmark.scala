@@ -40,16 +40,14 @@
 
 package gcbench
 
-import scala.{Int, Double, Boolean, Unit, Array}
-import java.lang.String
+import scala.Array
 
 class Node(var left: Node, var right: Node, var i: Int, var j: Int)
 
-object GCBenchBenchmark extends communitybench.Benchmark {
-  val inputOutput: (String, String) = ("", "true")
+object GCBenchBenchmark {
 
-  def run(input: String): Boolean = {
-    val (node, doubles) = GCBenchBenchmark.start()
+  def run(): Boolean = {
+    val (node, doubles) = start()
     node != null && doubles(1000) == 1.0 / 1000
   }
 

@@ -10,6 +10,7 @@ import mandelbrot.MandelbrotBenchmark
 import bounce.BounceBenchmark
 import brainfuck.BrainfuckBenchmark
 import cd.CDBenchmark
+import gcbench.GCBenchBenchmark
 
 class RuntimeBenchmarksNightly extends RuntimeBenchmarks:
 
@@ -36,3 +37,6 @@ class RuntimeBenchmarksNightly extends RuntimeBenchmarks:
 
   @Benchmark def cd: Unit =
     assert(CDBenchmark.run(100) == 4305)
+
+  @Benchmark def gcbench: Unit =
+    assert(GCBenchBenchmark.run())
