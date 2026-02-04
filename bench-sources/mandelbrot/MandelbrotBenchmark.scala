@@ -42,11 +42,8 @@
 // http://benchmarksgame.alioth.debian.org/u64q/program.php?test=mandelbrot&lang=yarv&id=3
 package mandelbrot
 
-object MandelbrotBenchmark extends communitybench.Benchmark {
-  val inputOutput: (String, String) = ("750", "50")
-
-  def run(input: String): Int = {
-    val size         = input.toInt
+object MandelbrotBenchmark {
+  def run(size: Int): Int = {
     var sum: Int     = 0
     var byteAcc: Int = 0
     var bitNum: Int  = 0

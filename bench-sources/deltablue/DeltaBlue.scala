@@ -28,7 +28,7 @@
 // Dart by Google 2008-2010.
 // Translated to Scala.js by Jonas Fonseca 2013
 
-package org.scalajs.benchmark.deltablue
+package deltablue
 
 /**
  * A Scala implementation of the DeltaBlue constraint-solving
@@ -45,12 +45,9 @@ package org.scalajs.benchmark.deltablue
  * implementation.
  */
 
-import scala.collection.mutable.{ArrayBuffer, ListBuffer, Stack}
+import scala.collection.mutable.{ArrayBuffer, ArrayDeque, ListBuffer}
 
-object DeltaBlue extends org.scalajs.benchmark.Benchmark {
-
-  override def prefix = "DeltaBlue"
-
+object DeltaBlue {
   def run(): Unit = {
     chainTest(100)
     projectionTest(100)
@@ -562,12 +559,13 @@ class Planner {
     c.removeFromGraph()
     val unsatisfied = removePropagateFrom(out)
     var strength: Strength = REQUIRED
-    do {
+    while {
       for (u <- unsatisfied) {
         if (u.strength == strength) incrementalAdd(u)
       }
       strength = strength.nextWeaker
-    } while (strength != WEAKEST)
+      strength != WEAKEST
+    } do ()
   }
 
   /// Select a previously unused mark value.
@@ -595,12 +593,12 @@ class Planner {
    * any constraint.
    * Assume: [sources] are all satisfied.
    */
-  def makePlan(sources: Stack[Constraint]) = {
+  def makePlan(sources: ArrayDeque[Constraint]) = {
     val mark = newMark()
     val plan = new Plan()
     val todo = sources
     while (!todo.isEmpty) {
-      val c = todo.pop()
+      val c = todo.removeLast()
       if (c.output().mark != mark && c.inputsKnown(mark)) {
         plan.addConstraint(c)
         c.output().mark = mark
@@ -615,10 +613,10 @@ class Planner {
    * given [constraints], usually a set of input constraints.
    */
   def extractPlanFromConstraints(constraints: Seq[Constraint]) = {
-    val sources = new Stack[Constraint]()
+    val sources = new ArrayDeque[Constraint]()
     for (c <- constraints) {
       // if not in plan already and eligible for inclusion.
-      if (c.isInput && c.isSatisfied()) sources.push(c)
+      if (c.isInput && c.isSatisfied()) sources.append(c)
     }
     makePlan(sources)
   }
@@ -637,9 +635,9 @@ class Planner {
    * constraint's output to one of its inputs.
    */
   def addPropagate(c: Constraint, mark: Int): Boolean = {
-    val todo = new Stack[Constraint]().push(c)
+    val todo = ArrayDeque[Constraint](c)
     while (!todo.isEmpty) {
-      val d = todo.pop()
+      val d = todo.removeLast()
       if (d.output().mark == mark) {
         incrementalRemove(c)
         return false
@@ -660,9 +658,9 @@ class Planner {
     out.walkStrength = WEAKEST
     out.stay = true
     val unsatisfied = new ListBuffer[Constraint]()
-    val todo = new Stack[Variable]().push(out)
+    val todo = ArrayDeque[Variable](out)
     while (!todo.isEmpty) {
-      val v = todo.pop()
+      val v = todo.removeLast()
       for (c <- v.constraints) {
         if (!c.isSatisfied()) unsatisfied += c
       }
@@ -670,17 +668,17 @@ class Planner {
       for (next <- v.constraints) {
         if (next != determining && next.isSatisfied()) {
           next.recalculate()
-          todo.push(next.output())
+          todo.append(next.output())
         }
       }
     }
     unsatisfied
   }
 
-  def addConstraintsConsumingTo(v: Variable, coll: Stack[Constraint]): Unit = {
+  def addConstraintsConsumingTo(v: Variable, coll: ArrayDeque[Constraint]): Unit = {
     val determining = v.determinedBy
     for (c <- v.constraints) {
-      if (c != determining && c.isSatisfied()) coll.push(c)
+      if (c != determining && c.isSatisfied()) coll.append(c)
     }
   }
 }

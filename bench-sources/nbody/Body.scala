@@ -5,16 +5,14 @@
  */
 package nbody
 
-import scala.{Double, Unit}
-
 final class Body private () {
-  private[this] var x: Double    = 0.0
-  private[this] var y: Double    = 0.0
-  private[this] var z: Double    = 0.0
-  private[this] var vx: Double   = 0.0
-  private[this] var vy: Double   = 0.0
-  private[this] var vz: Double   = 0.0
-  private[this] var mass: Double = 0.0
+  private var x: Double    = 0.0
+  private var y: Double    = 0.0
+  private var z: Double    = 0.0
+  private var vx: Double   = 0.0
+  private var vy: Double   = 0.0
+  private var vz: Double   = 0.0
+  private var mass: Double = 0.0
 
   def getX(): Double    = x
   def getY(): Double    = y

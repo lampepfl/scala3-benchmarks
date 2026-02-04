@@ -43,15 +43,12 @@
 // The benchmark was originally implemented in BCPL by
 // Martin Richards.
 
-package org.scalajs.benchmark.richards
+package richards
 
 /**
  * Richards simulates the task dispatcher of an operating system.
  */
-object Richards extends org.scalajs.benchmark.Benchmark {
-
-  override def prefix = "Richards"
-
+object Richards {
   def run(): Unit = {
     val scheduler = new Scheduler()
     scheduler.addIdleTask(ID_IDLE, 0, null, COUNT)
@@ -78,7 +75,7 @@ object Richards extends org.scalajs.benchmark.Benchmark {
 
     if (scheduler.queueCount != EXPECTED_QUEUE_COUNT ||
         scheduler.holdCount != EXPECTED_HOLD_COUNT) {
-      print(s"Error during execution: queueCount = ${scheduler.queueCount}, holdCount = ${scheduler.holdCount}.")
+      throw new Exception(s"Error during execution: queueCount = ${scheduler.queueCount}, holdCount = ${scheduler.holdCount}.")
     }
     if (EXPECTED_QUEUE_COUNT != scheduler.queueCount) {
       throw new Exception("bad scheduler queue-count")

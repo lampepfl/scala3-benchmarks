@@ -7,6 +7,7 @@ ThisBuild / resolvers += Resolver.scalaNightlyRepository
 lazy val bench =
   project
     .in(file("bench"))
+    .dependsOn(benchQueens, benchDeltablue, benchRichards, benchNbody, benchMandelbrot)
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions,
@@ -252,6 +253,51 @@ lazy val benchIndigo =
         publish / skip := true,
       )
 
+lazy val benchQueens =
+  project
+    .in(file("bench-sources/queens"))
+    .settings(
+      scalaVersion := compilerVersion,
+      scalacOptions ++= sharedScalacOptions,
+      Compile / scalaSource := baseDirectory.value,
+    )
+
+lazy val benchDeltablue =
+  project
+    .in(file("bench-sources/deltablue"))
+    .settings(
+      scalaVersion := compilerVersion,
+      scalacOptions ++= sharedScalacOptions,
+      Compile / scalaSource := baseDirectory.value,
+    )
+
+lazy val benchRichards =
+  project
+    .in(file("bench-sources/richards"))
+    .settings(
+      scalaVersion := compilerVersion,
+      scalacOptions ++= sharedScalacOptions,
+      Compile / scalaSource := baseDirectory.value,
+    )
+
+lazy val benchNbody =
+  project
+    .in(file("bench-sources/nbody"))
+    .settings(
+      scalaVersion := compilerVersion,
+      scalacOptions ++= sharedScalacOptions,
+      Compile / scalaSource := baseDirectory.value,
+    )
+
+lazy val benchMandelbrot =
+  project
+    .in(file("bench-sources/mandelbrot"))
+    .settings(
+      scalaVersion := compilerVersion,
+      scalacOptions ++= sharedScalacOptions,
+      Compile / scalaSource := baseDirectory.value,
+    )
+
 def kindProjectorFlag(scalaVersion: String): String =
   if (VersionNumber(scalaVersion).matchesSemVer(SemanticSelector("<=3.4")))
     "-Ykind-projector"
@@ -322,6 +368,11 @@ def benchmarkConfigs = Def.task {
     bigBenchmarkConfig(benchSourcecode, includeTests = true).value,
     bigBenchmarkConfig(benchTastyQuery).value,
     bigBenchmarkConfig(benchTictactoe, includeTests = true).value,
+    bigBenchmarkConfig(benchQueens).value,
+    bigBenchmarkConfig(benchDeltablue).value,
+    bigBenchmarkConfig(benchRichards).value,
+    bigBenchmarkConfig(benchNbody).value,
+    bigBenchmarkConfig(benchMandelbrot).value,
   )
 
   (smallEntries ++ bigEntries).toMap

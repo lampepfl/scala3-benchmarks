@@ -22,19 +22,15 @@
  */
 package queens
 
-import scala.Predef.intWrapper
-import scala.{Int, Boolean, Array, Unit}
-import java.lang.String
+import scala.compiletime.uninitialized
 
-object QueensBenchmark extends communitybench.Benchmark {
-  val inputOutput: (String, String) = ("", "true")
+object QueensBenchmark {
+  var freeMaxs: Array[Boolean] = uninitialized
+  var freeRows: Array[Boolean] = uninitialized
+  var freeMins: Array[Boolean] = uninitialized
+  var queenRows: Array[Int]    = uninitialized
 
-  var freeMaxs: Array[Boolean] = _
-  var freeRows: Array[Boolean] = _
-  var freeMins: Array[Boolean] = _
-  var queenRows: Array[Int]    = _
-
-  def run(input: String): Boolean = {
+  def run(): Boolean = {
     freeRows = Array.fill(8)(true)
     freeMaxs = Array.fill(16)(true)
     freeMins = Array.fill(16)(true)
