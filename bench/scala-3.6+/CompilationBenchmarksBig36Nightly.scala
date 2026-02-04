@@ -4,6 +4,7 @@ import bench.compilers.DottyCompiler
 import org.openjdk.jmh.annotations.{Benchmark, Warmup}
 
 class CompilationBenchmarksBig36 extends CompilationBenchmarks:
+  
   @Warmup(iterations = 60)
   @Benchmark
   def indigo =

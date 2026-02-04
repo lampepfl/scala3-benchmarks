@@ -7,11 +7,6 @@ on:
         description: "Dotty PR number"
         required: true
         type: string
-      jvm:
-        description: "JVM to use"
-        required: false
-        default: "temurin:25"
-        type: string
       runs:
         description: "Number of runs"
         required: false
@@ -27,11 +22,6 @@ on:
       pr:
         description: "Dotty PR number"
         required: true
-        type: string
-      jvm:
-        description: "JVM to use"
-        required: false
-        default: "temurin:25"
         type: string
       runs:
         description: "Number of runs"
@@ -91,7 +81,6 @@ jobs:
     uses: ./.github/workflows/benchmark.yml
     with:
       versions: ${{ needs.publish-pr.outputs.version }}
-      jvm: ${{ inputs.jvm }}
       runs: ${{ inputs.runs }}
       filter: ${{ inputs.filter }}
       branch: pr${{ inputs.pr }}
