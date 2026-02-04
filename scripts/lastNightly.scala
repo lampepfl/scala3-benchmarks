@@ -2,7 +2,8 @@
 //> using jvm temurin:25
 
 @main def run(): Unit =
-  val url = "https://repo.scala-lang.org/artifactory/maven-nightlies/org/scala-lang/scala3-compiler_3/maven-metadata.xml"
+  val url =
+    "https://repo.scala-lang.org/artifactory/maven-nightlies/org/scala-lang/scala3-compiler_3/maven-metadata.xml"
   val xml = scala.io.Source.fromURL(url).mkString
   val nightlyPattern = """<version>(.+-NIGHTLY)</version>""".r
   val nightlies = nightlyPattern.findAllMatchIn(xml).map(_.group(1)).toSeq

@@ -7,7 +7,7 @@
 import java.time.{Instant, ZoneId}
 import java.time.format.DateTimeFormatter
 
-import com.github.tototoshi.csv.{CSVWriter, CSVReader}
+import com.github.tototoshi.csv.{CSVReader, CSVWriter}
 import upickle.default.{read, ReadWriter}
 
 case class JmhMetric(rawData: Seq[Seq[Double]]) derives ReadWriter
@@ -23,7 +23,7 @@ case class JmhBenchmark(
 case class Stats(count: Int, min: Double, avg: Double, max: Double):
   def map(f: Double => Double): Stats =
     Stats(count, f(min), f(avg), f(max))
-  
+
   def merge(other: Stats): Stats =
     val totalCount = this.count + other.count
     val combinedAvg = (this.avg * this.count + other.avg * other.count) / totalCount
@@ -59,7 +59,7 @@ def appendStats(file: os.Path, version: String, stats: Stats): Unit =
       Seq.empty
 
   // Partition existing rows into those matching the version and others
-  val (others, existing)  = csvRows.partition(_("version") != version)
+  val (others, existing) = csvRows.partition(_("version") != version)
 
   // Combine previous stats with new stats if version already exists, otherwise use new stats
   val updatedRow: Map[String, String] =
@@ -75,7 +75,7 @@ def appendStats(file: os.Path, version: String, stats: Stats): Unit =
         previousRow("max").toDouble,
       ).merge(stats)
       combinedStats.toMap + ("version" -> version)
-  
+
   // Write back all rows (others + updatedRow) to CSV
   os.makeDir.all(file / os.up) // Ensure parent directory exists
   val writer = CSVWriter.open(file.toIO)
@@ -149,7 +149,7 @@ def importResults(
       shortBenchmark,
       bench.warmupIterations.toString,
       bench.measurementIterations.toString,
-      times.map(formatSigFigs(_)).mkString(" ")
+      times.map(formatSigFigs(_)).mkString(" "),
     ) ++ Seq(
       allocsStats.min,
       allocsStats.avg,
