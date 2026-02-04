@@ -23,7 +23,7 @@ on:
         default: ""
         type: string
       branch:
-        description: "Branch name for data repo (main or pr<n>)"
+        description: "Branch name for data repo"
         required: false
         default: "main"
         type: string
@@ -49,7 +49,7 @@ on:
         default: ""
         type: string
       branch:
-        description: "Branch name for data repo (main or pr<n>)"
+        description: "Branch name for data repo"
         required: false
         default: "main"
         type: string

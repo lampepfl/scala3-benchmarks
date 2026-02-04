@@ -7,6 +7,12 @@ on:
         description: "Dotty PR number"
         required: true
         type: string
+      commits:
+        # Space-separated SHAs. If empty, benchmarks merge base + PR head.
+        description: "Commit SHAs to benchmark"
+        required: false
+        default: ""
+        type: string
       runs:
         description: "Number of runs"
         required: false
@@ -23,6 +29,12 @@ on:
         description: "Dotty PR number"
         required: true
         type: string
+      commits:
+        # Space-separated SHAs. If empty, benchmarks merge base + PR head.
+        description: "Commit SHAs to benchmark"
+        required: false
+        default: ""
+        type: string
       runs:
         description: "Number of runs"
         required: false
@@ -38,13 +50,14 @@ jobs:
   publish-pr:
     runs-on: [self-hosted, benchmarks]
     outputs:
-      version: ${{ steps.version.outputs.version }}
+      versions: ${{ steps.publish.outputs.versions }}
     steps:
       - name: Checkout dotty PR
         uses: actions/checkout@v4
         with:
           repository: scala/scala3
-          ref: refs/pull/${{ inputs.pr }}/merge
+          ref: refs/pull/${{ inputs.pr }}/head
+          fetch-depth: 0
           path: dotty
 
       - name: Setup Coursier
@@ -53,34 +66,51 @@ jobs:
       - name: Setup sbt
         uses: sbt/setup-sbt@v1
 
-      - name: Publish dotty locally
-        working-directory: dotty
-        env:
-          # Makes a unique version based on commit hash
-          NIGHTLYBUILD: "yes"
-        # Publish dotty locally and write the published version to
-        # `community-build/scala3-bootstrapped.version`
-        run: sbt community-build/prepareCommunityBuild
-
-      - name: Get published version
-        id: version
+      - name: Determine commits to benchmark
+        id: commits
         working-directory: dotty
         run: |
-          VERSION=$(cat community-build/scala3-bootstrapped.version)
-          echo "Published version: $VERSION"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [ -n "${{ inputs.commits }}" ]; then
+            COMMITS="${{ inputs.commits }}"
+          else
+            git fetch origin main
+            MERGE_BASE=$(git merge-base origin/main HEAD)
+            PR_HEAD=$(git rev-parse HEAD)
+            COMMITS="$MERGE_BASE $PR_HEAD"
+          fi
+          echo "commits=$COMMITS" >> "$GITHUB_OUTPUT"
+          echo "Commits to benchmark: $COMMITS"
+
+      - name: Publish commits locally
+        id: publish
+        working-directory: dotty
+        env:
+          NIGHTLYBUILD: "yes"
+        run: |
+          VERSIONS=""
+          for COMMIT in ${{ steps.commits.outputs.commits }}; do
+            echo "=== Publishing commit $COMMIT ==="
+            git checkout "$COMMIT"
+            sbt clean community-build/prepareCommunityBuild
+            VERSION=$(cat community-build/scala3-bootstrapped.version)
+            echo "Published version: $VERSION"
+            VERSIONS="$VERSIONS $VERSION"
+          done
+          VERSIONS=$(echo "$VERSIONS" | xargs)
+          echo "versions=$VERSIONS" >> "$GITHUB_OUTPUT"
+          echo "All published versions: $VERSIONS"
 
   # Note: This relies on the PR compiler being published into the local machine cache
   # (Ivy/Coursier) and the subsequent benchmark job running on the same self-hosted
   # runner machine. GitHub does not guarantee runner affinity between jobs.
-  # If/when multiple runners share the [self-hosted, benchmarks] label, we’ll need a
+  # If/when multiple runners share the [self-hosted, benchmarks] label, we'll need a
   # different way to make the published artifacts available (or merge publish+benchmark
   # into one job / use a remote repository / use concurrency + single runner).
   benchmark:
     needs: publish-pr
     uses: ./.github/workflows/benchmark.yml
     with:
-      versions: ${{ needs.publish-pr.outputs.version }}
+      versions: ${{ needs.publish-pr.outputs.versions }}
       runs: ${{ inputs.runs }}
       filter: ${{ inputs.filter }}
       branch: pr${{ inputs.pr }}
