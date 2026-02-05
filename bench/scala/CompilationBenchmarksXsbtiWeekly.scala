@@ -1,7 +1,8 @@
 package bench
 
-import bench.compilers.XsbtiCompiler
 import org.openjdk.jmh.annotations.{Benchmark, Warmup}
+
+import bench.compilers.XsbtiCompiler
 
 class CompilationBenchmarksXsbtiWeekly extends CompilationBenchmarks:
 

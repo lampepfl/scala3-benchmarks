@@ -1,5 +1,7 @@
 package bench
 
+import org.openjdk.jmh.annotations.Benchmark
+
 import bounce.BounceBenchmark
 import brainfuck.BrainfuckBenchmark
 import cd.CDBenchmark
@@ -10,7 +12,6 @@ import kmeans.KmeansBenchmark
 import list.ListBenchmark
 import mandelbrot.MandelbrotBenchmark
 import nbody.NbodyBenchmark
-import org.openjdk.jmh.annotations.Benchmark
 import permute.PermuteBenchmark
 import queens.QueensBenchmark
 import richards.Richards
