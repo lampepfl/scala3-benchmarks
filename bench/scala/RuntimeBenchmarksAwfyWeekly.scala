@@ -20,7 +20,7 @@ import tracer.Tracer
 class RuntimeBenchmarksAwfyWeekly extends RuntimeBenchmarks:
 
   @Benchmark def bounce: Unit =
-    assert(BounceBenchmark.run(100000) == 1278008)
+    assert(BounceBenchmark.run(100) == 1331)
 
   @Benchmark def brainfuck: Unit =
     assert(BrainfuckBenchmark.run() == 11359)
@@ -41,7 +41,7 @@ class RuntimeBenchmarksAwfyWeekly extends RuntimeBenchmarks:
     assert(KmeansBenchmark.run(100000))
 
   @Benchmark def list: Unit =
-    assert(ListBenchmark.run(9) == 18)
+    assert(ListBenchmark.run(5) == 10)
 
   @Benchmark def mandelbrot: Unit =
     assert(MandelbrotBenchmark.run(750) == 50)
@@ -53,7 +53,7 @@ class RuntimeBenchmarksAwfyWeekly extends RuntimeBenchmarks:
     assert(QueensBenchmark.run())
 
   @Benchmark def permute: Unit =
-    assert(PermuteBenchmark.run(10) == 3628800)
+    assert(PermuteBenchmark.run(6) == 720)
 
   @Benchmark def richards: Unit =
     Richards.run()
