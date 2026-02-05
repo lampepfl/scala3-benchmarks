@@ -114,7 +114,7 @@ To add a new benchmark:
 
 ## Running Tests
 
-Some benchmarks (fansi, sourcecode, scalaYaml, scalaParserCombinators) include tests from their upstream repositories:
+Some benchmarks (fansi, sourcecode, scalaYaml, parserCombinators) include tests from their upstream repositories:
 
 ```bash
 sbt test                    # Run all tests

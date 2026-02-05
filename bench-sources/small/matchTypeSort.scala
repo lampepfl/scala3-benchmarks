@@ -1,7 +1,8 @@
-package matchTypeBubbleSort
+package matchTypeSort
 
 import scala.compiletime.ops.int.*
 
+/** Type-level bubble sort using match types and tuple operations */
 object TupleOps:
   import Tuple.*
 

@@ -22,7 +22,7 @@ case class YBEmployee(
 case class YBDepartment(name: String, budget: Double, employees: List[YBEmployee]) derives YamlCodec
 case class YBOrganization(name: String, departments: List[YBDepartment]) derives YamlCodec
 
-// --- scalaParserCombinators grammar (from Getting Started guide) ---
+// --- parserCombinators grammar (from Getting Started guide) ---
 
 case class WordFreq(word: String, count: Int)
 
@@ -150,7 +150,7 @@ class RuntimeBenchmarksLibsWeekly extends RuntimeBenchmarks:
     assert(org.departments.size == 10)
     assert(org.departments.head.employees.size == 100)
 
-  @Benchmark def parserCombinatorsWordFreq: Unit =
+  @Benchmark def wordFreqParser: Unit =
     val result = WordFreqParser(LibsBenchmarkData.wordFreqInput)
     assert(result.size == 50000)
 

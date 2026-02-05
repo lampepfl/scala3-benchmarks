@@ -7,7 +7,7 @@ ThisBuild / resolvers += Resolver.scalaNightlyRepository
 lazy val bench =
   project
     .in(file("bench"))
-    .dependsOn(benchAreWeFastYet, benchScalaYaml, benchScalaParserCombinators, benchFansi)
+    .dependsOn(benchAreWeFastYet, benchScalaYaml, benchParserCombinators, benchFansi)
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions,
@@ -71,9 +71,9 @@ lazy val benchRe2s =
       Compile / scalaSource := baseDirectory.value,
     )
 
-lazy val benchScalaParserCombinators =
+lazy val benchParserCombinators =
   project
-    .in(file("bench-sources/scalaParserCombinators"))
+    .in(file("bench-sources/parserCombinators"))
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions,
@@ -87,9 +87,9 @@ lazy val benchScalaParserCombinators =
       Test / scalaSource := baseDirectory.value / "test" / "scala",
     )
 
-lazy val benchScalaParallelCollections =
+lazy val benchParallelCollections =
   project
-    .in(file("bench-sources/scalaParallelCollections"))
+    .in(file("bench-sources/parallelCollections"))
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions ++ Seq("-Wconf:cat=unchecked:s"),
@@ -324,8 +324,8 @@ def benchmarkConfigs = Def.task {
     bigBenchmarkConfig(benchFansi, includeTests = true).value,
     bigBenchmarkConfig(benchIndigo).value, // Requires Scala 3.6.4+
     bigBenchmarkConfig(benchRe2s).value,
-    bigBenchmarkConfig(benchScalaParallelCollections, includeTests = true).value,
-    bigBenchmarkConfig(benchScalaParserCombinators, includeTests = true).value,
+    bigBenchmarkConfig(benchParallelCollections, includeTests = true).value,
+    bigBenchmarkConfig(benchParserCombinators, includeTests = true).value,
     bigBenchmarkConfig(benchScalaToday).value,
     bigBenchmarkConfig(benchScalaYaml, includeTests = true).value,
     bigBenchmarkConfig(benchScalaz).value,

@@ -28,9 +28,9 @@ class CompilationBenchmarksBigNightly extends CompilationBenchmarks:
 
   @Warmup(iterations = 80)
   @Benchmark
-  def scalaParallelCollections =
-    assert(Config.scalaParallelCollections.sources.size == 86)
-    DottyCompiler.compile(Config.scalaParallelCollections.sources, Config.scalaParallelCollections.options, outDir)
+  def parallelCollections =
+    assert(Config.parallelCollections.sources.size == 86)
+    DottyCompiler.compile(Config.parallelCollections.sources, Config.parallelCollections.options, outDir)
 
   @Benchmark
   def scalaToday =

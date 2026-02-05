@@ -37,10 +37,6 @@ class CompilationBenchmarksSmallWeekly extends CompilationBenchmarks:
     assert(Config.implicitCache.sources.size == 1)
     DottyCompiler.compile(Config.implicitCache.sources, Config.implicitCache.options, outDir)
 
-  @Benchmark def implicitInductive =
-    assert(Config.implicitInductive.sources.size == 1)
-    DottyCompiler.compile(Config.implicitInductive.sources, Config.implicitInductive.options, outDir)
-
   @Benchmark def implicitNums =
     assert(Config.implicitNums.sources.size == 1)
     DottyCompiler.compile(Config.implicitNums.sources, Config.implicitNums.options, outDir)
@@ -48,11 +44,7 @@ class CompilationBenchmarksSmallWeekly extends CompilationBenchmarks:
   @Benchmark def implicitScopeLoop =
     assert(Config.implicitScopeLoop.sources.size == 1)
     DottyCompiler.compile(Config.implicitScopeLoop.sources, Config.implicitScopeLoop.options, outDir)
-
-  @Benchmark def patmatexhaust =
-    assert(Config.patmatexhaust.sources.size == 1)
-    DottyCompiler.compile(Config.patmatexhaust.sources, Config.patmatexhaust.options, outDir)
-
+  
   @Benchmark def tuple =
     assert(Config.tuple.sources.size == 1)
     DottyCompiler.compile(Config.tuple.sources, Config.tuple.options, outDir)
