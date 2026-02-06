@@ -2,7 +2,7 @@ name: Benchmark Weekly
 
 on:
   schedule:
-    - cron: "24 9 * * 0" # every Sunday at 9:24 UTC
+    - cron: "24 9 * * *" # every day at 9:24 UTC. Temporary to populate initial data. TODO: revert to "24 9 * * 0".
   workflow_dispatch:
 
 jobs:
