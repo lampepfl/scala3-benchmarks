@@ -4,8 +4,12 @@ import org.openjdk.jmh.annotations.{Benchmark, Measurement, Warmup}
 import clbg.*
 import kostya.*
 
+
+@Warmup(batchSize = 10, iterations = 20)
+@Measurement(batchSize = 10, iterations = 10)
 class RuntimeBenchmarksOptimizerSmallNightly extends RuntimeBenchmarks:
 
+  @Warmup(batchSize = 10, iterations = 40)
   @Benchmark
   def ary: Unit =
     assert(Ary.main() == 1000000)
@@ -18,6 +22,8 @@ class RuntimeBenchmarksOptimizerSmallNightly extends RuntimeBenchmarks:
   def matMul: Unit =
     assert(MatMul.main() == -18.6716666)
 
+  @Warmup(batchSize = 1, iterations = 20)
+  @Measurement(batchSize = 1, iterations = 10)
   @Benchmark
   def meteor: Unit =
     assert(Meteor.main() == "9 9 9 9 8 \n 9 6 6 8 5 \n6 6 8 8 5 \n 6 8 2 5 5 \n7 7 7 2 5 \n 7 4 7 2 0 \n1 4 2 2 0 \n 1 4 4 0 3 \n1 4 0 0 3 \n 1 1 3 3 3 \n")
