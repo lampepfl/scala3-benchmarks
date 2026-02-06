@@ -129,6 +129,7 @@ def importResults(
   val header = Seq(
     "benchmark",
     "warmup_iterations",
+    "batch_size",
     "times",
     "allocs_min",
     "allocs_avg",
@@ -152,6 +153,7 @@ def importResults(
     writer.writeRow(Seq(
       shortBenchmark,
       bench.warmupIterations.toString,
+      bench.measurementBatchSize.toString,
       times.map(formatSigFigs(_)).mkString(" "),
     ) ++ Seq(
       allocsStats.min,
