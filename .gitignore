@@ -1,5 +1,6 @@
 .bloop
 .bsp
+.idea
 .metals
 metals.sbt
 target

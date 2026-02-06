@@ -7,7 +7,7 @@ ThisBuild / resolvers += Resolver.scalaNightlyRepository
 lazy val bench =
   project
     .in(file("bench"))
-    .dependsOn(benchAreWeFastYet, benchScalaYaml, benchParserCombinators, benchFansi)
+    .dependsOn(benchAreWeFastYet, benchOptimizer, benchScalaYaml, benchParserCombinators, benchFansi)
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions,
@@ -262,6 +262,15 @@ lazy val benchAreWeFastYet =
       Compile / scalaSource := baseDirectory.value,
     )
 
+lazy val benchOptimizer =
+  project
+    .in(file("bench-sources/optimizer"))
+    .settings(
+      scalaVersion := compilerVersion,
+      scalacOptions ++= sharedScalacOptions,
+      Compile / scalaSource := baseDirectory.value,
+    )
+
 def kindProjectorFlag(scalaVersion: String): String =
   if (VersionNumber(scalaVersion).matchesSemVer(SemanticSelector("<=3.4")))
     "-Ykind-projector"
@@ -319,20 +328,21 @@ def benchmarkConfigs = Def.task {
 
   // Big benchmarks: each has its own subproject
   val bigEntries = Seq(
+    bigBenchmarkConfig(benchAreWeFastYet).value,
     bigBenchmarkConfig(benchCaskApp).value,
     bigBenchmarkConfig(benchDottyUtil).value,
     bigBenchmarkConfig(benchFansi, includeTests = true).value,
     bigBenchmarkConfig(benchIndigo).value, // Requires Scala 3.6.4+
-    bigBenchmarkConfig(benchRe2s).value,
+    bigBenchmarkConfig(benchOptimizer).value,
     bigBenchmarkConfig(benchParallelCollections, includeTests = true).value,
     bigBenchmarkConfig(benchParserCombinators, includeTests = true).value,
+    bigBenchmarkConfig(benchRe2s).value,
     bigBenchmarkConfig(benchScalaToday).value,
     bigBenchmarkConfig(benchScalaYaml, includeTests = true).value,
     bigBenchmarkConfig(benchScalaz).value,
     bigBenchmarkConfig(benchSourcecode, includeTests = true).value,
     bigBenchmarkConfig(benchTastyQuery).value,
     bigBenchmarkConfig(benchTictactoe, includeTests = true).value,
-    bigBenchmarkConfig(benchAreWeFastYet).value,
   )
 
   (smallEntries ++ bigEntries).toMap
