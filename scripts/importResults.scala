@@ -15,7 +15,10 @@ case class JmhMetric(rawData: Seq[Seq[Double]]) derives ReadWriter
 case class JmhBenchmark(
     benchmark: String,
     warmupIterations: Int,
+    warmupBatchSize: Int,
     measurementIterations: Int,
+    measurementTime: String,
+    measurementBatchSize: Int,
     primaryMetric: JmhMetric,
     secondaryMetrics: Map[String, JmhMetric],
 ) derives ReadWriter
@@ -109,6 +112,9 @@ def importResults(
   val patchVersion = version.take(5)
   val benchmarks = read[Seq[JmhBenchmark]](os.read(jsonPath))
   assert(benchmarks.nonEmpty, s"No benchmarks found in JSON file: $jsonPath")
+  for bench <- benchmarks do
+    assert(bench.measurementTime == "single-shot", s"measurementTime should be 'single-shot', got '${bench.measurementTime}' for ${bench.benchmark}")
+    assert(bench.measurementBatchSize == bench.warmupBatchSize, s"measurementBatchSize (${bench.measurementBatchSize}) should equal warmupBatchSize (${bench.warmupBatchSize}) for ${bench.benchmark}")
 
   // Generate run datetime (ISO format without separators)
   val formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")
