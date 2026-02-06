@@ -63,8 +63,10 @@ Each CSV file contains one row per benchmark from a single JMH run. An `INDEX` f
 
 Columns:
 
+- `suite`: benchmark suite class name (e.g. `CompilationBenchmarksSmallNightly`).
 - `benchmark`: unqualified `@Benchmark` method name (e.g. `helloWorld`).
 - `warmup_iterations`: number of warmup iterations before measurement.
+- `batch_size`: number of benchmark invocations per iteration. This is typically 1 for big benchmarks, and higher for smaller benchmarks.
 - `times`: space-separated measurement times in milliseconds (one per iteration). The number of values is the number of measurement iterations. Benchmarks use `SingleShotTime` mode, so each value is a single invocation. See [JMH @BenchmarkMode](https://javadoc.io/doc/org.openjdk.jmh/jmh-core/latest/org/openjdk/jmh/annotations/BenchmarkMode.html).
 - `allocs_min`, `allocs_avg`, `allocs_max`: total allocation per operation in MB, from the `gc.alloc.rate.norm` secondary metric of JMH's [`-prof gc` (GcProfiler)](https://github.com/Valloric/jmh-playground/blob/d91560bfea6c18cd065b4bf9be9e2da14864cbf1/src/jmh/java/org/openjdk/jmh/samples/JMHSample_35_Profilers.java#L170-L212). The raw value (bytes) is divided by 1e6.
 - `gc_min`, `gc_avg`, `gc_max`: number of GC events during measurement, from the `gc.count` secondary metric of `-prof gc`.
@@ -72,9 +74,9 @@ Columns:
 
 ### Aggregated Data
 
-`aggregated/<machine>/<jvm>/<patch_version>/<metric>/<benchmark>.csv`
+`aggregated/<machine>/<jvm>/<patch_version>/<metric>/<suite>/<benchmark>.csv`
 
-Pre-computed summaries derived from raw data, organized per metric and benchmark for direct use by the visualiser. Each `<metric>` is one of `time`, `allocs`, `gc`, or `comp`.
+Pre-computed summaries derived from raw data, organized per metric, suite, and benchmark for direct use by the visualiser. Each `<metric>` is one of `time`, `allocs`, `gc`, or `comp`. The `<suite>` corresponds to the benchmark suite class name (e.g. `CompilationBenchmarksSmallNightly`).
 
 Columns:
 

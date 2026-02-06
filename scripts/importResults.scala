@@ -127,6 +127,7 @@ def importResults(
   val outputPath = outputDir / s"$runDatetime.csv"
   val writer = CSVWriter.open(outputPath.toIO)
   val header = Seq(
+    "suite",
     "benchmark",
     "warmup_iterations",
     "batch_size",
@@ -145,12 +146,15 @@ def importResults(
   writer.writeRow(header)
 
   for bench <- benchmarks do
-    val shortBenchmark = bench.benchmark.split('.').last
+    val parts = bench.benchmark.split('.')
+    val suite = parts(parts.length - 2)
+    val shortBenchmark = parts.last
     val times = bench.primaryMetric.rawData.flatten
     val allocsStats = metricStats(bench.secondaryMetrics("gc.alloc.rate.norm")).map(_ / 1e6) // Convert to MB
     val gcStats = metricStats(bench.secondaryMetrics("gc.count"))
     val compStats = metricStats(bench.secondaryMetrics("compiler.time.profiled"))
     writer.writeRow(Seq(
+      suite,
       shortBenchmark,
       bench.warmupIterations.toString,
       bench.measurementBatchSize.toString,
@@ -169,10 +173,10 @@ def importResults(
 
     val aggregatePath = dataRepoPath / "aggregated" / machine / jvm / patchVersion
     val timeStats = metricStats(bench.primaryMetric)
-    appendStats(aggregatePath / "time" / s"$shortBenchmark.csv", version, timeStats)
-    appendStats(aggregatePath / "allocs" / s"$shortBenchmark.csv", version, allocsStats)
-    appendStats(aggregatePath / "gc" / s"$shortBenchmark.csv", version, gcStats)
-    appendStats(aggregatePath / "comp" / s"$shortBenchmark.csv", version, compStats)
+    appendStats(aggregatePath / "time" / suite / s"$shortBenchmark.csv", version, timeStats)
+    appendStats(aggregatePath / "allocs" / suite / s"$shortBenchmark.csv", version, allocsStats)
+    appendStats(aggregatePath / "gc" / suite / s"$shortBenchmark.csv", version, gcStats)
+    appendStats(aggregatePath / "comp" / suite / s"$shortBenchmark.csv", version, compStats)
 
   writer.close()
   println(s"Wrote results to: $outputPath")
