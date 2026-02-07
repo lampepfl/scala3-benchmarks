@@ -81,20 +81,31 @@ jobs:
           echo "commits=$COMMITS" >> "$GITHUB_OUTPUT"
           echo "Commits to benchmark: $COMMITS"
 
-      - name: Publish commits locally
+      - name: Resolve or publish commits
         id: publish
         working-directory: dotty
         env:
           BENCHMARKBUILD: "yes"
         run: |
+          NIGHTLIES_URL="https://repo.scala-lang.org/artifactory/maven-nightlies/org/scala-lang/scala3-compiler_3/maven-metadata.xml"
+          METADATA=$(curl -sf "$NIGHTLIES_URL") || METADATA=""
+
           VERSIONS=""
           for COMMIT in ${{ steps.commits.outputs.commits }}; do
             echo "=== Processing commit $COMMIT ==="
             FULL_HASH=$(git rev-parse "$COMMIT")
-            EXISTING=$(find ~/.ivy2/local/org.scala-lang/scala3-compiler_3/ -maxdepth 1 -name "*-$FULL_HASH-*" -type d 2>/dev/null | head -1)
-            if [ -n "$EXISTING" ]; then
+            SHORT_HASH="${FULL_HASH:0:7}"
+
+            # 1. Check if a nightly version exists for this commit
+            NIGHTLY=$(echo "$METADATA" | grep -o "<version>[^<]*-${SHORT_HASH}-NIGHTLY</version>" | sed 's/<[^>]*>//g' | tail -1)
+            if [ -n "$NIGHTLY" ]; then
+              VERSION="$NIGHTLY"
+              echo "Found nightly version: $VERSION"
+            # 2. Check if already published locally
+            elif EXISTING=$(find ~/.ivy2/local/org.scala-lang/scala3-compiler_3/ -maxdepth 1 -name "*-$FULL_HASH-*" -type d 2>/dev/null | head -1) && [ -n "$EXISTING" ]; then
               VERSION=$(basename "$EXISTING")
-              echo "Already published: $VERSION, skipping"
+              echo "Already published locally: $VERSION, skipping"
+            # 3. Publish locally as fallback
             else
               git checkout "$COMMIT"
               sbt --no-colors clean community-build/prepareCommunityBuild
@@ -105,7 +116,7 @@ jobs:
           done
           VERSIONS=$(echo "$VERSIONS" | xargs)
           echo "versions=$VERSIONS" >> "$GITHUB_OUTPUT"
-          echo "All published versions: $VERSIONS"
+          echo "All resolved versions: $VERSIONS"
 
   # Note: This relies on the PR compiler being published into the local machine cache
   # (Ivy/Coursier) and the subsequent benchmark job running on the same self-hosted
