@@ -22,7 +22,7 @@ export default function ToggleOption({
       <ToggleSwitch
         aria-labelledby={labelId}
         checked={checked}
-        onChange={(on) => onChange(on)}
+        onClick={() => onChange(!checked)}
         size="small"
       />
     </Stack>
