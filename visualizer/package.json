@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/d3-dsv": "^3.0.7",
     "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
     "@types/react-plotly.js": "^2.6.4",
@@ -17,6 +18,7 @@
   },
   "dependencies": {
     "@primer/react": "^38.10.0",
+    "d3-dsv": "^3.0.1",
     "plotly.js-dist-min": "^3.3.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
