@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from "react";
 import {
   BaseStyles,
   ThemeProvider,
-  PageLayout,
   Heading,
   Spinner,
   Stack,
@@ -146,37 +145,35 @@ export default function App() {
   return (
     <ThemeProvider>
       <BaseStyles>
-        <PageLayout>
-          <PageLayout.Content>
-            <Heading as="h1" style={{ marginBottom: 16 }}>
-              Scala 3 Benchmarks
-            </Heading>
+        <div style={{ padding: 24 }}>
+          <Heading as="h1" style={{ marginBottom: 16 }}>
+            Scala 3 Benchmarks
+          </Heading>
 
-            <ConfigPanel
-              config={config}
-              onConfigChange={handleConfigChange}
-              machines={machines}
-              jvms={jvms}
-              versions={versions}
-              metrics={metrics}
-            />
+          <ConfigPanel
+            config={config}
+            onConfigChange={handleConfigChange}
+            machines={machines}
+            jvms={jvms}
+            versions={versions}
+            metrics={metrics}
+          />
 
-            {error && (
-              <p style={{ color: "var(--fgColor-danger)" }}>{error}</p>
-            )}
+          {error && (
+            <p style={{ color: "var(--fgColor-danger)" }}>{error}</p>
+          )}
 
-            {loading ? (
-              <Stack align="center" padding="spacious">
-                <Spinner size="large" />
-                <span>Loading benchmark data...</span>
-              </Stack>
-            ) : data.size === 0 ? (
-              <p>No benchmark data found for this configuration.</p>
-            ) : (
-              <BenchmarkChartList data={data} config={config} />
-            )}
-          </PageLayout.Content>
-        </PageLayout>
+          {loading ? (
+            <Stack align="center" padding="spacious">
+              <Spinner size="large" />
+              <span>Loading benchmark data...</span>
+            </Stack>
+          ) : data.size === 0 ? (
+            <p>No benchmark data found for this configuration.</p>
+          ) : (
+            <BenchmarkChartList data={data} config={config} />
+          )}
+        </div>
       </BaseStyles>
     </ThemeProvider>
   );
