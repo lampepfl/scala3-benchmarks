@@ -8,3 +8,7 @@ target
 out
 results
 sbt
+
+# Visualizer
+visualizer/node_modules
+visualizer/dist

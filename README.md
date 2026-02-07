@@ -49,6 +49,7 @@ bench-sources/
 bench/scala/
   CompilationBenchmarksSmallNightly.scala
   ...
+visualizer/              # Web app for visualizing results (see visualizer/README.md)
 ```
 
 ## Results structure
