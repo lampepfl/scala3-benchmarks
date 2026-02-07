@@ -9,7 +9,8 @@ import {
 } from "@primer/react";
 import type { Config, AllBenchmarks } from "./types";
 import { DEFAULT_CONFIG } from "./types";
-import { listDirectory, fetchAllBenchmarks } from "./api";
+import { fetchDataIndex, fetchAllBenchmarks } from "./api";
+import type { DataIndex } from "./api";
 import ConfigPanel from "./components/ConfigPanel";
 import BenchmarkChartList from "./components/BenchmarkChartList";
 
@@ -29,100 +30,79 @@ function saveConfig(config: Config) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
 }
 
+/** Only updates config if a value actually changed; avoids re-renders. */
+function patchConfig(
+  setConfig: React.Dispatch<React.SetStateAction<Config>>,
+  patch: Partial<Config>,
+) {
+  setConfig((prev) => {
+    const changed = (Object.keys(patch) as (keyof Config)[]).some(
+      (k) => prev[k] !== patch[k],
+    );
+    if (!changed) return prev;
+    const next = { ...prev, ...patch };
+    saveConfig(next);
+    return next;
+  });
+}
+
+/** Pick a default: use current value if available, otherwise first item. */
+function pickDefault(current: string, available: string[]): string {
+  if (available.includes(current)) return current;
+  return available[available.length - 1] ?? "";
+}
+
 export default function App() {
   const [config, setConfig] = useState<Config>(loadConfig);
-
-  const [machines, setMachines] = useState<string[]>([]);
-  const [jvms, setJvms] = useState<string[]>([]);
-  const [versions, setVersions] = useState<string[]>([]);
-  const [metrics, setMetrics] = useState<string[]>([]);
+  const [index, setIndex] = useState<DataIndex | null>(null);
 
   const [data, setData] = useState<AllBenchmarks>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const handleConfigChange = useCallback((newConfig: Config) => {
-    setConfig(newConfig);
-    saveConfig(newConfig);
+    setConfig((prev) => {
+      const changed = (Object.keys(newConfig) as (keyof Config)[]).some(
+        (k) => prev[k] !== newConfig[k],
+      );
+      if (!changed) return prev;
+      saveConfig(newConfig);
+      return newConfig;
+    });
   }, []);
 
-  // Fetch machines on mount
+  // Fetch the full data index on mount (single API call)
   useEffect(() => {
     let active = true;
-    listDirectory("aggregated")
-      .then((names) => {
+    fetchDataIndex()
+      .then((idx) => {
         if (!active) return;
-        setMachines(names);
-        if (!names.includes(config.machine) && names.length > 0) {
-          handleConfigChange({ ...config, machine: names[0] });
-        }
+        setIndex(idx);
+        // Validate/fix config against what's actually available
+        const machine = pickDefault(config.machine, idx.machines);
+        const jvms = idx.jvms[machine] ?? [];
+        const jvm = pickDefault(config.jvm, jvms);
+        const versions = idx.versions[`${machine}/${jvm}`] ?? [];
+        const minorVersion = pickDefault(config.minorVersion, versions);
+        const metrics =
+          idx.metrics[`${machine}/${jvm}/${minorVersion}`] ?? [];
+        const metric = pickDefault(config.metric, metrics);
+        patchConfig(setConfig, { machine, jvm, minorVersion, metric });
       })
-      .catch((e) => active && setError(e.message));
+      .catch((e) => {
+        if (!active) return;
+        setError(e.message);
+        setLoading(false);
+      });
     return () => {
       active = false;
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Fetch JVMs when machine changes
-  useEffect(() => {
-    if (!config.machine) return;
-    let active = true;
-    listDirectory(`aggregated/${config.machine}`)
-      .then((names) => {
-        if (!active) return;
-        setJvms(names);
-        if (!names.includes(config.jvm) && names.length > 0) {
-          handleConfigChange({ ...config, jvm: names[0] });
-        }
-      })
-      .catch((e) => active && setError(e.message));
-    return () => {
-      active = false;
-    };
-  }, [config.machine]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Fetch versions when JVM changes
-  useEffect(() => {
-    if (!config.machine || !config.jvm) return;
-    let active = true;
-    listDirectory(`aggregated/${config.machine}/${config.jvm}`)
-      .then((names) => {
-        if (!active) return;
-        setVersions(names);
-        const latest = names[names.length - 1];
-        if (!names.includes(config.minorVersion) && names.length > 0) {
-          handleConfigChange({ ...config, minorVersion: latest });
-        }
-      })
-      .catch((e) => active && setError(e.message));
-    return () => {
-      active = false;
-    };
-  }, [config.machine, config.jvm]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Fetch metrics when version changes
-  useEffect(() => {
-    if (!config.machine || !config.jvm || !config.minorVersion) return;
-    let active = true;
-    listDirectory(
-      `aggregated/${config.machine}/${config.jvm}/${config.minorVersion}`,
-    )
-      .then((names) => {
-        if (!active) return;
-        setMetrics(names);
-        if (!names.includes(config.metric) && names.length > 0) {
-          handleConfigChange({ ...config, metric: names[0] });
-        }
-      })
-      .catch((e) => active && setError(e.message));
-    return () => {
-      active = false;
-    };
-  }, [config.machine, config.jvm, config.minorVersion]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Fetch benchmark data when metric changes
+  // Fetch benchmark CSVs when config or index changes
   useEffect(() => {
     if (
+      !index ||
       !config.machine ||
       !config.jvm ||
       !config.minorVersion ||
@@ -137,6 +117,7 @@ export default function App() {
       config.jvm,
       config.minorVersion,
       config.metric,
+      index,
     )
       .then((result) => {
         if (!active) return;
@@ -151,7 +132,16 @@ export default function App() {
     return () => {
       active = false;
     };
-  }, [config.machine, config.jvm, config.minorVersion, config.metric]);
+  }, [index, config.machine, config.jvm, config.minorVersion, config.metric]);
+
+  // Derive available options from the index
+  const machines = index?.machines ?? [];
+  const jvms = index?.jvms[config.machine] ?? [];
+  const versions = index?.versions[`${config.machine}/${config.jvm}`] ?? [];
+  const metrics =
+    index?.metrics[
+      `${config.machine}/${config.jvm}/${config.minorVersion}`
+    ] ?? [];
 
   return (
     <ThemeProvider>
