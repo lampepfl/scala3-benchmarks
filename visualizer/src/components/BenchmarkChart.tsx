@@ -28,6 +28,12 @@ function extractDate(version: string): string {
   return `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`;
 }
 
+/** Extract commit hash from nightly version like "3.8.3-RC1-bin-20260206-7d9042f-NIGHTLY" */
+function extractCommitHash(version: string): string | null {
+  const match = version.match(/-([0-9a-f]{7,})-NIGHTLY$/i);
+  return match ? match[1] : null;
+}
+
 export default function BenchmarkChart({
   title,
   data,
@@ -109,6 +115,16 @@ export default function BenchmarkChart({
     margin: { t: 40, b: 60 },
   };
 
+  const handleClick = (event: Plotly.PlotMouseEvent) => {
+    const point = event.points[0];
+    if (!point) return;
+    const version = versions[point.pointIndex];
+    const hash = extractCommitHash(version);
+    if (hash) {
+      window.open(`https://github.com/scala/scala3/commit/${hash}`, "_blank");
+    }
+  };
+
   return (
     <Plot
       data={traces}
@@ -116,6 +132,7 @@ export default function BenchmarkChart({
       useResizeHandler
       style={{ width: "100%", height: 400 }}
       config={{ responsive: true }}
+      onClick={handleClick}
     />
   );
 }
