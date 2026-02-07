@@ -47,6 +47,7 @@ on:
 jobs:
   benchmark:
     runs-on: [self-hosted, benchmarks]
+    timeout-minutes: 4320 # 3 days
     steps:
 
       - uses: actions/checkout@v4
