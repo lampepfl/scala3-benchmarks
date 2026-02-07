@@ -106,10 +106,12 @@ export default memo(function BenchmarkChart({
         tickvals: tickIndices,
         ticktext: tickLabels,
         zeroline: false,
+        automargin: false,
       },
       yaxis: {
         title: { text: yAxisTitle },
         zeroline: true,
+        automargin: false,
         range: config.yAxisAtZero
           ? [0, Math.max(...avgs) * 1.1]
           : undefined,
@@ -121,7 +123,7 @@ export default memo(function BenchmarkChart({
         xanchor: "right" as const,
         x: 1,
       },
-      margin: { t: 40, b: 60 },
+      margin: { t: 40, b: 60, l: 60, r: 30 },
     };
   }, [title, indices, versions, avgs, config.metric, config.yAxisAtZero]);
 
