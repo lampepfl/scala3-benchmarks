@@ -1,3 +1,4 @@
+import { memo, useMemo, useCallback } from "react";
 import createPlotlyComponent from "react-plotly.js/factory";
 import Plotly from "plotly.js-dist-min";
 import type { AggregatedRow, Config } from "../types";
@@ -34,105 +35,120 @@ function extractCommitHash(version: string): string | null {
   return match ? match[1] : null;
 }
 
-export default function BenchmarkChart({
+const PLOT_STYLE = { width: "100%", height: 400 } as const;
+const PLOT_CONFIG = { responsive: true } as const;
+
+export default memo(function BenchmarkChart({
   title,
   data,
   config,
 }: BenchmarkChartProps) {
-  const versions = data.map((r) => r.version);
-  const avgs = data.map((r) => r.avg);
-  const indices = data.map((_, i) => i);
+  const versions = useMemo(() => data.map((r) => r.version), [data]);
+  const avgs = useMemo(() => data.map((r) => r.avg), [data]);
+  const indices = useMemo(() => data.map((_, i) => i), [data]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const scatterTrace: any = {
-    x: indices,
-    y: avgs,
-    customdata: versions,
-    hovertemplate: "<b>%{customdata}</b><br>avg: %{y}<extra></extra>",
-    mode: "markers",
-    type: "scatter",
-    name: "Average",
-  };
-
-  if (config.errorBars) {
-    scatterTrace.error_y = {
-      type: "data",
-      array: data.map((r) => r.max - r.avg),
-      arrayminus: data.map((r) => r.avg - r.min),
-      visible: true,
-    };
-  }
-
-  const traces: Plotly.PlotData[] = [scatterTrace];
-
-  if (config.movingAverage) {
-    traces.push({
+  const traces = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const scatterTrace: any = {
       x: indices,
-      y: computeMovingAverage(avgs),
-      mode: "lines" as const,
-      type: "scatter" as const,
-      name: "Moving average",
-    } as Plotly.PlotData);
-  }
+      y: avgs,
+      customdata: versions,
+      hovertemplate: "<b>%{customdata}</b><br>avg: %{y}<extra></extra>",
+      mode: "markers",
+      type: "scatter",
+      name: "Average",
+    };
 
-  const tickInterval = Math.max(1, Math.ceil(indices.length / 5));
-  const tickIndices = indices.filter((_, i) => i % tickInterval === 0);
-  const tickLabels = tickIndices.map((i) => extractDate(versions[i]));
-
-  const yAxisTitle =
-    config.metric === "time"
-      ? "Time (ms)"
-      : config.metric === "allocs"
-        ? "Allocations (MB)"
-        : config.metric === "gc"
-          ? "GC events"
-          : config.metric === "comp"
-            ? "JIT time (ms)"
-            : config.metric;
-
-  const layout: Partial<Plotly.Layout> = {
-    title: { text: title },
-    xaxis: {
-      title: { text: "Version" },
-      tickvals: tickIndices,
-      ticktext: tickLabels,
-      zeroline: false,
-    },
-    yaxis: {
-      title: { text: yAxisTitle },
-      zeroline: true,
-      range: config.yAxisAtZero
-        ? [0, Math.max(...avgs) * 1.1]
-        : undefined,
-    },
-    legend: {
-      orientation: "h",
-      yanchor: "bottom",
-      y: 1.02,
-      xanchor: "right",
-      x: 1,
-    },
-    margin: { t: 40, b: 60 },
-  };
-
-  const handleClick = (event: Plotly.PlotMouseEvent) => {
-    const point = event.points[0];
-    if (!point) return;
-    const version = versions[point.pointIndex];
-    const hash = extractCommitHash(version);
-    if (hash) {
-      window.open(`https://github.com/scala/scala3/commit/${hash}`, "_blank");
+    if (config.errorBars) {
+      scatterTrace.error_y = {
+        type: "data",
+        array: data.map((r) => r.max - r.avg),
+        arrayminus: data.map((r) => r.avg - r.min),
+        visible: true,
+      };
     }
-  };
+
+    const result: Plotly.PlotData[] = [scatterTrace];
+
+    if (config.movingAverage) {
+      result.push({
+        x: indices,
+        y: computeMovingAverage(avgs),
+        mode: "lines" as const,
+        type: "scatter" as const,
+        name: "Moving average",
+      } as Plotly.PlotData);
+    }
+
+    return result;
+  }, [data, indices, avgs, versions, config.errorBars, config.movingAverage]);
+
+  const layout = useMemo(() => {
+    const tickInterval = Math.max(1, Math.ceil(indices.length / 5));
+    const tickIndices = indices.filter((_, i) => i % tickInterval === 0);
+    const tickLabels = tickIndices.map((i) => extractDate(versions[i]));
+
+    const yAxisTitle =
+      config.metric === "time"
+        ? "Time (ms)"
+        : config.metric === "allocs"
+          ? "Allocations (MB)"
+          : config.metric === "gc"
+            ? "GC events"
+            : config.metric === "comp"
+              ? "JIT time (ms)"
+              : config.metric;
+
+    return {
+      title: { text: title },
+      xaxis: {
+        title: { text: "Version" },
+        tickvals: tickIndices,
+        ticktext: tickLabels,
+        zeroline: false,
+      },
+      yaxis: {
+        title: { text: yAxisTitle },
+        zeroline: true,
+        range: config.yAxisAtZero
+          ? [0, Math.max(...avgs) * 1.1]
+          : undefined,
+      },
+      legend: {
+        orientation: "h" as const,
+        yanchor: "bottom" as const,
+        y: 1.02,
+        xanchor: "right" as const,
+        x: 1,
+      },
+      margin: { t: 40, b: 60 },
+    };
+  }, [title, indices, versions, avgs, config.metric, config.yAxisAtZero]);
+
+  const handleClick = useCallback(
+    (event: Plotly.PlotMouseEvent) => {
+      const point = event.points[0];
+      if (!point) return;
+      const version = versions[point.pointIndex];
+      const hash = extractCommitHash(version);
+      if (hash) {
+        window.open(
+          `https://github.com/scala/scala3/commit/${hash}`,
+          "_blank",
+        );
+      }
+    },
+    [versions],
+  );
 
   return (
     <Plot
       data={traces}
       layout={layout}
       useResizeHandler
-      style={{ width: "100%", height: 400 }}
-      config={{ responsive: true }}
+      style={PLOT_STYLE}
+      config={PLOT_CONFIG}
       onClick={handleClick}
     />
   );
-}
+});
