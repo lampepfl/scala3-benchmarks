@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "visualizer/**"
+      - ".github/workflows/deploy-visualizer.yml"
   workflow_dispatch:
 
 permissions:
