@@ -171,12 +171,14 @@ def importResults(
       compStats.max,
     ).map(formatSigFigs(_)))
 
-    val aggregatePath = dataRepoPath / "aggregated" / machine / jvm / patchVersion
-    val timeStats = metricStats(bench.primaryMetric)
-    appendStats(aggregatePath / "time" / suite / s"$shortBenchmark.csv", version, timeStats)
-    appendStats(aggregatePath / "allocs" / suite / s"$shortBenchmark.csv", version, allocsStats)
-    appendStats(aggregatePath / "gc" / suite / s"$shortBenchmark.csv", version, gcStats)
-    appendStats(aggregatePath / "comp" / suite / s"$shortBenchmark.csv", version, compStats)
+    // Only aggregate NIGHTLY versions
+    if version.endsWith("-NIGHTLY") then
+      val aggregatePath = dataRepoPath / "aggregated" / machine / jvm / patchVersion
+      val timeStats = metricStats(bench.primaryMetric)
+      appendStats(aggregatePath / "time" / suite / s"$shortBenchmark.csv", version, timeStats)
+      appendStats(aggregatePath / "allocs" / suite / s"$shortBenchmark.csv", version, allocsStats)
+      appendStats(aggregatePath / "gc" / suite / s"$shortBenchmark.csv", version, gcStats)
+      appendStats(aggregatePath / "comp" / suite / s"$shortBenchmark.csv", version, compStats)
 
   writer.close()
   println(s"Wrote results to: $outputPath")
