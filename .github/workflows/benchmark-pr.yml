@@ -51,6 +51,7 @@ jobs:
     runs-on: [self-hosted, benchmarks]
     outputs:
       versions: ${{ steps.publish.outputs.versions }}
+      versions_json: ${{ steps.publish.outputs.versions_json }}
     steps:
       - name: Checkout dotty PR
         uses: actions/checkout@v4
@@ -118,17 +119,26 @@ jobs:
           echo "versions=$VERSIONS" >> "$GITHUB_OUTPUT"
           echo "All resolved versions: $VERSIONS"
 
+          # Convert to JSON array for matrix
+          VERSIONS_JSON=$(python3 -c "import sys, json; print(json.dumps(sys.argv[1].split()))" "$VERSIONS")
+          echo "versions_json=$VERSIONS_JSON" >> "$GITHUB_OUTPUT"
+
   # Note: This relies on the PR compiler being published into the local machine cache
-  # (Ivy/Coursier) and the subsequent benchmark job running on the same self-hosted
+  # (Ivy/Coursier) and the subsequent benchmark jobs running on the same self-hosted
   # runner machine. GitHub does not guarantee runner affinity between jobs.
   # If/when multiple runners share the [self-hosted, benchmarks] label, we'll need a
   # different way to make the published artifacts available (or merge publish+benchmark
   # into one job / use a remote repository / use concurrency + single runner).
+  #
+  # Note: Each job imports and pushes results independently.
   benchmark:
     needs: publish-pr
+    strategy:
+      matrix:
+        version: ${{ fromJSON(needs.publish-pr.outputs.versions_json) }}
     uses: ./.github/workflows/benchmark.yml
     with:
-      versions: ${{ needs.publish-pr.outputs.versions }}
+      versions: ${{ matrix.version }}
       runs: ${{ inputs.runs }}
       filter: ${{ inputs.filter }}
     secrets: inherit
