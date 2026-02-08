@@ -112,9 +112,7 @@ export default memo(function BenchmarkChart({
         title: { text: yAxisTitle },
         zeroline: true,
         automargin: false,
-        range: config.yAxisAtZero
-          ? [0, Math.max(...avgs) * 1.1]
-          : undefined,
+        rangemode: config.yAxisAtZero ? ("tozero" as const) : undefined,
       },
       legend: {
         orientation: "h" as const,
