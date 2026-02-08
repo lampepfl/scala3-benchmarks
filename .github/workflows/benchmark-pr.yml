@@ -128,14 +128,23 @@ jobs:
           RUNS_ARRAY=$(python3 -c "import sys, json; print(json.dumps(list(range(1, int(sys.argv[1]) + 1))))" "${{ inputs.runs }}")
           echo "runs_array=$RUNS_ARRAY" >> "$GITHUB_OUTPUT"
 
-  # Note: This relies on the PR compiler being published into the local machine cache
-  # (Ivy/Coursier) and the subsequent benchmark jobs running on the same self-hosted
-  # runner machine. GitHub does not guarantee runner affinity between jobs.
-  # If/when multiple runners share the [self-hosted, benchmarks] label, we'll need a
-  # different way to make the published artifacts available (or merge publish+benchmark
-  # into one job / use a remote repository / use concurrency + single runner).
+  # Note: This relies on the PR compiler being published into the local machine
+  # cache (Ivy/Coursier) and the subsequent benchmark jobs running on the same
+  # self-hosted runner machine. GitHub does not guarantee runner affinity
+  # between jobs. If/when multiple runners share the [self-hosted, benchmarks]
+  # label, we'll need a different way to make the published artifacts available
+  # (or merge publish+benchmark into one job / use a remote repository / use
+  # concurrency + single runner).
   #
   # Note: Each job imports and pushes results independently.
+  #
+  # Note: the benchmark.yml workflow could be called with a list of versions to
+  # benchmark in one job, but we run them separately with a matrix because a
+  # single long-running job would time out after 6 hours. This is a bug in
+  # GitHub actions. We should normally be able to run jobs on self-hosted
+  # runners for up to 5 days, but this doesn't work with "workflow_call". See
+  # https://github.com/orgs/community/discussions/50481 and
+  # https://docs.github.com/en/actions/reference/limits.
   benchmark:
     needs: publish-pr
     strategy:
