@@ -104,6 +104,7 @@ export default memo(function BenchmarkChart({
       xaxis: {
         title: { text: "Version" },
         type: "date" as const,
+        tickformat: "%b %d, %Y",
         zeroline: false,
         automargin: false,
       },
