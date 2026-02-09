@@ -49,6 +49,9 @@ jobs:
     runs-on: [self-hosted, benchmarks]
     timeout-minutes: 4320 # 3 days
     steps:
+      - name: Get timestamp
+        id: timestamp
+        run: echo "ts=$(date +'%Y%m%d-%H%M%S')" >> "$GITHUB_OUTPUT"
 
       - uses: actions/checkout@v4
 
@@ -121,5 +124,5 @@ jobs:
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: benchmark-results
+          name: benchmark-results-${{ inputs.versions }}-${{ steps.timestamp.outputs.ts }}
           path: results/
