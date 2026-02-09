@@ -43,14 +43,18 @@ export default memo(function BenchmarkChart({
   data,
   config,
 }: BenchmarkChartProps) {
-  const versions = useMemo(() => data.map((r) => r.version), [data]);
-  const avgs = useMemo(() => data.map((r) => r.avg), [data]);
-  const indices = useMemo(() => data.map((_, i) => i), [data]);
+  const sorted = useMemo(
+    () => [...data].sort((a, b) => extractDate(a.version).localeCompare(extractDate(b.version))),
+    [data],
+  );
+  const versions = useMemo(() => sorted.map((r) => r.version), [sorted]);
+  const dates = useMemo(() => sorted.map((r) => extractDate(r.version)), [sorted]);
+  const avgs = useMemo(() => sorted.map((r) => r.avg), [sorted]);
 
   const traces = useMemo(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const scatterTrace: any = {
-      x: indices,
+      x: dates,
       y: avgs,
       customdata: versions,
       hovertemplate: "<b>%{customdata}</b><br>avg: %{y}<extra></extra>",
@@ -62,8 +66,8 @@ export default memo(function BenchmarkChart({
     if (config.errorBars) {
       scatterTrace.error_y = {
         type: "data",
-        array: data.map((r) => r.max - r.avg),
-        arrayminus: data.map((r) => r.avg - r.min),
+        array: sorted.map((r) => r.max - r.avg),
+        arrayminus: sorted.map((r) => r.avg - r.min),
         visible: true,
       };
     }
@@ -72,7 +76,7 @@ export default memo(function BenchmarkChart({
 
     if (config.movingAverage) {
       result.push({
-        x: indices,
+        x: dates,
         y: computeMovingAverage(avgs),
         mode: "lines" as const,
         type: "scatter" as const,
@@ -81,13 +85,9 @@ export default memo(function BenchmarkChart({
     }
 
     return result;
-  }, [data, indices, avgs, versions, config.errorBars, config.movingAverage]);
+  }, [sorted, dates, avgs, versions, config.errorBars, config.movingAverage]);
 
   const layout = useMemo(() => {
-    const tickInterval = Math.max(1, Math.ceil(indices.length / 5));
-    const tickIndices = indices.filter((_, i) => i % tickInterval === 0);
-    const tickLabels = tickIndices.map((i) => extractDate(versions[i]));
-
     const yAxisTitle =
       config.metric === "time"
         ? "Time (ms)"
@@ -103,8 +103,7 @@ export default memo(function BenchmarkChart({
       title: { text: title },
       xaxis: {
         title: { text: "Version" },
-        tickvals: tickIndices,
-        ticktext: tickLabels,
+        type: "date" as const,
         zeroline: false,
         automargin: false,
       },
@@ -123,7 +122,7 @@ export default memo(function BenchmarkChart({
       },
       margin: { t: 40, b: 60, l: 60, r: 30 },
     };
-  }, [title, indices, versions, avgs, config.metric, config.yAxisAtZero]);
+  }, [title, config.metric, config.yAxisAtZero]);
 
   const handleClick = useCallback(
     (event: Plotly.PlotMouseEvent) => {
