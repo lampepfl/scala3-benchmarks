@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { SelectPanel, Button } from "@primer/react";
-import type { SelectPanelItemInput } from "@primer/react";
+import { ActionList, ActionMenu } from "@primer/react";
 
 interface DisplayOptionsProps {
   yAxisAtZero: boolean;
@@ -9,10 +7,10 @@ interface DisplayOptionsProps {
   onChange: (key: "yAxisAtZero" | "movingAverage" | "errorBars", value: boolean) => void;
 }
 
-const OPTIONS: { id: string; key: "yAxisAtZero" | "movingAverage" | "errorBars"; text: string }[] = [
-  { id: "yAxisAtZero", key: "yAxisAtZero", text: "Y-axis at 0" },
-  { id: "movingAverage", key: "movingAverage", text: "Moving average" },
-  { id: "errorBars", key: "errorBars", text: "Error bars" },
+const OPTIONS: { key: "yAxisAtZero" | "movingAverage" | "errorBars"; label: string }[] = [
+  { key: "yAxisAtZero", label: "Y-axis at 0" },
+  { key: "movingAverage", label: "Moving average" },
+  { key: "errorBars", label: "Error bars" },
 ];
 
 export default function DisplayOptions({
@@ -21,36 +19,26 @@ export default function DisplayOptions({
   errorBars,
   onChange,
 }: DisplayOptionsProps) {
-  const [open, setOpen] = useState(false);
-
   const values: Record<string, boolean> = { yAxisAtZero, movingAverage, errorBars };
 
-  const items: SelectPanelItemInput[] = OPTIONS.map((opt) => ({
-    text: opt.text,
-    id: opt.id,
-  }));
-
-  const selected = items.filter((item) => values[item.id as string]);
-
   return (
-    <SelectPanel
-      title="Display options"
-      renderAnchor={({ ...anchorProps }) => (
-        <Button {...anchorProps} size="small">Display options</Button>
-      )}
-      open={open}
-      onOpenChange={(newOpen) => setOpen(newOpen)}
-      onFilterChange={() => {}}
-      items={items}
-      selected={selected}
-      onSelectedChange={(selectedItems: SelectPanelItemInput[]) => {
-        for (const opt of OPTIONS) {
-          const isSelected = selectedItems.some((s) => s.id === opt.id);
-          if (isSelected !== values[opt.id]) {
-            onChange(opt.key, isSelected);
-          }
-        }
-      }}
-    />
+    <ActionMenu>
+      <ActionMenu.Button size="small">Display options</ActionMenu.Button>
+      <ActionMenu.Overlay>
+        <ActionList selectionVariant="multiple" role="menu">
+          {OPTIONS.map((opt) => (
+            <ActionList.Item
+              key={opt.key}
+              role="menuitemcheckbox"
+              selected={values[opt.key]}
+              aria-checked={values[opt.key]}
+              onSelect={() => onChange(opt.key, !values[opt.key])}
+            >
+              {opt.label}
+            </ActionList.Item>
+          ))}
+        </ActionList>
+      </ActionMenu.Overlay>
+    </ActionMenu>
   );
 }
