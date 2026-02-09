@@ -79,14 +79,14 @@ def appendStats(file: os.Path, version: String, stats: Stats): Unit =
       ).merge(stats)
       combinedStats.toMap + ("version" -> version)
 
-  // Write back all rows (others + updatedRow) to CSV
+  // Write back all rows (others + updatedRow) sorted by version
+  val allRows = (others :+ updatedRow).sortBy(_("version"))
   os.makeDir.all(file / os.up) // Ensure parent directory exists
   val writer = CSVWriter.open(file.toIO)
   val header = Seq("version", "count", "min", "avg", "max")
   writer.writeRow(header)
-  for row <- others do
+  for row <- allRows do
     writer.writeRow(header.map(h => row(h)))
-  writer.writeRow(header.map(h => updatedRow(h)))
   writer.close()
 
 def formatSigFigs(d: Double, sigFigs: Int = 4): String =
