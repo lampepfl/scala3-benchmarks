@@ -56,8 +56,8 @@ export default memo(function BenchmarkChart({
     const scatterTrace: any = {
       x: dates,
       y: avgs,
-      customdata: versions,
-      hovertemplate: "<b>%{customdata}</b><br>avg: %{y}<extra></extra>",
+      customdata: sorted.map((r) => [r.version, r.count]),
+      hovertemplate: "<b>%{customdata[0]}</b><br>avg: %{y}<br>count: %{customdata[1]}<extra></extra>",
       mode: "markers",
       type: "scatter",
       name: "Average",
