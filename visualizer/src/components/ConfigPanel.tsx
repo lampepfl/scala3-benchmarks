@@ -29,7 +29,7 @@ export default function ConfigPanel({
       direction="horizontal"
       gap="condensed"
       wrap="wrap"
-      style={{ marginBottom: 16 }}
+      className="mb-3"
     >
       <SelectorOption
         label="Machine"

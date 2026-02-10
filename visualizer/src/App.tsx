@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import {
   BaseStyles,
   ThemeProvider,
-  Heading,
+  PageHeader,
   Spinner,
   Stack,
   UnderlineNav,
@@ -196,12 +196,13 @@ export default function App() {
   return (
     <ThemeProvider>
       <BaseStyles>
-        <div style={{ padding: 24 }}>
-          <Heading as="h1" style={{ marginBottom: 16 }}>
-            Scala 3 Benchmarks
-          </Heading>
-
-          <div style={{ marginBottom: 16 }}>
+          <div className="px-4 pt-3">
+            <PageHeader>
+              <PageHeader.TitleArea>
+                <PageHeader.Title>Scala 3 Benchmarks</PageHeader.Title>
+              </PageHeader.TitleArea>
+            </PageHeader>
+          </div>
           <UnderlineNav aria-label="Views">
             <UnderlineNav.Item
               as="button"
@@ -225,8 +226,8 @@ export default function App() {
               Compare
             </UnderlineNav.Item>
           </UnderlineNav>
-          </div>
 
+          <div className="p-4">
           <ConfigPanel
             config={config}
             onConfigChange={handleConfigChange}
@@ -274,7 +275,7 @@ export default function App() {
           ) : (
             <BenchmarkChartList data={data} config={config} />
           )}
-        </div>
+          </div>
       </BaseStyles>
     </ThemeProvider>
   );

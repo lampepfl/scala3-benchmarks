@@ -14,7 +14,7 @@ export default function VersionSelector({
   const items = availableVersions.map((v) => ({ text: v, id: v }));
 
   return (
-    <div style={{ marginBottom: 16, maxWidth: 600 }}>
+    <div className="mb-3" style={{ maxWidth: 600 }}>
       <FormControl>
         <FormControl.Label>Versions to compare</FormControl.Label>
         <Autocomplete>
@@ -35,7 +35,7 @@ export default function VersionSelector({
         </Autocomplete>
       </FormControl>
       {selectedVersions.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 8 }}>
+        <div className="mt-2 d-flex flex-wrap" style={{ gap: 4 }}>
           {selectedVersions.map((version) => (
             <Token
               key={version}
