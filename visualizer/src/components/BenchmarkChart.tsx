@@ -121,7 +121,7 @@ export default memo(function BenchmarkChart({
         xanchor: "right" as const,
         x: 1,
       },
-      margin: { t: 40, b: 60, l: 60, r: 30 },
+      margin: { t: 80, b: 60, l: 60, r: 30 },
     };
   }, [title, config.metric, config.yAxisAtZero]);
 

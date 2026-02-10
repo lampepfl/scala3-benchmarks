@@ -99,7 +99,7 @@ export default memo(function ComparisonChart({
         xanchor: "right" as const,
         x: 1,
       },
-      margin: { t: 40, b: 100, l: 60, r: 30 },
+      margin: { t: 120, b: 100, l: 60, r: 30 },
     }),
     [suiteName],
   );
