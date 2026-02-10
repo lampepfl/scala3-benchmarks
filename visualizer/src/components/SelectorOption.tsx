@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { SelectPanel, Button } from "@primer/react";
+import { TriangleDownIcon } from "@primer/octicons-react";
 import type { SelectPanelItemInput } from "@primer/react";
 
 interface SelectorOptionProps {
@@ -31,8 +32,9 @@ export default function SelectorOption({
     <SelectPanel
       title={`Select ${label}`}
       renderAnchor={({ ...anchorProps }) => (
-        <Button {...anchorProps} size="small">
-          {label}: {selected || "..."}
+        <Button {...anchorProps} size="small" trailingAction={TriangleDownIcon}>
+          <span className="color-fg-muted">{label}:</span>{" "}
+          <span className="color-fg-default">{selected || "..."}</span>
         </Button>
       )}
       open={open}
