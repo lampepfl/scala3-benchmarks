@@ -196,6 +196,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <BaseStyles>
+          <div className="color-bg-subtle">
           <div className="px-4 pt-3">
             <PageHeader>
               <PageHeader.TitleArea>
@@ -226,6 +227,7 @@ export default function App() {
               Compare
             </UnderlineNav.Item>
           </UnderlineNav>
+          </div>
 
           <div className="p-4">
           <ConfigPanel
