@@ -5,13 +5,17 @@ import {
   Heading,
   Spinner,
   Stack,
+  UnderlineNav,
 } from "@primer/react";
-import type { Config, AllBenchmarks } from "./types";
+import type { Config, AllBenchmarks, ComparisonData } from "./types";
 import { DEFAULT_CONFIG } from "./types";
-import { fetchDataIndex, fetchAllBenchmarks } from "./api";
+import { fetchDataIndex, fetchAllBenchmarks, fetchComparisonData } from "./api";
 import type { DataIndex } from "./api";
+import { useHashRouter } from "./hooks/useHashRouter";
 import ConfigPanel from "./components/ConfigPanel";
 import BenchmarkChartList from "./components/BenchmarkChartList";
+import VersionSelector from "./components/VersionSelector";
+import ComparisonChartList from "./components/ComparisonChartList";
 
 const STORAGE_KEY = "visualizer-config";
 
@@ -54,10 +58,16 @@ function pickDefault(current: string, available: string[]): string {
 export default function App() {
   const [config, setConfig] = useState<Config>(loadConfig);
   const [index, setIndex] = useState<DataIndex | null>(null);
+  const [route, setRoute] = useHashRouter();
 
+  // Time series state
   const [data, setData] = useState<AllBenchmarks>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Comparison state
+  const [compareData, setCompareData] = useState<ComparisonData>(new Map());
+  const [compareLoading, setCompareLoading] = useState(false);
 
   const handleConfigChange = useCallback((newConfig: Config) => {
     setConfig((prev) => {
@@ -98,7 +108,7 @@ export default function App() {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Fetch benchmark CSVs when config or index changes
+  // Fetch aggregated benchmark CSVs when config or index changes (time series view)
   useEffect(() => {
     if (
       !index ||
@@ -133,6 +143,41 @@ export default function App() {
     };
   }, [index, config.machine, config.jvm, config.minorVersion, config.metric]);
 
+  // Fetch raw comparison data when in compare mode and versions change
+  useEffect(() => {
+    if (
+      route.view !== "compare" ||
+      route.compareVersions.length < 2 ||
+      !index ||
+      !config.machine ||
+      !config.jvm ||
+      !config.minorVersion
+    )
+      return;
+    let active = true;
+    setCompareLoading(true);
+    fetchComparisonData(
+      config.machine,
+      config.jvm,
+      config.minorVersion,
+      route.compareVersions,
+      index,
+    )
+      .then((result) => {
+        if (!active) return;
+        setCompareData(result);
+        setCompareLoading(false);
+      })
+      .catch((e) => {
+        if (!active) return;
+        setError(e.message);
+        setCompareLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [route.view, route.compareVersions, config.machine, config.jvm, config.minorVersion, index]);
+
   // Derive available options from the index
   const machines = index?.machines ?? [];
   const jvms = index?.jvms[config.machine] ?? [];
@@ -141,6 +186,12 @@ export default function App() {
     index?.metrics[
       `${config.machine}/${config.jvm}/${config.minorVersion}`
     ] ?? [];
+  const rawVersions =
+    index?.rawVersions[
+      `${config.machine}/${config.jvm}/${config.minorVersion}`
+    ] ?? [];
+
+  const isCompare = route.view === "compare";
 
   return (
     <ThemeProvider>
@@ -150,6 +201,32 @@ export default function App() {
             Scala 3 Benchmarks
           </Heading>
 
+          <div style={{ marginBottom: 16 }}>
+          <UnderlineNav aria-label="Views">
+            <UnderlineNav.Item
+              as="button"
+              aria-current={!isCompare ? "page" : undefined}
+              onSelect={() =>
+                setRoute({ view: "timeseries", compareVersions: [] })
+              }
+            >
+              Time Series
+            </UnderlineNav.Item>
+            <UnderlineNav.Item
+              as="button"
+              aria-current={isCompare ? "page" : undefined}
+              onSelect={() =>
+                setRoute({
+                  view: "compare",
+                  compareVersions: route.compareVersions,
+                })
+              }
+            >
+              Compare
+            </UnderlineNav.Item>
+          </UnderlineNav>
+          </div>
+
           <ConfigPanel
             config={config}
             onConfigChange={handleConfigChange}
@@ -157,13 +234,37 @@ export default function App() {
             jvms={jvms}
             versions={versions}
             metrics={metrics}
+            hideMetric={isCompare}
+            hideDisplayOptions={isCompare}
           />
 
           {error && (
             <p style={{ color: "var(--fgColor-danger)" }}>{error}</p>
           )}
 
-          {loading ? (
+          {isCompare ? (
+            <>
+              <VersionSelector
+                availableVersions={rawVersions}
+                selectedVersions={route.compareVersions}
+                onSelectedVersionsChange={(newVersions) =>
+                  setRoute({
+                    view: "compare",
+                    compareVersions: newVersions,
+                  })
+                }
+              />
+              {route.compareVersions.length < 2 ? (
+                <p>Select at least 2 versions to compare.</p>
+              ) : (
+                <ComparisonChartList
+                  data={compareData}
+                  versions={route.compareVersions}
+                  loading={compareLoading}
+                />
+              )}
+            </>
+          ) : loading ? (
             <Stack align="center" padding="spacious">
               <Spinner size="large" />
               <span>Loading benchmark data...</span>

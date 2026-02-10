@@ -10,6 +10,8 @@ interface ConfigPanelProps {
   jvms: string[];
   versions: string[];
   metrics: string[];
+  hideMetric?: boolean;
+  hideDisplayOptions?: boolean;
 }
 
 export default function ConfigPanel({
@@ -19,6 +21,8 @@ export default function ConfigPanel({
   jvms,
   versions,
   metrics,
+  hideMetric,
+  hideDisplayOptions,
 }: ConfigPanelProps) {
   return (
     <Stack
@@ -39,12 +43,14 @@ export default function ConfigPanel({
         selected={config.jvm}
         onSelectedChange={(v) => onConfigChange({ ...config, jvm: v })}
       />
-      <SelectorOption
-        label="Metric"
-        items={metrics}
-        selected={config.metric}
-        onSelectedChange={(v) => onConfigChange({ ...config, metric: v })}
-      />
+      {!hideMetric && (
+        <SelectorOption
+          label="Metric"
+          items={metrics}
+          selected={config.metric}
+          onSelectedChange={(v) => onConfigChange({ ...config, metric: v })}
+        />
+      )}
       <SelectorOption
         label="Minor version"
         items={versions}
@@ -53,14 +59,16 @@ export default function ConfigPanel({
           onConfigChange({ ...config, minorVersion: v })
         }
       />
-      <DisplayOptions
-        yAxisAtZero={config.yAxisAtZero}
-        movingAverage={config.movingAverage}
-        errorBars={config.errorBars}
-        onChange={(key, value) =>
-          onConfigChange({ ...config, [key]: value })
-        }
-      />
+      {!hideDisplayOptions && (
+        <DisplayOptions
+          yAxisAtZero={config.yAxisAtZero}
+          movingAverage={config.movingAverage}
+          errorBars={config.errorBars}
+          onChange={(key, value) =>
+            onConfigChange({ ...config, [key]: value })
+          }
+        />
+      )}
     </Stack>
   );
 }

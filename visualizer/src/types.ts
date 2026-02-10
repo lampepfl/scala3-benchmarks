@@ -31,3 +31,14 @@ export type SuiteBenchmarks = Map<string, AggregatedRow[]>;
 
 /** Map from suite name to its benchmarks */
 export type AllBenchmarks = Map<string, SuiteBenchmarks>;
+
+export type ViewMode = "timeseries" | "compare";
+
+/** Map: benchmark → individual measurements */
+export type RawMeasurements = Map<string, number[]>;
+
+/** Map: suite → benchmarks */
+export type RawSuiteData = Map<string, RawMeasurements>;
+
+/** Map: version → suites */
+export type ComparisonData = Map<string, RawSuiteData>;
