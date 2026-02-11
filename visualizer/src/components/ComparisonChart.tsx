@@ -2,6 +2,7 @@ import { memo, useMemo } from "react";
 import createPlotlyComponent from "react-plotly.js/factory";
 import Plotly from "plotly.js-dist-min";
 import type { RawMeasurements } from "../types";
+import { plotlyColors } from "../plotlyTheme";
 
 const Plot = createPlotlyComponent(Plotly);
 
@@ -31,7 +32,6 @@ export default memo(function ComparisonChart({
   versions,
   colorMode,
 }: ComparisonChartProps) {
-  const isDark = colorMode === "night";
   const traces = useMemo(() => {
     const refData = versionData.get(versions[0]);
     if (!refData) return [];
@@ -76,26 +76,25 @@ export default memo(function ComparisonChart({
   }, [versionData, versions]);
 
   const layout = useMemo(() => {
-    const fontColor = isDark ? "#c9d1d9" : "#1f2328";
-    const gridColor = isDark ? "#30363d" : "#e1e4e8";
-    const lineColor = isDark ? "#c9d1d9" : "black";
+    const { font, grid, colorway } = plotlyColors(colorMode);
 
     return {
       title: { text: suiteName },
       paper_bgcolor: "transparent",
       plot_bgcolor: "transparent",
-      font: { color: fontColor },
+      font: { color: font },
+      colorway,
       yaxis: {
         title: { text: "Relative to first version" },
         zeroline: false,
-        gridcolor: gridColor,
-        linecolor: gridColor,
-        tickcolor: gridColor,
+        gridcolor: grid,
+        linecolor: grid,
+        tickcolor: grid,
       },
       xaxis: {
-        gridcolor: gridColor,
-        linecolor: gridColor,
-        tickcolor: gridColor,
+        gridcolor: grid,
+        linecolor: grid,
+        tickcolor: grid,
       },
       shapes: [
         {
@@ -106,7 +105,7 @@ export default memo(function ComparisonChart({
           y1: 1,
           xref: "paper" as const,
           yref: "y" as const,
-          line: { color: lineColor, width: 1 },
+          line: { color: font, width: 1 },
         },
       ],
       boxmode: "group" as const,
@@ -119,7 +118,7 @@ export default memo(function ComparisonChart({
       },
       margin: { t: 120, b: 100, l: 60, r: 30 },
     };
-  }, [suiteName, isDark]);
+  }, [suiteName, colorMode]);
 
   return (
     <Plot
