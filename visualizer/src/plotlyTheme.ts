@@ -29,6 +29,7 @@ export function plotlyColors(colorMode: ColorMode) {
   return {
     font: isDark ? "#c9d1d9" : "#1f2328",
     grid: isDark ? "#30363d" : "#e1e4e8",
+    background: isDark ? "rgb(13, 17, 23)" : "#fff",
     colorway: isDark ? DARK_COLORWAY : LIGHT_COLORWAY,
   };
 }

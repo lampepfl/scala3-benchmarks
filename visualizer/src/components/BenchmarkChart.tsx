@@ -91,7 +91,7 @@ export default memo(function BenchmarkChart({
   }, [sorted, dates, avgs, versions, config.errorBars, config.movingAverage]);
 
   const layout = useMemo(() => {
-    const { font, grid, colorway } = plotlyColors(colorMode);
+    const colors = plotlyColors(colorMode);
     const yAxisTitle =
       config.metric === "time"
         ? "Time (ms)"
@@ -105,29 +105,29 @@ export default memo(function BenchmarkChart({
 
     return {
       title: { text: title },
-      paper_bgcolor: "transparent",
-      plot_bgcolor: "transparent",
-      font: { color: font },
-      colorway,
+      paper_bgcolor: colors.background,
+      plot_bgcolor: colors.background,
+      font: { color: colors.font },
+      colorway: colors.colorway,
       xaxis: {
         title: { text: "Version" },
         type: "date" as const,
         tickformat: "%b %d, %Y",
         zeroline: false,
         automargin: false,
-        gridcolor: grid,
-        linecolor: grid,
-        tickcolor: grid,
+        gridcolor: colors.grid,
+        linecolor: colors.grid,
+        tickcolor: colors.grid,
       },
       yaxis: {
         title: { text: yAxisTitle },
         zeroline: true,
         automargin: false,
         rangemode: config.yAxisAtZero ? ("tozero" as const) : undefined,
-        gridcolor: grid,
-        zerolinecolor: grid,
-        linecolor: grid,
-        tickcolor: grid,
+        gridcolor: colors.grid,
+        zerolinecolor: colors.grid,
+        linecolor: colors.grid,
+        tickcolor: colors.grid,
       },
       legend: {
         orientation: "h" as const,
