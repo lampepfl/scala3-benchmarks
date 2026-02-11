@@ -6,12 +6,14 @@ interface ComparisonChartListProps {
   data: ComparisonData;
   versions: string[];
   loading: boolean;
+  colorMode: "day" | "night";
 }
 
 export default function ComparisonChartList({
   data,
   versions,
   loading,
+  colorMode,
 }: ComparisonChartListProps) {
   if (loading) {
     return (
@@ -50,6 +52,7 @@ export default function ComparisonChartList({
             suiteName={suiteName}
             versionData={versionData}
             versions={versions}
+            colorMode={colorMode}
           />
         );
       })}

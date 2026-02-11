@@ -5,11 +5,13 @@ import BenchmarkChart from "./BenchmarkChart";
 interface BenchmarkChartListProps {
   data: AllBenchmarks;
   config: Config;
+  colorMode: "day" | "night";
 }
 
 export default function BenchmarkChartList({
   data,
   config,
+  colorMode,
 }: BenchmarkChartListProps) {
   // Sort suites alphabetically
   const sortedSuites = Array.from(data.entries()).sort(([a], [b]) =>
@@ -35,6 +37,7 @@ export default function BenchmarkChartList({
                 title={benchmarkName}
                 data={rows}
                 config={config}
+                colorMode={colorMode}
               />
             ))}
           </div>

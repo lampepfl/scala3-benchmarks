@@ -11,6 +11,7 @@ interface ComparisonChartProps {
   versionData: Map<string, RawMeasurements>;
   /** Ordered list of versions (first is the reference) */
   versions: string[];
+  colorMode: "day" | "night";
 }
 
 function median(arr: number[]): number {
@@ -28,7 +29,9 @@ export default memo(function ComparisonChart({
   suiteName,
   versionData,
   versions,
+  colorMode,
 }: ComparisonChartProps) {
+  const isDark = colorMode === "night";
   const traces = useMemo(() => {
     const refData = versionData.get(versions[0]);
     if (!refData) return [];
@@ -72,12 +75,27 @@ export default memo(function ComparisonChart({
     return traces;
   }, [versionData, versions]);
 
-  const layout = useMemo(
-    () => ({
+  const layout = useMemo(() => {
+    const fontColor = isDark ? "#c9d1d9" : "#1f2328";
+    const gridColor = isDark ? "#30363d" : "#e1e4e8";
+    const lineColor = isDark ? "#c9d1d9" : "black";
+
+    return {
       title: { text: suiteName },
+      paper_bgcolor: "transparent",
+      plot_bgcolor: "transparent",
+      font: { color: fontColor },
       yaxis: {
         title: { text: "Relative to first version" },
         zeroline: false,
+        gridcolor: gridColor,
+        linecolor: gridColor,
+        tickcolor: gridColor,
+      },
+      xaxis: {
+        gridcolor: gridColor,
+        linecolor: gridColor,
+        tickcolor: gridColor,
       },
       shapes: [
         {
@@ -88,7 +106,7 @@ export default memo(function ComparisonChart({
           y1: 1,
           xref: "paper" as const,
           yref: "y" as const,
-          line: { color: "black", width: 1 },
+          line: { color: lineColor, width: 1 },
         },
       ],
       boxmode: "group" as const,
@@ -100,9 +118,8 @@ export default memo(function ComparisonChart({
         x: 1,
       },
       margin: { t: 120, b: 100, l: 60, r: 30 },
-    }),
-    [suiteName],
-  );
+    };
+  }, [suiteName, isDark]);
 
   return (
     <Plot

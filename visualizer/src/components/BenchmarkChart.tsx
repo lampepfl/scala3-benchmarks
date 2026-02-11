@@ -9,6 +9,7 @@ interface BenchmarkChartProps {
   title: string;
   data: AggregatedRow[];
   config: Config;
+  colorMode: "day" | "night";
 }
 
 function computeMovingAverage(values: number[], windowSize = 10): number[] {
@@ -42,7 +43,9 @@ export default memo(function BenchmarkChart({
   title,
   data,
   config,
+  colorMode,
 }: BenchmarkChartProps) {
+  const isDark = colorMode === "night";
   const sorted = useMemo(
     () => [...data].sort((a, b) => extractDate(a.version).localeCompare(extractDate(b.version))),
     [data],
@@ -99,20 +102,33 @@ export default memo(function BenchmarkChart({
               ? "JIT time (ms)"
               : config.metric;
 
+    const fontColor = isDark ? "#c9d1d9" : "#1f2328";
+    const gridColor = isDark ? "#30363d" : "#e1e4e8";
+
     return {
       title: { text: title },
+      paper_bgcolor: "transparent",
+      plot_bgcolor: "transparent",
+      font: { color: fontColor },
       xaxis: {
         title: { text: "Version" },
         type: "date" as const,
         tickformat: "%b %d, %Y",
         zeroline: false,
         automargin: false,
+        gridcolor: gridColor,
+        linecolor: gridColor,
+        tickcolor: gridColor,
       },
       yaxis: {
         title: { text: yAxisTitle },
         zeroline: true,
         automargin: false,
         rangemode: config.yAxisAtZero ? ("tozero" as const) : undefined,
+        gridcolor: gridColor,
+        zerolinecolor: gridColor,
+        linecolor: gridColor,
+        tickcolor: gridColor,
       },
       legend: {
         orientation: "h" as const,
@@ -123,7 +139,7 @@ export default memo(function BenchmarkChart({
       },
       margin: { t: 80, b: 60, l: 60, r: 30 },
     };
-  }, [title, config.metric, config.yAxisAtZero]);
+  }, [title, config.metric, config.yAxisAtZero, isDark]);
 
   const handleClick = useCallback(
     (event: Plotly.PlotMouseEvent) => {

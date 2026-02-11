@@ -2,11 +2,13 @@ import { useEffect, useState, useCallback } from "react";
 import {
   BaseStyles,
   ThemeProvider,
+  IconButton,
   PageHeader,
   Spinner,
   Stack,
   UnderlineNav,
 } from "@primer/react";
+import { MoonIcon, SunIcon } from "@primer/octicons-react";
 import type { Config, AllBenchmarks, ComparisonData } from "./types";
 import { DEFAULT_CONFIG } from "./types";
 import { fetchDataIndex, fetchAllBenchmarks, fetchComparisonData } from "./api";
@@ -18,6 +20,19 @@ import VersionSelector from "./components/VersionSelector";
 import ComparisonChartList from "./components/ComparisonChartList";
 
 const STORAGE_KEY = "visualizer-config";
+const THEME_KEY = "visualizer-color-mode";
+
+type ColorMode = "day" | "night";
+
+function loadColorMode(): ColorMode {
+  try {
+    const stored = localStorage.getItem(THEME_KEY);
+    if (stored === "day" || stored === "night") return stored;
+  } catch {
+    // ignore
+  }
+  return "day";
+}
 
 function loadConfig(): Config {
   try {
@@ -56,6 +71,7 @@ function pickDefault(current: string, available: string[]): string {
 }
 
 export default function App() {
+  const [colorMode, setColorMode] = useState<ColorMode>(loadColorMode);
   const [config, setConfig] = useState<Config>(loadConfig);
   const [index, setIndex] = useState<DataIndex | null>(null);
   const [route, setRoute] = useHashRouter();
@@ -193,15 +209,31 @@ export default function App() {
 
   const isCompare = route.view === "compare";
 
+  const toggleColorMode = useCallback(() => {
+    setColorMode((prev) => {
+      const next = prev === "day" ? "night" : "day";
+      localStorage.setItem(THEME_KEY, next);
+      return next;
+    });
+  }, []);
+
   return (
-    <ThemeProvider>
+    <ThemeProvider colorMode={colorMode}>
       <BaseStyles>
+        <div className="color-bg-default" style={{ minHeight: "100vh" }}>
           <div className="color-bg-subtle">
           <div className="px-4 pt-3">
             <PageHeader>
               <PageHeader.TitleArea>
                 <PageHeader.Title>Scala 3 Benchmarks</PageHeader.Title>
               </PageHeader.TitleArea>
+              <PageHeader.Actions>
+                <IconButton
+                  icon={colorMode === "day" ? MoonIcon : SunIcon}
+                  aria-label="Toggle color mode"
+                  onClick={toggleColorMode}
+                />
+              </PageHeader.Actions>
             </PageHeader>
           </div>
           <UnderlineNav aria-label="Views">
@@ -264,6 +296,7 @@ export default function App() {
                   data={compareData}
                   versions={route.compareVersions}
                   loading={compareLoading}
+                  colorMode={colorMode}
                 />
               )}
             </>
@@ -275,9 +308,10 @@ export default function App() {
           ) : data.size === 0 ? (
             <p>No benchmark data found for this configuration.</p>
           ) : (
-            <BenchmarkChartList data={data} config={config} />
+            <BenchmarkChartList data={data} config={config} colorMode={colorMode} />
           )}
           </div>
+        </div>
       </BaseStyles>
     </ThemeProvider>
   );
