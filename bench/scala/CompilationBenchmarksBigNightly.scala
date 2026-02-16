@@ -10,6 +10,7 @@ class CompilationBenchmarksBigNightly extends CompilationBenchmarks:
     assert(Config.caskApp.sources.size == 1)
     DottyCompiler.compile(Config.caskApp.sources, Config.caskApp.options, outDir)
 
+  @Warmup(iterations = 170)
   @Benchmark
   def dottyUtils =
     assert(Config.dottyUtil.sources.size == 34)
@@ -20,13 +21,13 @@ class CompilationBenchmarksBigNightly extends CompilationBenchmarks:
     assert(Config.fansi.sources.size == 2)
     DottyCompiler.compile(Config.fansi.sources, Config.fansi.options, outDir)
 
-  @Warmup(iterations = 100)
+  @Warmup(iterations = 120)
   @Benchmark
   def re2s =
     assert(Config.re2s.sources.size == 17)
     DottyCompiler.compile(Config.re2s.sources, Config.re2s.options, outDir)
 
-  @Warmup(iterations = 80)
+  @Warmup(iterations = 100)
   @Benchmark
   def parallelCollections =
     assert(Config.parallelCollections.sources.size == 86)
