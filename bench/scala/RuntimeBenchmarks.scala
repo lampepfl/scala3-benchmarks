@@ -6,7 +6,7 @@ import org.openjdk.jmh.annotations.{BenchmarkMode, Fork, Measurement, OutputTime
 
 @Fork(value = 1, jvmArgsPrepend = Array("-Xms2G", "-Xmx2G"))
 @Warmup(iterations = 20)
-@Measurement(iterations = 10)
+@Measurement(iterations = 20)
 @BenchmarkMode(Array(org.openjdk.jmh.annotations.Mode.SingleShotTime))
 @State(Scope.Benchmark)
 @OutputTimeUnit(MILLISECONDS)

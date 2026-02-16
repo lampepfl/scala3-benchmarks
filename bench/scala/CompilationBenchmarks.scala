@@ -21,7 +21,7 @@ import org.openjdk.jmh.annotations.{
   jvmArgsPrepend = Array("-XX:+PrintCommandLineFlags", "-Xms8G", "-Xmx8G", "--sun-misc-unsafe-memory-access=allow"),
 )
 @Warmup(iterations = 150)
-@Measurement(iterations = 10)
+@Measurement(iterations = 20)
 @BenchmarkMode(Array(org.openjdk.jmh.annotations.Mode.SingleShotTime))
 @State(Scope.Benchmark)
 @OutputTimeUnit(MILLISECONDS)
