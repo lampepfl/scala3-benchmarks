@@ -76,12 +76,12 @@ export default memo(function ComparisonChart({
   }, [versionData, versions]);
 
   const layout = useMemo(() => {
-    const { font, grid, colorway } = plotlyColors(colorMode);
+    const { font, grid, background, colorway } = plotlyColors(colorMode);
 
     return {
       title: { text: suiteName },
-      paper_bgcolor: "transparent",
-      plot_bgcolor: "transparent",
+      paper_bgcolor: background,
+      plot_bgcolor: background,
       font: { color: font },
       colorway,
       yaxis: {
