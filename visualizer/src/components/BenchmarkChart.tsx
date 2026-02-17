@@ -3,6 +3,7 @@ import createPlotlyComponent from "react-plotly.js/factory";
 import Plotly from "plotly.js-dist-min";
 import type { AggregatedRow, Config } from "../types";
 import { plotlyColors } from "../plotlyTheme";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 const Plot = createPlotlyComponent(Plotly);
 
@@ -46,6 +47,7 @@ export default memo(function BenchmarkChart({
   config,
   colorMode,
 }: BenchmarkChartProps) {
+  const isMobile = useIsMobile();
   const sorted = useMemo(
     () => [...data].sort((a, b) => extractDate(a.version).localeCompare(extractDate(b.version))),
     [data],
@@ -136,9 +138,11 @@ export default memo(function BenchmarkChart({
         xanchor: "right" as const,
         x: 1,
       },
-      margin: { t: 80, b: 60, l: 60, r: 30 },
+      margin: isMobile
+        ? { t: 80, b: 80, l: 40, r: 20 }
+        : { t: 80, b: 60, l: 60, r: 30 },
     };
-  }, [title, config.metric, config.yAxisAtZero, colorMode]);
+  }, [title, config.metric, config.yAxisAtZero, colorMode, isMobile]);
 
   const handleClick = useCallback(
     (event: Plotly.PlotMouseEvent) => {

@@ -3,6 +3,7 @@ import createPlotlyComponent from "react-plotly.js/factory";
 import Plotly from "plotly.js-dist-min";
 import type { RawMeasurements } from "../types";
 import { plotlyColors } from "../plotlyTheme";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 const Plot = createPlotlyComponent(Plotly);
 
@@ -32,6 +33,7 @@ export default memo(function ComparisonChart({
   versions,
   colorMode,
 }: ComparisonChartProps) {
+  const isMobile = useIsMobile();
   const traces = useMemo(() => {
     const refData = versionData.get(versions[0]);
     if (!refData) return [];
@@ -116,9 +118,11 @@ export default memo(function ComparisonChart({
         xanchor: "right" as const,
         x: 1,
       },
-      margin: { t: 120, b: 100, l: 60, r: 30 },
+      margin: isMobile
+        ? { t: 120, b: 120, l: 40, r: 20 }
+        : { t: 120, b: 100, l: 60, r: 30 },
     };
-  }, [suiteName, colorMode]);
+  }, [suiteName, colorMode, isMobile]);
 
   return (
     <Plot
