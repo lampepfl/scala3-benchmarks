@@ -121,6 +121,7 @@ export default memo(function ComparisonChart({
       margin: isMobile
         ? { t: 120, b: 120, l: 40, r: 20 }
         : { t: 120, b: 100, l: 60, r: 30 },
+      dragmode: !isMobile && ("zoom" as const),
     };
   }, [suiteName, colorMode, isMobile]);
 
@@ -130,7 +131,7 @@ export default memo(function ComparisonChart({
       layout={layout}
       useResizeHandler
       style={PLOT_STYLE}
-      config={PLOT_CONFIG}
+      config={isMobile ? { ...PLOT_CONFIG, scrollZoom: false } : PLOT_CONFIG}
     />
   );
 });

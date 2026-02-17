@@ -141,6 +141,7 @@ export default memo(function BenchmarkChart({
       margin: isMobile
         ? { t: 80, b: 80, l: 40, r: 20 }
         : { t: 80, b: 60, l: 60, r: 30 },
+      dragmode: !isMobile && ("zoom" as const),
     };
   }, [title, config.metric, config.yAxisAtZero, colorMode, isMobile]);
 
@@ -166,7 +167,7 @@ export default memo(function BenchmarkChart({
       layout={layout}
       useResizeHandler
       style={PLOT_STYLE}
-      config={PLOT_CONFIG}
+      config={isMobile ? { ...PLOT_CONFIG, scrollZoom: false } : PLOT_CONFIG}
       onClick={handleClick}
     />
   );
