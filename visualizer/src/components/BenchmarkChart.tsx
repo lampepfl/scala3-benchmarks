@@ -167,7 +167,7 @@ export default memo(function BenchmarkChart({
       layout={layout}
       useResizeHandler
       style={PLOT_STYLE}
-      config={isMobile ? { ...PLOT_CONFIG, scrollZoom: false } : PLOT_CONFIG}
+      config={isMobile ? { ...PLOT_CONFIG, scrollZoom: false, displayModeBar: false } : PLOT_CONFIG}
       onClick={handleClick}
     />
   );
