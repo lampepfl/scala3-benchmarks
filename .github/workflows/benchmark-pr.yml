@@ -64,6 +64,8 @@ jobs:
 
       - name: Setup Coursier
         uses: coursier/setup-action@v1
+        with:
+          jvm: "temurin:25"
 
       - name: Setup sbt
         uses: sbt/setup-sbt@v1
