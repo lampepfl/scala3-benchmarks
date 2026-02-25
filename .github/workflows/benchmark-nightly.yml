@@ -21,7 +21,7 @@ jobs:
       - name: Get latest nightly version
         id: nightly
         run: |
-          VERSION=$(scala --server=false scripts/lastNightly.scala)
+          VERSION=$(scala --cli-version 1.12.0 --server=false scripts/lastNightly.scala)
           echo "Latest nightly: $VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 

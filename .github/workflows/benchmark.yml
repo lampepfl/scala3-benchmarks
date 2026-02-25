@@ -83,7 +83,7 @@ jobs:
           for json_file in results/*/*/*/*.json; do
             if [ -f "$json_file" ]; then
               echo "Importing $json_file"
-              scala --server=false scripts/importResults.scala -- \
+              scala --cli-version 1.12.0 --server=false scripts/importResults.scala -- \
                 "$json_file" \
                 data-repo
               found=$((found + 1))
