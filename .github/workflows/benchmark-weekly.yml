@@ -15,13 +15,13 @@ jobs:
 
       - uses: coursier/setup-action@v1
         with:
-          apps: scala
+          apps: scala-cli:1.12.3
           jvm: "temurin:25"
 
       - name: Get latest nightly version
         id: nightly
         run: |
-          VERSION=$(scala --cli-version 1.12.0 --server=false scripts/lastNightly.scala)
+          VERSION=$(scala-cli --server=false scripts/lastNightly.scala)
           echo "Latest nightly: $VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 

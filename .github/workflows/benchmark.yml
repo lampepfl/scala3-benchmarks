@@ -48,11 +48,11 @@ jobs:
       - name: Setup Coursier
         uses: coursier/setup-action@v1
         with:
-          apps: scala
+          apps: scala-cli:1.12.3
           jvm: "temurin:25"
 
       - name: Test Scala CLI
-        run: scala --version
+        run: scala-cli --version
 
       - name: Setup sbt
         uses: sbt/setup-sbt@v1
@@ -86,7 +86,7 @@ jobs:
           for json_file in results/*/*/*/*.json; do
             if [ -f "$json_file" ]; then
               echo "Importing $json_file"
-              scala --cli-version 1.12.0 --server=false scripts/importResults.scala -- \
+              scala-cli --server=false scripts/importResults.scala -- \
                 "$json_file" \
                 data-repo
               found=$((found + 1))
