@@ -51,6 +51,9 @@ jobs:
           apps: scala
           jvm: "temurin:25"
 
+      - name: Test Scala CLI
+        run: scala --version
+
       - name: Setup sbt
         uses: sbt/setup-sbt@v1
 
