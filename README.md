@@ -2,6 +2,8 @@
 
 JMH benchmarks for measuring Scala 3 compiler performance.
 
+Depends on Coursier (or you can uncomment the lines that use `cs` in `run.sh` to use your local JVM always).
+
 ## Benchmarks
 
 **Real-world code** (multi-file): Sources are vendored (copied directly into this repository) and fixed to compile without errors or warnings across all Scala versions from 3.3.7 to nightly. Fixed versions ensure comparable benchmark results.
@@ -31,7 +33,7 @@ LOC = lines of Scala code (reported by [cloc](https://github.com/AlDanial/cloc))
 
 ```bash
 # Run benchmarks for multiple versions with interleaved runs
-./run.sh --versions 3.3.4 3.7.4 --jvm temurin:21 --runs 3
+./run.sh --versions 3.3.4 3.7.4 --jvm temurin:25 --runs 3
 
 # Or run manually with sbt
 sbt -Dcompiler.version=3.3.4 "clean; bench / Jmh / run -gc true -foe true"
@@ -135,7 +137,7 @@ Examples of using JMH's built-in profilers: [jmh/samples/JMHSample_35_Profilers.
 Flame graphs can be generated using [async-profiler](https://github.com/async-profiler/async-profiler). Example command:
 
 ```bash
-sbt -Dcompiler.version=3.7.4 "clean; bench / Jmh / run -gc true -foe true -prof \"async:libPath=../async-profiler-4.2.1-macos/lib/libasyncProfiler.dylib;output=flamegraph;dir=profile-results;include=CompilationBenchmarks.scalac\" helloWorld"
+sbt -Dcompiler.version=3.7.4 "clean; bench / Jmh / run -gc true -foe true -prof \"async:libPath=../async-profiler-4.2.1-macos/lib/libasyncProfiler.dylib;output=flamegraph;dir=profile-results;include=DottyCompiler$.compile\" helloWorld"
 ```
 
 Replace `3.7.4`, `../async-profiler-4.2.1-macos/lib/libasyncProfiler.dylib` and `helloWorld` with the desired Scala version, path to the async profiler library, and benchmark name respectively. Read more at [markrmiller/jmh-profilers.md](https://gist.github.com/markrmiller/a04f5c734fad879f688123bc312c21af#using-jmh-with-the-async-profiler).
