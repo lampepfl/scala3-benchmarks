@@ -104,11 +104,11 @@ CURRENT=0
 
 for version in "${RUN_ORDER[@]}"; do
   CURRENT=$((CURRENT + 1))
-  TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+  TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
   VERSION_DIR="$RESULTS_BASE/$version"
   mkdir -p "$VERSION_DIR"
   RESULTS_FILE="$VERSION_DIR/$TIMESTAMP.json"
-  RESULTS_FILE_ABS=$(realpath "$RESULTS_FILE")
+  RESULTS_FILE_ABS="$(realpath "$VERSION_DIR")/$TIMESTAMP.json"
 
   echo "[$CURRENT/$TOTAL] Running benchmarks for Scala $version..."
   echo "  Results will be written to: $RESULTS_FILE_ABS"
