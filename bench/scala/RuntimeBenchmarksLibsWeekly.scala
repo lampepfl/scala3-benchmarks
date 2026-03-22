@@ -136,7 +136,7 @@ object LibsBenchmarkData:
 
 // --- JMH benchmark suite ---
 
-@Warmup(iterations = 10)
+@Warmup(iterations = 20)
 class RuntimeBenchmarksLibsWeekly extends RuntimeBenchmarks:
   import org.virtuslab.yaml.*
 
