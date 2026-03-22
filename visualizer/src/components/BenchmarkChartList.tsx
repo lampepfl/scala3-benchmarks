@@ -33,8 +33,8 @@ export default function BenchmarkChartList({
         allBenchmarks.sort(([a], [b]) => a.localeCompare(b));
 
         return (
-          <div key={category.name}>
-            <Heading as="h2" variant="small" style={{ marginTop: 24, marginBottom: 8 }}>
+          <div key={category.name} style={{ border: "1px solid var(--borderColor-default, #d0d7de)", borderRadius: 6, padding: 16 }}>
+            <Heading as="h2" variant="small" style={{ marginBottom: 8 }}>
               {category.name}
             </Heading>
             {allBenchmarks.map(([benchmarkName, rows]) => (
