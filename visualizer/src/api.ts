@@ -20,6 +20,10 @@ export interface DataIndex {
   rawVersions: Record<string, string[]>;
   /** machine/jvm/patchVersion/version → CSV filenames (from raw/) */
   rawFiles: Record<string, string[]>;
+  /** machine/jvm → all raw version strings (across all patch versions) */
+  allRawVersions: Record<string, string[]>;
+  /** machine/jvm/version → patchVersion (reverse lookup) */
+  rawVersionToPatch: Record<string, string>;
 }
 
 /** Fetches the full aggregated tree in a single API call and parses the hierarchy. */
@@ -67,6 +71,8 @@ export async function fetchDataIndex(): Promise<DataIndex> {
 
   const rawVersionSets: Record<string, Set<string>> = {};
   const rawFilesMap: Record<string, string[]> = {};
+  const allRawVersionSets: Record<string, Set<string>> = {};
+  const rawVersionToPatch: Record<string, string> = {};
 
   for (const parts of rawPaths) {
     if (parts.length !== 5) continue;
@@ -74,6 +80,10 @@ export async function fetchDataIndex(): Promise<DataIndex> {
     const key = `${machine}/${jvm}/${patchVersion}`;
     (rawVersionSets[key] ??= new Set()).add(version);
     ((rawFilesMap[`${key}/${version}`]) ??= []).push(file);
+
+    const mjKey = `${machine}/${jvm}`;
+    (allRawVersionSets[mjKey] ??= new Set()).add(version);
+    rawVersionToPatch[`${mjKey}/${version}`] = patchVersion;
   }
 
   const toSorted = (s: Set<string>) => [...s].sort();
@@ -94,6 +104,10 @@ export async function fetchDataIndex(): Promise<DataIndex> {
       Object.entries(rawVersionSets).map(([k, v]) => [k, toSorted(v)]),
     ),
     rawFiles: rawFilesMap,
+    allRawVersions: Object.fromEntries(
+      Object.entries(allRawVersionSets).map(([k, v]) => [k, toSorted(v)]),
+    ),
+    rawVersionToPatch,
   };
 }
 
@@ -212,12 +226,13 @@ async function fetchRawDataForVersion(
 export async function fetchComparisonData(
   machine: string,
   jvm: string,
-  patchVersion: string,
   versions: string[],
   index: DataIndex,
 ): Promise<ComparisonData> {
   const entries = await Promise.all(
     versions.map(async (version) => {
+      const patchVersion = index.rawVersionToPatch[`${machine}/${jvm}/${version}`];
+      if (!patchVersion) return [version, new Map() as RawSuiteData] as const;
       const data = await fetchRawDataForVersion(machine, jvm, patchVersion, version, index);
       return [version, data] as const;
     }),

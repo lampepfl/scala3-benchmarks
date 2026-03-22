@@ -11,6 +11,7 @@ interface ConfigPanelProps {
   versions: string[];
   metrics: string[];
   hideMetric?: boolean;
+  hideVersion?: boolean;
   hideDisplayOptions?: boolean;
 }
 
@@ -22,6 +23,7 @@ export default function ConfigPanel({
   versions,
   metrics,
   hideMetric,
+  hideVersion,
   hideDisplayOptions,
 }: ConfigPanelProps) {
   return (
@@ -51,14 +53,16 @@ export default function ConfigPanel({
           onSelectedChange={(v) => onConfigChange({ ...config, metric: v })}
         />
       )}
-      <SelectorOption
-        label="Minor version"
-        items={versions}
-        selected={config.minorVersion}
-        onSelectedChange={(v) =>
-          onConfigChange({ ...config, minorVersion: v })
-        }
-      />
+      {!hideVersion && (
+        <SelectorOption
+          label="Minor version"
+          items={versions}
+          selected={config.minorVersion}
+          onSelectedChange={(v) =>
+            onConfigChange({ ...config, minorVersion: v })
+          }
+        />
+      )}
       {!hideDisplayOptions && (
         <DisplayOptions
           yAxisAtZero={config.yAxisAtZero}

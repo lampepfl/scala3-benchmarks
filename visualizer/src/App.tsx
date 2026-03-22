@@ -166,8 +166,7 @@ export default function App() {
       route.compareVersions.length < 2 ||
       !index ||
       !config.machine ||
-      !config.jvm ||
-      !config.minorVersion
+      !config.jvm
     )
       return;
     let active = true;
@@ -175,7 +174,6 @@ export default function App() {
     fetchComparisonData(
       config.machine,
       config.jvm,
-      config.minorVersion,
       route.compareVersions,
       index,
     )
@@ -192,7 +190,7 @@ export default function App() {
     return () => {
       active = false;
     };
-  }, [route.view, route.compareVersions, config.machine, config.jvm, config.minorVersion, index]);
+  }, [route.view, route.compareVersions, config.machine, config.jvm, index]);
 
   // Derive available options from the index
   const machines = index?.machines ?? [];
@@ -203,9 +201,7 @@ export default function App() {
       `${config.machine}/${config.jvm}/${config.minorVersion}`
     ] ?? [];
   const rawVersions =
-    index?.rawVersions[
-      `${config.machine}/${config.jvm}/${config.minorVersion}`
-    ] ?? [];
+    index?.allRawVersions[`${config.machine}/${config.jvm}`] ?? [];
 
   const isCompare = route.view === "compare";
 
@@ -270,6 +266,7 @@ export default function App() {
             versions={versions}
             metrics={metrics}
             hideMetric={isCompare}
+            hideVersion={isCompare}
             hideDisplayOptions={isCompare}
           />
 
