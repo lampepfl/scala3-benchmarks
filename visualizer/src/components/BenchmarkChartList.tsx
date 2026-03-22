@@ -1,5 +1,6 @@
 import { Heading, Stack } from "@primer/react";
-import type { AllBenchmarks, Config } from "../types";
+import type { AllBenchmarks, AggregatedRow, Config } from "../types";
+import { benchmarkCategories } from "../benchmarkCategories";
 import BenchmarkChart from "./BenchmarkChart";
 
 interface BenchmarkChartListProps {
@@ -13,27 +14,32 @@ export default function BenchmarkChartList({
   config,
   colorMode,
 }: BenchmarkChartListProps) {
-  // Sort suites alphabetically
-  const sortedSuites = Array.from(data.entries()).sort(([a], [b]) =>
-    a.localeCompare(b)
-  );
-
   return (
     <Stack direction="vertical" gap="normal">
-      {sortedSuites.map(([suiteName, benchmarks]) => {
-        // Sort benchmarks alphabetically within each suite
-        const sortedBenchmarks = Array.from(benchmarks.entries()).sort(
-          ([a], [b]) => a.localeCompare(b)
-        );
+      {benchmarkCategories.map((category) => {
+        // Collect all benchmarks from all suites in this category
+        const allBenchmarks: [string, AggregatedRow[]][] = [];
+        for (const suiteName of category.benchmarks) {
+          const suite = data.get(suiteName);
+          if (!suite) continue;
+          for (const [benchmarkName, rows] of suite) {
+            allBenchmarks.push([benchmarkName, rows]);
+          }
+        }
+
+        if (allBenchmarks.length === 0) return null;
+
+        // Sort benchmarks alphabetically by name
+        allBenchmarks.sort(([a], [b]) => a.localeCompare(b));
 
         return (
-          <div key={suiteName}>
+          <div key={category.name}>
             <Heading as="h2" variant="small" style={{ marginTop: 24, marginBottom: 8 }}>
-              {suiteName}
+              {category.name}
             </Heading>
-            {sortedBenchmarks.map(([benchmarkName, rows]) => (
+            {allBenchmarks.map(([benchmarkName, rows]) => (
               <BenchmarkChart
-                key={`${suiteName}-${benchmarkName}`}
+                key={benchmarkName}
                 title={benchmarkName}
                 data={rows}
                 config={config}
