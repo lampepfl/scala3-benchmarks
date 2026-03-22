@@ -47,6 +47,18 @@ on:
         type: string
 
 jobs:
+  comment-start:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post starting comment on PR
+        env:
+          GH_TOKEN: ${{ secrets.DOTTY_TOKEN }}
+        run: |
+          WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          gh pr comment "${{ inputs.pr }}" \
+            --repo scala/scala3 \
+            --body "Benchmarks started. [Workflow run](${WORKFLOW_URL})."
+
   publish-pr:
     runs-on: [self-hosted, benchmarks]
     outputs:
@@ -129,22 +141,6 @@ jobs:
           # Create runs array [1, 2, ..., runs]
           RUNS_ARRAY=$(python3 -c "import sys, json; print(json.dumps(list(range(1, int(sys.argv[1]) + 1))))" "${{ inputs.runs }}")
           echo "runs_array=$RUNS_ARRAY" >> "$GITHUB_OUTPUT"
-
-  comment-start:
-    needs: publish-pr
-    runs-on: ubuntu-latest
-    steps:
-      - name: Post starting comment on PR
-        env:
-          GH_TOKEN: ${{ secrets.DOTTY_TOKEN }}
-        run: |
-          VERSIONS="${{ needs.publish-pr.outputs.versions }}"
-          COMPARE_PARAM=$(echo "$VERSIONS" | tr ' ' ',')
-          OVERVIEW_URL="https://lampepfl.github.io/scala3-benchmarks/#compare/${COMPARE_PARAM}"
-          WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          gh pr comment "${{ inputs.pr }}" \
-            --repo scala/scala3 \
-            --body "Benchmarks started. [Workflow run](${WORKFLOW_URL})."
 
   # Note: This relies on the PR compiler being published into the local machine
   # cache (Ivy/Coursier) and the subsequent benchmark jobs running on the same
