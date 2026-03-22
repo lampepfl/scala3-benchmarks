@@ -6,7 +6,7 @@ export interface BenchmarkCategory {
 
 export const benchmarkCategories: BenchmarkCategory[] = [
   {
-    name: "Compilation: Big",
+    name: "Compilation – Big",
     description: "",
     benchmarks: [
       "CompilationBenchmarksBigNightly",
@@ -15,7 +15,7 @@ export const benchmarkCategories: BenchmarkCategory[] = [
     ],
   },
   {
-    name: "Compilation: Small",
+    name: "Compilation – Small",
     description: "",
     benchmarks: [
       "CompilationBenchmarksSmallNightly",
@@ -23,17 +23,17 @@ export const benchmarkCategories: BenchmarkCategory[] = [
     ],
   },
   {
-    name: "Compilation: Xsbti",
+    name: "Compilation – Xsbti",
     description: "",
     benchmarks: ["CompilationBenchmarksXsbtiWeekly"],
   },
   {
-    name: "Runtime: Are We Fast Yet?",
+    name: "Runtime – Are We Fast Yet?",
     description: "",
     benchmarks: ["RuntimeBenchmarksAwfyWeekly"],
   },
   {
-    name: "Runtime: Optimizer",
+    name: "Runtime – Optimizer",
     description: "",
     benchmarks: [
       "RuntimeBenchmarksOptimizerSmallNightly",
@@ -41,7 +41,7 @@ export const benchmarkCategories: BenchmarkCategory[] = [
     ],
   },
   {
-    name: "Runtime: Libraries",
+    name: "Runtime – Libraries",
     description: "",
     benchmarks: ["RuntimeBenchmarksLibsWeekly"],
   },

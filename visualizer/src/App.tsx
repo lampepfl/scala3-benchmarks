@@ -225,7 +225,7 @@ export default function App() {
           <div className="px-4 pt-3">
             <PageHeader>
               <PageHeader.TitleArea>
-                <PageHeader.Title>Scala 3 Benchmarks</PageHeader.Title>
+                <PageHeader.Title as="h1">Scala 3 Benchmarks</PageHeader.Title>
               </PageHeader.TitleArea>
               <PageHeader.Actions>
                 <IconButton
