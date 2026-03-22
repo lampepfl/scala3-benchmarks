@@ -1,5 +1,6 @@
-import { Stack, Spinner } from "@primer/react";
+import { Heading, Stack, Spinner } from "@primer/react";
 import type { ComparisonData, RawMeasurements } from "../types";
+import { benchmarkCategories } from "../benchmarkCategories";
 import ComparisonChart from "./ComparisonChart";
 
 interface ComparisonChartListProps {
@@ -31,29 +32,46 @@ export default function ComparisonChartList({
       allSuites.add(suite);
     }
   }
-  const sortedSuites = [...allSuites].sort();
 
-  if (sortedSuites.length === 0) {
+  if (allSuites.size === 0) {
     return <p>No raw benchmark data found for the selected versions.</p>;
   }
 
   return (
     <Stack direction="vertical" gap="normal">
-      {sortedSuites.map((suiteName) => {
-        const versionData = new Map<string, RawMeasurements>();
+      {benchmarkCategories.map((category) => {
+        // Merge all suites in this category into one RawMeasurements per version
+        const mergedVersionData = new Map<string, RawMeasurements>();
+        let hasBenchmarks = false;
+
         for (const [version, suiteData] of data) {
-          const benchmarks = suiteData.get(suiteName);
-          if (benchmarks) versionData.set(version, benchmarks);
+          const merged: RawMeasurements = new Map();
+          for (const suiteName of category.benchmarks) {
+            const benchmarks = suiteData.get(suiteName);
+            if (!benchmarks) continue;
+            for (const [bench, times] of benchmarks) {
+              merged.set(bench, times);
+              hasBenchmarks = true;
+            }
+          }
+          if (merged.size > 0) {
+            mergedVersionData.set(version, merged);
+          }
         }
 
+        if (!hasBenchmarks) return null;
+
         return (
-          <ComparisonChart
-            key={suiteName}
-            suiteName={suiteName}
-            versionData={versionData}
-            versions={versions}
-            colorMode={colorMode}
-          />
+          <div key={category.name}>
+            <Heading as="h2" variant="large" style={{ marginTop: 24, marginBottom: 16 }}>
+              {category.name}
+            </Heading>
+            <ComparisonChart
+              versionData={mergedVersionData}
+              versions={versions}
+              colorMode={colorMode}
+            />
+          </div>
         );
       })}
     </Stack>

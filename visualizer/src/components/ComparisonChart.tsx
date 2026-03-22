@@ -8,7 +8,6 @@ import { useIsMobile } from "../hooks/useIsMobile";
 const Plot = createPlotlyComponent(Plotly);
 
 interface ComparisonChartProps {
-  suiteName: string;
   /** version → (benchmark → measurements) */
   versionData: Map<string, RawMeasurements>;
   /** Ordered list of versions (first is the reference) */
@@ -28,7 +27,6 @@ const PLOT_STYLE = { width: "100%", height: 500 } as const;
 const PLOT_CONFIG = { responsive: true } as const;
 
 export default memo(function ComparisonChart({
-  suiteName,
   versionData,
   versions,
   colorMode,
@@ -81,7 +79,6 @@ export default memo(function ComparisonChart({
     const { font, grid, background, colorway } = plotlyColors(colorMode);
 
     return {
-      title: { text: suiteName },
       paper_bgcolor: background,
       plot_bgcolor: background,
       font: { color: font },
@@ -119,11 +116,11 @@ export default memo(function ComparisonChart({
         x: 1,
       },
       margin: isMobile
-        ? { t: 120, b: 120, l: 40, r: 20 }
-        : { t: 120, b: 100, l: 60, r: 30 },
+        ? { t: 60, b: 120, l: 40, r: 20 }
+        : { t: 60, b: 100, l: 60, r: 30 },
       dragmode: !isMobile && ("zoom" as const),
     };
-  }, [suiteName, colorMode, isMobile]);
+  }, [colorMode, isMobile]);
 
   return (
     <Plot
