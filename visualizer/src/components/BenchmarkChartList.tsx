@@ -34,12 +34,12 @@ export default function BenchmarkChartList({
 
         return (
           <div key={category.name}>
-            <Heading as="h2" variant="large" style={{ marginTop: 24, marginBottom: 16, textAlign: "center" }}>
+            <Heading as="h2" variant="large" style={{ marginTop: 24, marginBottom: 16 }}>
               {category.name}
             </Heading>
             {allBenchmarks.map(([benchmarkName, rows]) => (
-              <div key={benchmarkName} style={{ border: "1px solid var(--borderColor-default, #d0d7de)", borderRadius: 6, padding: 16, marginBottom: 32 }}>
-                <Heading as="h3" variant="small" style={{ marginBottom: 4 }}>
+              <div key={benchmarkName} style={{ marginBottom: 32 }}>
+                <Heading as="h3" variant="medium" style={{ marginBottom: 4 }}>
                   {benchmarkName}
                 </Heading>
                 <BenchmarkChart
