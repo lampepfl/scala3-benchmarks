@@ -106,7 +106,7 @@ export default memo(function BenchmarkChart({
               : config.metric;
 
     return {
-      title: { text: title },
+      title: undefined,
       paper_bgcolor: colors.background,
       plot_bgcolor: colors.background,
       font: { color: colors.font },
@@ -139,8 +139,8 @@ export default memo(function BenchmarkChart({
         x: 1,
       },
       margin: isMobile
-        ? { t: 80, b: 80, l: 40, r: 20 }
-        : { t: 80, b: 60, l: 60, r: 30 },
+        ? { t: 30, b: 80, l: 40, r: 20 }
+        : { t: 30, b: 60, l: 60, r: 30 },
       dragmode: !isMobile && ("zoom" as const),
     };
   }, [title, config.metric, config.yAxisAtZero, colorMode, isMobile]);

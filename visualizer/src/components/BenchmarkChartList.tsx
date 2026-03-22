@@ -38,13 +38,17 @@ export default function BenchmarkChartList({
               {category.name}
             </Heading>
             {allBenchmarks.map(([benchmarkName, rows]) => (
-              <BenchmarkChart
-                key={benchmarkName}
-                title={benchmarkName}
-                data={rows}
-                config={config}
-                colorMode={colorMode}
-              />
+              <div key={benchmarkName}>
+                <Heading as="h3" variant="small" style={{ marginTop: 16, marginBottom: 4 }}>
+                  {benchmarkName}
+                </Heading>
+                <BenchmarkChart
+                  title={benchmarkName}
+                  data={rows}
+                  config={config}
+                  colorMode={colorMode}
+                />
+              </div>
             ))}
           </div>
         );
