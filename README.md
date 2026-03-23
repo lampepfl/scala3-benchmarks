@@ -4,7 +4,7 @@ JMH benchmarks for measuring Scala 3 compiler performance.
 
 ## Dependencies
 
-- [Coursier](https://get-coursier.io/) (or you can comment the lines that use `cs` in `run.sh` to use your local JVM).
+- [Coursier](https://get-coursier.io/) (or you can comment the lines that use `cs` in `run.sh` to use your local JVM). Note only JVMs >= 25 are supported.
 
 ## Benchmarks
 

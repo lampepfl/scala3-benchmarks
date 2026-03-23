@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Default values
 VERSIONS=()
-JVM="temurin:21"
+JVM="temurin:25"
 RUNS=1
 MACHINE=$(hostname)
 FILTER=""
