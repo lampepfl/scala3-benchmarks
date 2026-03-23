@@ -60,6 +60,7 @@ jobs:
             --body "Benchmarks started. [Workflow run](${WORKFLOW_URL})."
 
   publish-pr:
+    needs: comment-start
     runs-on: [self-hosted, benchmarks]
     outputs:
       versions: ${{ steps.publish.outputs.versions }}
