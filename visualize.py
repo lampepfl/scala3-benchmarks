@@ -54,7 +54,7 @@ def load_all_data() -> pd.DataFrame:
 
 
 def compute_relative_speeds(df: pd.DataFrame, baseline_version: str) -> pd.DataFrame:
-    """Compute speed relative to the baseline version (higher = faster)."""
+    """Compute time relative to the baseline version (lower = faster)."""
     # Compute median time for each benchmark in the baseline version
     baseline_medians = (
         df[df["version"] == baseline_version]
@@ -63,10 +63,10 @@ def compute_relative_speeds(df: pd.DataFrame, baseline_version: str) -> pd.DataF
         .to_dict()
     )
 
-    # Compute relative speed: baseline_time / current_time
-    # Values > 1 mean faster than baseline, < 1 mean slower
+    # Compute relative time: current_time / baseline_time
+    # Values < 1 mean faster than baseline, > 1 mean slower
     df["relative_speed"] = df.apply(
-        lambda row: baseline_medians.get(row["benchmark"], 1) / row["time_ms"], axis=1
+        lambda row: row["time_ms"] / baseline_medians.get(row["benchmark"], 1), axis=1
     )
 
     return df
@@ -136,10 +136,10 @@ def main():
         x="benchmark",
         y="relative_speed",
         color="version",
-        title=f"Benchmark Performance Relative to {baseline_version} (higher = faster)",
+        title=f"Benchmark Performance Relative to {baseline_version} (lower = faster)",
         labels={
             "benchmark": "Benchmark",
-            "relative_speed": f"Relative Speed (vs {baseline_version})",
+            "relative_speed": f"Relative Time (vs {baseline_version})",
             "version": "Version",
         },
         category_orders={"version": versions},
