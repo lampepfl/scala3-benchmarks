@@ -2,11 +2,17 @@
 
 JMH benchmarks for measuring Scala 3 compiler performance.
 
-Depends on Coursier (or you can uncomment the lines that use `cs` in `run.sh` to use your local JVM always).
+## Dependencies
+
+- [Coursier](https://get-coursier.io/) (or you can comment the lines that use `cs` in `run.sh` to use your local JVM).
 
 ## Benchmarks
 
-**Real-world code** (multi-file): Sources are vendored (copied directly into this repository) and fixed to compile without errors or warnings across all Scala versions from 3.3.7 to nightly. Fixed versions ensure comparable benchmark results.
+### Compilation benchmarks
+
+#### Big benchmarks (multi-file)
+
+Sources are vendored (copied directly into this repository) and fixed to compile without errors or warnings across all Scala versions from 3.3.3 to nightly. Fixed versions ensure comparable benchmark results.
 
 | Project | Version | LOC | Dependencies | Tests |
 |---------|---------|----:|--------------|-------|
@@ -27,7 +33,15 @@ Depends on Coursier (or you can uncomment the lines that use `cs` in `run.sh` to
 ⚡ = Scala.js benchmark (requires Scala 3.6.4+)  
 LOC = lines of Scala code (reported by [cloc](https://github.com/AlDanial/cloc))
 
-**Synthetic benchmarks** (single-file): The remaining benchmarks target specific compiler aspects (pattern matching, implicit resolution, inlining, etc.). Most are adapted from the previous benchmark suite.
+#### Small benchmarks (single-file)
+
+The remaining benchmarks target specific compiler aspects (pattern matching, implicit resolution, inlining, etc.). Most are adapted from the previous benchmark suite.
+
+### Runtime benchmarks
+
+- [Are We Fast Yet?](bench-sources/areWeFastYet): classic benchmark suite ported to Scala, including Bounce, Brainfuck, CD, DeltaBlue, GCBench, Json, Kmeans, List, Mandelbrot, NBody, Permute, Queens, Richards, and Tracer.
+- [Optimizer](bench-sources/optimizer): small benchmarks used to track the effect of the Scala 3 optimizer.
+- [Librairies](bench/scala/RuntimeBenchmarksLibsWeekly.scala): runtime benchmarks using libraries such as scala-yaml and scala-parser-combinators.
 
 ## Quick Start
 
