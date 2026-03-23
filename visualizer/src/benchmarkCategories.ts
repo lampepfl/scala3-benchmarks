@@ -28,11 +28,6 @@ export const benchmarkCategories: BenchmarkCategory[] = [
     benchmarks: ["CompilationBenchmarksXsbtiWeekly"],
   },
   {
-    name: "Runtime – Are We Fast Yet?",
-    description: "",
-    benchmarks: ["RuntimeBenchmarksAwfyWeekly"],
-  },
-  {
     name: "Runtime – Optimizer",
     description: "",
     benchmarks: [
@@ -44,5 +39,10 @@ export const benchmarkCategories: BenchmarkCategory[] = [
     name: "Runtime – Libraries",
     description: "",
     benchmarks: ["RuntimeBenchmarksLibsWeekly"],
+  },
+  {
+    name: "Runtime – Are We Fast Yet?",
+    description: "",
+    benchmarks: ["RuntimeBenchmarksAwfyWeekly"],
   },
 ];
