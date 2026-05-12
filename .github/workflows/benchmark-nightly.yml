@@ -11,9 +11,9 @@ jobs:
     outputs:
       version: ${{ steps.nightly.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: coursier/setup-action@v1
+      - uses: coursier/setup-action@v3
         with:
           apps: scala-cli:1.12.3
           jvm: "temurin:25"

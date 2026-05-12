@@ -79,7 +79,7 @@ jobs:
       runs_array: ${{ steps.publish.outputs.runs_array }}
     steps:
       - name: Checkout dotty PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: scala/scala3
           ref: refs/pull/${{ inputs.pr }}/head
@@ -87,7 +87,7 @@ jobs:
           path: dotty
 
       - name: Setup Coursier
-        uses: coursier/setup-action@v1
+        uses: coursier/setup-action@v3
         with:
           jvm: "temurin:25"
 

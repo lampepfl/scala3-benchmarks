@@ -43,10 +43,10 @@ jobs:
         id: timestamp
         run: echo "ts=$(date +'%Y%m%d-%H%M%S')" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Coursier
-        uses: coursier/setup-action@v1
+        uses: coursier/setup-action@v3
         with:
           apps: scala-cli:1.12.3
           jvm: "temurin:25"
@@ -72,7 +72,7 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
 
       - name: Checkout data repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: lampepfl/scala3-benchmarks-data
           path: data-repo
