@@ -23,6 +23,11 @@ on:
         required: false
         default: ""
         type: string
+      post_comments:
+        description: "Post comments on the PR"
+        required: false
+        default: true
+        type: boolean
   workflow_call:
     inputs:
       pr:
@@ -45,9 +50,15 @@ on:
         required: false
         default: ""
         type: string
+      post_comments:
+        description: "Post comments on the PR"
+        required: false
+        default: true
+        type: boolean
 
 jobs:
   comment-start:
+    if: inputs.post_comments
     runs-on: ubuntu-latest
     steps:
       - name: Post starting comment on PR
@@ -175,7 +186,7 @@ jobs:
 
   comment-done:
     needs: [publish-pr, benchmark]
-    if: always()
+    if: always() && inputs.post_comments
     runs-on: ubuntu-latest
     steps:
       - name: Post results comment on PR
