@@ -53,7 +53,7 @@ jobs:
 
       - name: Setup Coursier (JVM launcher)
         run: |
-          CS_JAR=/tmp/coursier.jar
+          CS_JAR="${RUNNER_TEMP:-/tmp}/coursier.jar"
           curl -fL --retry 3 --retry-all-errors -o "$CS_JAR" \
             https://github.com/coursier/coursier/releases/download/v2.1.25-M19/coursier.jar
           # Match coursier/setup-action behavior (`cs install --contrib ...`) for scala-cli.
