@@ -55,6 +55,7 @@ jobs:
         run: |
           curl -fL --retry 3 --retry-all-errors -o /tmp/coursier.jar \
             https://github.com/coursier/coursier/releases/download/v2.1.25-M19/coursier.jar
+          # Match coursier/setup-action behavior (`cs install --contrib ...`) for scala-cli.
           java -jar /tmp/coursier.jar install --contrib scala-cli:1.12.3 --install-dir "$HOME/cs/bin"
           echo "$HOME/cs/bin" >> "$GITHUB_PATH"
 
