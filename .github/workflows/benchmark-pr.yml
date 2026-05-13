@@ -88,10 +88,11 @@ jobs:
           fetch-depth: 0
           path: dotty
 
-      - name: Setup Coursier
-        uses: coursier/setup-action@v1
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
-          jvm: "temurin:25"
+          distribution: temurin
+          java-version: 25
 
       - name: Setup sbt
         uses: sbt/setup-sbt@v1

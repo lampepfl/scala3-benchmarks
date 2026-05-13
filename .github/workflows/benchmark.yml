@@ -45,11 +45,19 @@ jobs:
 
       - uses: actions/checkout@v6
 
-      - name: Setup Coursier
-        uses: coursier/setup-action@v1
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
-          apps: scala-cli:1.12.3
-          jvm: "temurin:25"
+          distribution: temurin
+          java-version: 25
+
+      - name: Setup Coursier (JVM launcher)
+        run: |
+          curl -fL --retry 3 --retry-all-errors -o /tmp/coursier.jar \
+            https://github.com/coursier/coursier/releases/download/v2.1.25-M19/coursier.jar
+          java -jar /tmp/coursier.jar --help
+          java -jar /tmp/coursier.jar install --contrib scala-cli:1.12.3 --install-dir "$HOME/cs/bin"
+          echo "$HOME/cs/bin" >> "$GITHUB_PATH"
 
       - name: Test Scala CLI
         run: scala-cli --version
