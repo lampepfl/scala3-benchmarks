@@ -89,7 +89,7 @@ jobs:
           path: dotty
 
       - name: Setup Coursier
-        uses: coursier/setup-action@v3
+        uses: coursier/setup-action@v1
         with:
           jvm: "temurin:25"
 
