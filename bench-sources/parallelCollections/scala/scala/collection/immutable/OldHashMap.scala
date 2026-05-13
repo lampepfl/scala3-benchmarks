@@ -355,7 +355,7 @@ object OldHashMap extends MapFactory[OldHashMap] {
     protected[collection] def get0(key: K, hash: Int, level: Int): Option[V] = {
       // Note: this code is duplicated with `contains0`
       val index = (hash >>> level) & 0x1f
-      if (bitmap == - 1) {
+      if (bitmap == -1) {
         elems(index).get0(key, hash, level + 5)
       } else {
         val mask = (1 << index)
@@ -371,7 +371,7 @@ object OldHashMap extends MapFactory[OldHashMap] {
     protected def contains0(key: K, hash: Int, level: Int): Boolean = {
       // Note: this code is duplicated from `get0`
       val index = (hash >>> level) & 0x1f
-      if (bitmap == - 1) {
+      if (bitmap == -1) {
         elems(index).contains0(key, hash, level + 5)
       } else {
         val mask = (1 << index)

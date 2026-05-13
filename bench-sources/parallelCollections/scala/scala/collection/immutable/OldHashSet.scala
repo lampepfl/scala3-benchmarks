@@ -530,7 +530,7 @@ object OldHashSet extends IterableFactory[OldHashSet] {
     protected def get0(key: A, hash: Int, level: Int) = {
       val index = (hash >>> level) & 0x1f
       val mask = (1 << index)
-      if (bitmap == - 1) {
+      if (bitmap == -1) {
         elems(index & 0x1f).get0(key, hash, level + 5)
       } else if ((bitmap & mask) != 0) {
         val offset = Integer.bitCount(bitmap & (mask-1))
