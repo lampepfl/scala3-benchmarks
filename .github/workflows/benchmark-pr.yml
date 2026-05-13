@@ -77,6 +77,9 @@ jobs:
       versions_json: ${{ steps.publish.outputs.versions_json }}
       runs_array: ${{ steps.publish.outputs.runs_array }}
     steps:
+      - name: Dump inputs
+        run: echo '${{ toJSON(inputs) }}'
+
       - name: Checkout dotty PR
         uses: actions/checkout@v6
         with:
