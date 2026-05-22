@@ -7,7 +7,7 @@ import kostya.*
 
 @Warmup(batchSize = 10, iterations = 20)
 @Measurement(batchSize = 10, iterations = 10)
-class RuntimeBenchmarksOptimizerSmallNightly extends RuntimeBenchmarks:
+class RuntimeBenchmarksOptimizerSmallWeekly extends RuntimeBenchmarks:
 
   @Warmup(batchSize = 10, iterations = 40)
   @Benchmark
