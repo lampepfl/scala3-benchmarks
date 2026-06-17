@@ -69,7 +69,19 @@ jobs:
       - name: Setup SSH for GitHub
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          i=1
+          while [ $i -le 10 ]; do
+            if ssh-keyscan github.com >> ~/.ssh/known_hosts; then
+              exit 0
+            fi
+            if [ $i -lt 10 ]; then
+              echo "ssh-keyscan failed, waiting 60 seconds before retry..."
+              sleep 60
+            fi
+            i=$((i + 1))
+          done
+          echo "ssh-keyscan failed after 10 attempts"
+          exit 1
 
       - name: Checkout data repository
         uses: actions/checkout@v6
