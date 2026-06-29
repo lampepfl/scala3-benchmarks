@@ -30,7 +30,7 @@ set_commit() {
 
 scala_build() {
   cd "$repo"
-    BENCHMARKBUILD=yes sbt clean community-build/prepareCommunityBuild 1>2
+    BENCHMARKBUILD=yes sbt clean community-build/prepareCommunityBuild 1>&2
   cd '-' >/dev/null
 }
 scala_version() {
