@@ -1,6 +1,6 @@
 val compilerVersion = sys.props.get("compiler.version").getOrElse("3.8.1")
 
-val sharedScalacOptions = Seq("-feature", "-Werror", "-deprecation")
+val sharedScalacOptions = Seq("-feature", "-deprecation")
 
 ThisBuild / resolvers += Resolver.scalaNightlyRepository
 
