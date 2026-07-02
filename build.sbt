@@ -1,6 +1,11 @@
 val compilerVersion = sys.props.get("compiler.version").getOrElse("3.8.1")
 
-val sharedScalacOptions = Seq("-feature", "-Werror", "-deprecation")
+val sharedScalacOptions = Seq(
+  "-feature",
+  "-Werror",
+  "-deprecation",
+  "-Wconf:msg=re-run with -deprecation:s" // otherwise when we override to remove -deprecation we get a warning about them existing
+)
 
 ThisBuild / resolvers += Resolver.scalaNightlyRepository
 
@@ -176,6 +181,7 @@ lazy val benchScalaToday =
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions,
+      scalacOptions -= "-deprecation", // some macros use deprecated features
       libraryDependencies ++= Seq(
         "com.softwaremill.sttp.tapir" %% "tapir-netty-server-sync" % "1.10.8",
         "com.softwaremill.sttp.tapir" %% "tapir-files" % "1.10.8",
