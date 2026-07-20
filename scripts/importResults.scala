@@ -109,7 +109,9 @@ def importResults(
   val machine = segments(segments.length - 4)
   val jvm = segments(segments.length - 3)
   val version = segments(segments.length - 2)
-  val patchVersion = version.take(5)
+  // MAJOR.MINOR.PATCH prefix, e.g. "3.10.0-RC1-bin-...-NIGHTLY" -> "3.10.0".
+  // Not a fixed-length prefix: minor/patch can have more than one digit.
+  val patchVersion = version.takeWhile(c => c.isDigit || c == '.')
   val benchmarks = read[Seq[JmhBenchmark]](os.read(jsonPath))
   assert(benchmarks.nonEmpty, s"No benchmarks found in JSON file: $jsonPath")
   for bench <- benchmarks do
