@@ -5,7 +5,9 @@ import clbg.*
 import kostya.*
 
 
-@Warmup(batchSize = 10, iterations = 20)
+// With 20 warmup iterations, ary2 was still ~1.8x slow at measured iteration 1
+// and nestedLoop2 until iteration 5 (see checkWarmups.py in the data repo).
+@Warmup(batchSize = 10, iterations = 30)
 @Measurement(batchSize = 10, iterations = 10)
 class RuntimeBenchmarksOptimizerSmallWeekly extends RuntimeBenchmarks:
 
@@ -22,7 +24,9 @@ class RuntimeBenchmarksOptimizerSmallWeekly extends RuntimeBenchmarks:
   def matMul: Unit =
     assert(MatMul.main() == -18.6716666)
 
-  @Warmup(batchSize = 1, iterations = 20)
+  // With 20 warmup iterations, meteor still sped up ~1.2x as late as measured
+  // iteration 9 in some forks (see checkWarmups.py in the data repo).
+  @Warmup(batchSize = 1, iterations = 40)
   @Measurement(batchSize = 1, iterations = 10)
   @Benchmark
   def meteor: Unit =

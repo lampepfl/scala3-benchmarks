@@ -136,7 +136,10 @@ object LibsBenchmarkData:
 
 // --- JMH benchmark suite ---
 
-@Warmup(iterations = 20)
+// With 20 warmup iterations, wordFreqParser and fansiFormat still sped up
+// ~1.2x as late as measured iteration 12, and yamlEncode until iteration 6
+// (see checkWarmups.py in the data repo).
+@Warmup(iterations = 40)
 class RuntimeBenchmarksLibsWeekly extends RuntimeBenchmarks:
   import org.virtuslab.yaml.*
 

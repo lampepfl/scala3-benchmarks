@@ -41,6 +41,9 @@ class RuntimeBenchmarksAwfyWeekly extends RuntimeBenchmarks:
   def deltablue: Unit =
     DeltaBlue.run()
 
+  // With the inherited 20 warmup iterations, the first measured iteration was
+  // still ~1.5x slow in 90% of forks (see checkWarmups.py in the data repo).
+  @Warmup(iterations = 30)
   @Benchmark
   def gcbench: Unit =
     assert(GCBenchBenchmark.run())
