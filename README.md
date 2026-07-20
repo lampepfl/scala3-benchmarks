@@ -161,6 +161,17 @@ The default sampling interval is 10ms. It can be changed by adding the `interval
 
 Async-profiler options reference [async-profiler/docs/ProfilerOptions.md](https://github.com/async-profiler/async-profiler/blob/master/docs/ProfilerOptions.md).
 
+## Benchmarking Local Changes
+
+To benchmark local changes to the compiler, you can publish a local snapshot of the compiler and run the benchmarks against it:
+
+```bash
+# Run from the root of the scala/scala3 repository
+sbt community-build/prepareCommunityBuild
+```
+
+The version of the published snapshot is written to the `community-build/scala3-bootstrapped.version` file.
+
 ## Known Issues
 
 Under Java 25, the following warning is printed during benchmark runs:
