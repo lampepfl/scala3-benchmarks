@@ -89,7 +89,10 @@ class RuntimeBenchmarksAwfyWeekly extends RuntimeBenchmarks:
   def richards: Unit =
     Richards.run()
 
-  @Warmup(batchSize = 100, iterations = 10)
+  // 20 warmup iterations: with 10, the final C2 recompilation lands inside the
+  // measurement window in ~12% of forks, making the first measured iterations
+  // 1.3-4x slower (transition completes around 1500 total invocations).
+  @Warmup(batchSize = 100, iterations = 20)
   @Measurement(batchSize = 100, iterations = 10)
   @Benchmark
   def tracer: Unit =
