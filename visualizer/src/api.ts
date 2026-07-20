@@ -16,8 +16,6 @@ export interface DataIndex {
   metrics: Record<string, string[]>; // machine/jvm/version → metrics
   /** machine/jvm/version/metric → suite → benchmark files */
   suites: Record<string, Record<string, string[]>>;
-  /** machine/jvm/patchVersion → version strings (from raw/) */
-  rawVersions: Record<string, string[]>;
   /** machine/jvm/patchVersion/version → CSV filenames (from raw/) */
   rawFiles: Record<string, string[]>;
   /** machine/jvm → all raw version strings (across all patch versions) */
@@ -69,7 +67,6 @@ export async function fetchDataIndex(): Promise<DataIndex> {
     .filter((e) => e.path.startsWith("raw/") && e.path.endsWith(".csv"))
     .map((e) => e.path.replace("raw/", "").split("/"));
 
-  const rawVersionSets: Record<string, Set<string>> = {};
   const rawFilesMap: Record<string, string[]> = {};
   const allRawVersionSets: Record<string, Set<string>> = {};
   const rawVersionToPatch: Record<string, string> = {};
@@ -78,7 +75,6 @@ export async function fetchDataIndex(): Promise<DataIndex> {
     if (parts.length !== 5) continue;
     const [machine, jvm, patchVersion, version, file] = parts;
     const key = `${machine}/${jvm}/${patchVersion}`;
-    (rawVersionSets[key] ??= new Set()).add(version);
     ((rawFilesMap[`${key}/${version}`]) ??= []).push(file);
 
     const mjKey = `${machine}/${jvm}`;
@@ -113,9 +109,6 @@ export async function fetchDataIndex(): Promise<DataIndex> {
       Object.entries(metricSets).map(([k, v]) => [k, toSorted(v)]),
     ),
     suites: suitesMap,
-    rawVersions: Object.fromEntries(
-      Object.entries(rawVersionSets).map(([k, v]) => [k, toSorted(v)]),
-    ),
     rawFiles: rawFilesMap,
     allRawVersions: Object.fromEntries(
       Object.entries(allRawVersionSets).map(([k, v]) => [k, toSorted(v)]),

@@ -90,7 +90,7 @@ export default memo(function BenchmarkChart({
     }
 
     return result;
-  }, [sorted, dates, avgs, versions, config.errorBars, config.movingAverage]);
+  }, [sorted, dates, avgs, config.errorBars, config.movingAverage]);
 
   const layout = useMemo(() => {
     const colors = plotlyColors(colorMode);
