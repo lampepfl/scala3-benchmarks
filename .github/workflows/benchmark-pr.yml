@@ -89,8 +89,12 @@ jobs:
           path: dotty
 
       - name: Setup Coursier
-        uses: coursier/setup-action@v1
+        uses: coursier/setup-action@v3
         with:
+          # Pinned: newer cs versions' default launcher needs AVX/BMI, which this
+          # runner lacks; the fixed -compat launcher (coursier/coursier#3600) is
+          # not downloadable via setup-action yet.
+          version: "2.1.17"
           jvm: "temurin:25"
 
       - name: Setup sbt
