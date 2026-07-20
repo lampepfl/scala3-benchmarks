@@ -86,7 +86,20 @@ export async function fetchDataIndex(): Promise<DataIndex> {
     rawVersionToPatch[`${mjKey}/${version}`] = patchVersion;
   }
 
-  const toSorted = (s: Set<string>) => [...s].sort();
+  // Natural sort so version-like strings order numerically ("3.9.0" < "3.10.0").
+  const compareNatural = (a: string, b: string): number => {
+    const ax = a.split(/(\d+)/);
+    const bx = b.split(/(\d+)/);
+    for (let i = 0; i < Math.max(ax.length, bx.length); i++) {
+      const as = ax[i] ?? "";
+      const bs = bx[i] ?? "";
+      if (as === bs) continue;
+      if (/^\d+$/.test(as) && /^\d+$/.test(bs)) return Number(as) - Number(bs);
+      return as < bs ? -1 : 1;
+    }
+    return 0;
+  };
+  const toSorted = (s: Set<string>) => [...s].sort(compareNatural);
 
   return {
     machines: toSorted(machineSet),
