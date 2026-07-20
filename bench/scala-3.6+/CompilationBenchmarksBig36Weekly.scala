@@ -3,7 +3,7 @@ package bench
 import bench.compilers.DottyCompiler
 import org.openjdk.jmh.annotations.{Benchmark, Warmup}
 
-class CompilationBenchmarksBig36Nightly extends CompilationBenchmarks:
+class CompilationBenchmarksBig36Weekly extends CompilationBenchmarks:
   
   @Warmup(iterations = 60)
   @Benchmark
