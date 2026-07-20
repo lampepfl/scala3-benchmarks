@@ -6,25 +6,15 @@ import DisplayOptions from "./DisplayOptions";
 interface ConfigPanelProps {
   config: Config;
   onConfigChange: (config: Config) => void;
-  machines: string[];
-  jvms: string[];
   versions: string[];
   metrics: string[];
-  hideMetric?: boolean;
-  hideVersion?: boolean;
-  hideDisplayOptions?: boolean;
 }
 
 export default function ConfigPanel({
   config,
   onConfigChange,
-  machines,
-  jvms,
   versions,
   metrics,
-  hideMetric,
-  hideVersion,
-  hideDisplayOptions,
 }: ConfigPanelProps) {
   return (
     <Stack
@@ -34,45 +24,27 @@ export default function ConfigPanel({
       className="mb-3"
     >
       <SelectorOption
-        label="Machine"
-        items={machines}
-        selected={config.machine}
-        onSelectedChange={(v) => onConfigChange({ ...config, machine: v })}
+        label="Metric"
+        items={metrics}
+        selected={config.metric}
+        onSelectedChange={(v) => onConfigChange({ ...config, metric: v })}
       />
       <SelectorOption
-        label="JVM"
-        items={jvms}
-        selected={config.jvm}
-        onSelectedChange={(v) => onConfigChange({ ...config, jvm: v })}
+        label="Minor version"
+        items={versions}
+        selected={config.minorVersion}
+        onSelectedChange={(v) =>
+          onConfigChange({ ...config, minorVersion: v })
+        }
       />
-      {!hideMetric && (
-        <SelectorOption
-          label="Metric"
-          items={metrics}
-          selected={config.metric}
-          onSelectedChange={(v) => onConfigChange({ ...config, metric: v })}
-        />
-      )}
-      {!hideVersion && (
-        <SelectorOption
-          label="Minor version"
-          items={versions}
-          selected={config.minorVersion}
-          onSelectedChange={(v) =>
-            onConfigChange({ ...config, minorVersion: v })
-          }
-        />
-      )}
-      {!hideDisplayOptions && (
-        <DisplayOptions
-          yAxisAtZero={config.yAxisAtZero}
-          movingAverage={config.movingAverage}
-          errorBars={config.errorBars}
-          onChange={(key, value) =>
-            onConfigChange({ ...config, [key]: value })
-          }
-        />
-      )}
+      <DisplayOptions
+        yAxisAtZero={config.yAxisAtZero}
+        movingAverage={config.movingAverage}
+        errorBars={config.errorBars}
+        onChange={(key, value) =>
+          onConfigChange({ ...config, [key]: value })
+        }
+      />
     </Stack>
   );
 }

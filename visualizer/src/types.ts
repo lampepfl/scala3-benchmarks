@@ -10,8 +10,6 @@ export interface Config {
   yAxisAtZero: boolean;
   movingAverage: boolean;
   errorBars: boolean;
-  machine: string;
-  jvm: string;
   metric: string;
   minorVersion: string;
 }
@@ -20,8 +18,6 @@ export const DEFAULT_CONFIG: Config = {
   yAxisAtZero: false,
   movingAverage: true,
   errorBars: true,
-  machine: "laraquad1",
-  jvm: "temurin-25",
   metric: "time",
   minorVersion: "",
 };

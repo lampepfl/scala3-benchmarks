@@ -104,15 +104,12 @@ export default function App() {
         if (!active) return;
         setIndex(idx);
         // Validate/fix config against what's actually available
-        const machine = pickDefault(config.machine, idx.machines);
-        const jvms = idx.jvms[machine] ?? [];
-        const jvm = pickDefault(config.jvm, jvms);
-        const versions = idx.versions[`${machine}/${jvm}`] ?? [];
-        const minorVersion = pickDefault(config.minorVersion, versions);
-        const metrics =
-          idx.metrics[`${machine}/${jvm}/${minorVersion}`] ?? [];
-        const metric = pickDefault(config.metric, metrics);
-        patchConfig(setConfig, { machine, jvm, minorVersion, metric });
+        const minorVersion = pickDefault(config.minorVersion, idx.versions);
+        const metric = pickDefault(
+          config.metric,
+          idx.metrics[minorVersion] ?? [],
+        );
+        patchConfig(setConfig, { minorVersion, metric });
       })
       .catch((e) => {
         if (!active) return;
@@ -126,24 +123,11 @@ export default function App() {
 
   // Fetch aggregated benchmark CSVs when config or index changes (time series view)
   useEffect(() => {
-    if (
-      !index ||
-      !config.machine ||
-      !config.jvm ||
-      !config.minorVersion ||
-      !config.metric
-    )
-      return;
+    if (!index || !config.minorVersion || !config.metric) return;
     let active = true;
     setLoading(true);
     setError(null);
-    fetchAllBenchmarks(
-      config.machine,
-      config.jvm,
-      config.minorVersion,
-      config.metric,
-      index,
-    )
+    fetchAllBenchmarks(config.minorVersion, config.metric, index)
       .then((result) => {
         if (!active) return;
         setData(result);
@@ -157,26 +141,15 @@ export default function App() {
     return () => {
       active = false;
     };
-  }, [index, config.machine, config.jvm, config.minorVersion, config.metric]);
+  }, [index, config.minorVersion, config.metric]);
 
   // Fetch raw comparison data when in compare mode and versions change
   useEffect(() => {
-    if (
-      route.view !== "compare" ||
-      route.compareVersions.length < 2 ||
-      !index ||
-      !config.machine ||
-      !config.jvm
-    )
+    if (route.view !== "compare" || route.compareVersions.length < 2 || !index)
       return;
     let active = true;
     setCompareLoading(true);
-    fetchComparisonData(
-      config.machine,
-      config.jvm,
-      route.compareVersions,
-      index,
-    )
+    fetchComparisonData(route.compareVersions, index)
       .then((result) => {
         if (!active) return;
         setCompareData(result);
@@ -190,18 +163,12 @@ export default function App() {
     return () => {
       active = false;
     };
-  }, [route.view, route.compareVersions, config.machine, config.jvm, index]);
+  }, [route.view, route.compareVersions, index]);
 
   // Derive available options from the index
-  const machines = index?.machines ?? [];
-  const jvms = index?.jvms[config.machine] ?? [];
-  const versions = index?.versions[`${config.machine}/${config.jvm}`] ?? [];
-  const metrics =
-    index?.metrics[
-      `${config.machine}/${config.jvm}/${config.minorVersion}`
-    ] ?? [];
-  const rawVersions =
-    index?.allRawVersions[`${config.machine}/${config.jvm}`] ?? [];
+  const versions = index?.versions ?? [];
+  const metrics = index?.metrics[config.minorVersion] ?? [];
+  const rawVersions = index?.rawVersions ?? [];
 
   const isCompare = route.view === "compare";
 
@@ -258,17 +225,14 @@ export default function App() {
           </div>
 
           <div className="p-4">
-          <ConfigPanel
-            config={config}
-            onConfigChange={handleConfigChange}
-            machines={machines}
-            jvms={jvms}
-            versions={versions}
-            metrics={metrics}
-            hideMetric={isCompare}
-            hideVersion={isCompare}
-            hideDisplayOptions={isCompare}
-          />
+          {!isCompare && (
+            <ConfigPanel
+              config={config}
+              onConfigChange={handleConfigChange}
+              versions={versions}
+              metrics={metrics}
+            />
+          )}
 
           {error && (
             <p style={{ color: "var(--fgColor-danger)" }}>{error}</p>

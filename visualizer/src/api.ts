@@ -5,26 +5,32 @@ const GITHUB_API_BASE =
   "https://api.github.com/repos/lampepfl/scala3-benchmarks-data";
 const DATA_BASE = "https://lampepfl.github.io/scala3-benchmarks-data";
 
+/** All benchmarks currently run on a single machine and JVM. */
+export const MACHINE = "laraquad1";
+export const JVM = "temurin-25";
+
+const AGGREGATED_PREFIX = `aggregated/${MACHINE}/${JVM}/`;
+const RAW_PREFIX = `raw/${MACHINE}/${JVM}/`;
+
 /**
- * Parsed representation of the aggregated directory tree.
+ * Parsed representation of the data directory tree.
  * Path structure: aggregated/<machine>/<jvm>/<version>/<metric>/<suite>/<benchmark>.csv
  */
 export interface DataIndex {
-  machines: string[];
-  jvms: Record<string, string[]>; // machine → jvms
-  versions: Record<string, string[]>; // machine/jvm → versions
-  metrics: Record<string, string[]>; // machine/jvm/version → metrics
-  /** machine/jvm/version/metric → suite → benchmark files */
+  versions: string[];
+  /** version → metrics */
+  metrics: Record<string, string[]>;
+  /** version/metric → suite → benchmark files */
   suites: Record<string, Record<string, string[]>>;
-  /** machine/jvm/patchVersion/version → CSV filenames (from raw/) */
+  /** patchVersion/version → CSV filenames (from raw/) */
   rawFiles: Record<string, string[]>;
-  /** machine/jvm → all raw version strings (across all patch versions) */
-  allRawVersions: Record<string, string[]>;
-  /** machine/jvm/version → patchVersion (reverse lookup) */
+  /** All raw version strings (across all patch versions) */
+  rawVersions: string[];
+  /** version → patchVersion (reverse lookup) */
   rawVersionToPatch: Record<string, string>;
 }
 
-/** Fetches the full aggregated tree in a single API call and parses the hierarchy. */
+/** Fetches the full data tree in a single API call and parses the hierarchy. */
 export async function fetchDataIndex(): Promise<DataIndex> {
   const response = await fetch(
     `${GITHUB_API_BASE}/git/trees/main?recursive=1`,
@@ -35,51 +41,39 @@ export async function fetchDataIndex(): Promise<DataIndex> {
     await response.json();
 
   const paths = json.tree
-    .filter((e) => e.path.startsWith("aggregated/") && e.path.endsWith(".csv"))
-    .map((e) => e.path.replace("aggregated/", "").split("/"));
+    .filter(
+      (e) => e.path.startsWith(AGGREGATED_PREFIX) && e.path.endsWith(".csv"),
+    )
+    .map((e) => e.path.replace(AGGREGATED_PREFIX, "").split("/"));
 
-  const machineSet = new Set<string>();
-  const jvmSets: Record<string, Set<string>> = {};
-  const versionSets: Record<string, Set<string>> = {};
+  const versionSet = new Set<string>();
   const metricSets: Record<string, Set<string>> = {};
   const suitesMap: Record<string, Record<string, string[]>> = {};
 
   for (const parts of paths) {
-    if (parts.length !== 6) continue;
-    const [machine, jvm, version, metric, suite, file] = parts;
+    if (parts.length !== 4) continue;
+    const [version, metric, suite, file] = parts;
 
-    machineSet.add(machine);
-
-    (jvmSets[machine] ??= new Set()).add(jvm);
-
-    const mjKey = `${machine}/${jvm}`;
-    (versionSets[mjKey] ??= new Set()).add(version);
-
-    const mjvKey = `${mjKey}/${version}`;
-    (metricSets[mjvKey] ??= new Set()).add(metric);
-
-    const fullKey = `${mjvKey}/${metric}`;
-    ((suitesMap[fullKey] ??= {})[suite] ??= []).push(file);
+    versionSet.add(version);
+    (metricSets[version] ??= new Set()).add(metric);
+    ((suitesMap[`${version}/${metric}`] ??= {})[suite] ??= []).push(file);
   }
 
   // Parse raw/ paths: raw/<machine>/<jvm>/<patchVersion>/<version>/<file>.csv
   const rawPaths = json.tree
-    .filter((e) => e.path.startsWith("raw/") && e.path.endsWith(".csv"))
-    .map((e) => e.path.replace("raw/", "").split("/"));
+    .filter((e) => e.path.startsWith(RAW_PREFIX) && e.path.endsWith(".csv"))
+    .map((e) => e.path.replace(RAW_PREFIX, "").split("/"));
 
   const rawFilesMap: Record<string, string[]> = {};
-  const allRawVersionSets: Record<string, Set<string>> = {};
+  const rawVersionSet = new Set<string>();
   const rawVersionToPatch: Record<string, string> = {};
 
   for (const parts of rawPaths) {
-    if (parts.length !== 5) continue;
-    const [machine, jvm, patchVersion, version, file] = parts;
-    const key = `${machine}/${jvm}/${patchVersion}`;
-    ((rawFilesMap[`${key}/${version}`]) ??= []).push(file);
-
-    const mjKey = `${machine}/${jvm}`;
-    (allRawVersionSets[mjKey] ??= new Set()).add(version);
-    rawVersionToPatch[`${mjKey}/${version}`] = patchVersion;
+    if (parts.length !== 3) continue;
+    const [patchVersion, version, file] = parts;
+    ((rawFilesMap[`${patchVersion}/${version}`]) ??= []).push(file);
+    rawVersionSet.add(version);
+    rawVersionToPatch[version] = patchVersion;
   }
 
   // Natural sort so version-like strings order numerically ("3.9.0" < "3.10.0").
@@ -98,34 +92,24 @@ export async function fetchDataIndex(): Promise<DataIndex> {
   const toSorted = (s: Set<string>) => [...s].sort(compareNatural);
 
   return {
-    machines: toSorted(machineSet),
-    jvms: Object.fromEntries(
-      Object.entries(jvmSets).map(([k, v]) => [k, toSorted(v)]),
-    ),
-    versions: Object.fromEntries(
-      Object.entries(versionSets).map(([k, v]) => [k, toSorted(v)]),
-    ),
+    versions: toSorted(versionSet),
     metrics: Object.fromEntries(
       Object.entries(metricSets).map(([k, v]) => [k, toSorted(v)]),
     ),
     suites: suitesMap,
     rawFiles: rawFilesMap,
-    allRawVersions: Object.fromEntries(
-      Object.entries(allRawVersionSets).map(([k, v]) => [k, toSorted(v)]),
-    ),
+    rawVersions: toSorted(rawVersionSet),
     rawVersionToPatch,
   };
 }
 
 export async function fetchBenchmarkCsv(
-  machine: string,
-  jvm: string,
   version: string,
   metric: string,
   suite: string,
   file: string,
 ): Promise<AggregatedRow[]> {
-  const path = `aggregated/${machine}/${jvm}/${version}/${metric}/${suite}/${file}`;
+  const path = `${AGGREGATED_PREFIX}${version}/${metric}/${suite}/${file}`;
   const response = await fetch(`${DATA_BASE}/${path}`);
   if (!response.ok) return [];
   const text = await response.text();
@@ -139,14 +123,11 @@ export async function fetchBenchmarkCsv(
 }
 
 export async function fetchAllBenchmarks(
-  machine: string,
-  jvm: string,
   version: string,
   metric: string,
   index: DataIndex,
 ): Promise<AllBenchmarks> {
-  const key = `${machine}/${jvm}/${version}/${metric}`;
-  const suitesForKey = index.suites[key];
+  const suitesForKey = index.suites[`${version}/${metric}`];
   if (!suitesForKey) return new Map();
 
   const result: AllBenchmarks = new Map();
@@ -158,14 +139,7 @@ export async function fetchAllBenchmarks(
       await Promise.all(
         files.map(async (file) => {
           const benchmarkName = file.replace(/\.csv$/, "");
-          const data = await fetchBenchmarkCsv(
-            machine,
-            jvm,
-            version,
-            metric,
-            suite,
-            file,
-          );
+          const data = await fetchBenchmarkCsv(version, metric, suite, file);
           if (data.length > 0) {
             suiteBenchmarks.set(benchmarkName, data);
           }
@@ -188,13 +162,11 @@ interface RawRow {
 }
 
 async function fetchRawCsv(
-  machine: string,
-  jvm: string,
   patchVersion: string,
   version: string,
   file: string,
 ): Promise<RawRow[]> {
-  const path = `raw/${machine}/${jvm}/${patchVersion}/${version}/${file}`;
+  const path = `${RAW_PREFIX}${patchVersion}/${version}/${file}`;
   const response = await fetch(`${DATA_BASE}/${path}`);
   if (!response.ok) return [];
   const text = await response.text();
@@ -206,16 +178,13 @@ async function fetchRawCsv(
 }
 
 async function fetchRawDataForVersion(
-  machine: string,
-  jvm: string,
   patchVersion: string,
   version: string,
   index: DataIndex,
 ): Promise<RawSuiteData> {
-  const key = `${machine}/${jvm}/${patchVersion}/${version}`;
-  const files = index.rawFiles[key] ?? [];
+  const files = index.rawFiles[`${patchVersion}/${version}`] ?? [];
   const allRows = await Promise.all(
-    files.map((file) => fetchRawCsv(machine, jvm, patchVersion, version, file)),
+    files.map((file) => fetchRawCsv(patchVersion, version, file)),
   );
   const result: RawSuiteData = new Map();
   for (const rows of allRows) {
@@ -230,16 +199,14 @@ async function fetchRawDataForVersion(
 }
 
 export async function fetchComparisonData(
-  machine: string,
-  jvm: string,
   versions: string[],
   index: DataIndex,
 ): Promise<ComparisonData> {
   const entries = await Promise.all(
     versions.map(async (version) => {
-      const patchVersion = index.rawVersionToPatch[`${machine}/${jvm}/${version}`];
+      const patchVersion = index.rawVersionToPatch[version];
       if (!patchVersion) return [version, new Map() as RawSuiteData] as const;
-      const data = await fetchRawDataForVersion(machine, jvm, patchVersion, version, index);
+      const data = await fetchRawDataForVersion(patchVersion, version, index);
       return [version, data] as const;
     }),
   );
