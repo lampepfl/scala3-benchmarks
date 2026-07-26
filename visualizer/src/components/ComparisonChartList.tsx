@@ -1,6 +1,6 @@
 import { Heading, Stack, Spinner } from "@primer/react";
 import type { ComparisonData, RawMeasurements } from "../types";
-import { benchmarkCategories } from "../benchmarkCategories";
+import { benchmarkCategories, suiteBase } from "../benchmarkCategories";
 import ComparisonChart from "./ComparisonChart";
 
 interface ComparisonChartListProps {
@@ -46,11 +46,10 @@ export default function ComparisonChartList({
 
         for (const [version, suiteData] of data) {
           const merged: RawMeasurements = new Map();
-          for (const suiteName of category.benchmarks) {
-            const benchmarks = suiteData.get(suiteName);
-            if (!benchmarks) continue;
+          for (const [suiteName, benchmarks] of suiteData) {
+            if (!category.suites.includes(suiteBase(suiteName))) continue;
             for (const [bench, times] of benchmarks) {
-              merged.set(bench, times);
+              merged.set(bench, (merged.get(bench) ?? []).concat(times));
               hasBenchmarks = true;
             }
           }

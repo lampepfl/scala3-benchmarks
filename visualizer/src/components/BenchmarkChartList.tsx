@@ -1,6 +1,6 @@
 import { Heading, Stack } from "@primer/react";
 import type { AllBenchmarks, AggregatedRow, Config } from "../types";
-import { benchmarkCategories } from "../benchmarkCategories";
+import { benchmarkCategories, suiteBase } from "../benchmarkCategories";
 import BenchmarkChart from "./BenchmarkChart";
 
 interface BenchmarkChartListProps {
@@ -17,28 +17,42 @@ export default function BenchmarkChartList({
   return (
     <Stack direction="vertical" gap="normal">
       {benchmarkCategories.map((category) => {
-        // Collect all benchmarks from all suites in this category
-        const allBenchmarks: [string, AggregatedRow[]][] = [];
-        for (const suiteName of category.benchmarks) {
-          const suite = data.get(suiteName);
-          if (!suite) continue;
+        // Collect benchmarks from all suites in this category, merged per
+        // (base suite, benchmark) so that history split across Nightly and
+        // Weekly variants joins up, while a same-named benchmark in a
+        // different base suite stays separate.
+        const merged = new Map<
+          string,
+          { benchmarkName: string; rows: AggregatedRow[] }
+        >();
+        for (const [suiteName, suite] of data) {
+          const base = suiteBase(suiteName);
+          if (!category.suites.includes(base)) continue;
           for (const [benchmarkName, rows] of suite) {
-            allBenchmarks.push([benchmarkName, rows]);
+            const key = `${base}/${benchmarkName}`;
+            const existing = merged.get(key);
+            if (existing) {
+              existing.rows = existing.rows.concat(rows);
+            } else {
+              merged.set(key, { benchmarkName, rows });
+            }
           }
         }
 
-        if (allBenchmarks.length === 0) return null;
+        if (merged.size === 0) return null;
 
         // Sort benchmarks alphabetically by name
-        allBenchmarks.sort(([a], [b]) => a.localeCompare(b));
+        const allBenchmarks = [...merged.entries()].sort(
+          ([, a], [, b]) => a.benchmarkName.localeCompare(b.benchmarkName),
+        );
 
         return (
           <div key={category.name}>
             <Heading as="h2" variant="large" style={{ marginTop: 24, marginBottom: 16 }}>
               {category.name}
             </Heading>
-            {allBenchmarks.map(([benchmarkName, rows]) => (
-              <div key={benchmarkName} style={{ marginBottom: 32 }}>
+            {allBenchmarks.map(([key, { benchmarkName, rows }]) => (
+              <div key={key} style={{ marginBottom: 32 }}>
                 <Heading as="h3" variant="medium" style={{ marginBottom: 4 }}>
                   {benchmarkName}
                 </Heading>

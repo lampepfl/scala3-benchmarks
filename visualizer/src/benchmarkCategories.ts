@@ -1,41 +1,41 @@
 export interface BenchmarkCategory {
   name: string;
-  benchmarks: string[];
+  /** Suite names without the Nightly/Weekly schedule suffix. */
+  suites: string[];
+}
+
+/**
+ * Suite name with the Nightly/Weekly schedule suffix stripped, so that a
+ * benchmark keeps a single identity when its schedule changes (e.g.
+ * CompilationBenchmarksBig36Nightly → CompilationBenchmarksBig36Weekly).
+ */
+export function suiteBase(suite: string): string {
+  return suite.replace(/(Nightly|Weekly)$/, "");
 }
 
 export const benchmarkCategories: BenchmarkCategory[] = [
   {
     name: "Compilation – Big",
-    benchmarks: [
-      "CompilationBenchmarksBigNightly",
-      "CompilationBenchmarksBigWeekly",
-      "CompilationBenchmarksBig36Nightly",
-    ],
+    suites: ["CompilationBenchmarksBig", "CompilationBenchmarksBig36"],
   },
   {
     name: "Compilation – Small",
-    benchmarks: [
-      "CompilationBenchmarksSmallNightly",
-      "CompilationBenchmarksSmallWeekly",
-    ],
+    suites: ["CompilationBenchmarksSmall"],
   },
   {
     name: "Compilation – Xsbti",
-    benchmarks: ["CompilationBenchmarksXsbtiWeekly"],
+    suites: ["CompilationBenchmarksXsbti"],
   },
   {
     name: "Runtime – Optimizer",
-    benchmarks: [
-      "RuntimeBenchmarksOptimizerSmallNightly",
-      "RuntimeBenchmarksOptimizerSmallWeekly",
-    ],
+    suites: ["RuntimeBenchmarksOptimizerSmall"],
   },
   {
     name: "Runtime – Libraries",
-    benchmarks: ["RuntimeBenchmarksLibsWeekly"],
+    suites: ["RuntimeBenchmarksLibs"],
   },
   {
     name: "Runtime – Are We Fast Yet?",
-    benchmarks: ["RuntimeBenchmarksAwfyWeekly"],
+    suites: ["RuntimeBenchmarksAwfy"],
   },
 ];
