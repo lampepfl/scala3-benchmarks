@@ -259,12 +259,18 @@ lazy val benchIndigo =
         publish / skip := true,
       )
 
+val optimizerFlags =
+  if (VersionNumber(compilerVersion).matchesSemVer(SemanticSelector(">=3.8.4")))
+    Seq("-opt", "-opt-inline:**,!java.**")
+  else
+    Seq.empty
+
 lazy val benchAreWeFastYet =
   project
     .in(file("bench-sources/areWeFastYet"))
     .settings(
       scalaVersion := compilerVersion,
-      scalacOptions ++= sharedScalacOptions ++ Seq("-opt", "-opt-inline:**,!java.**"),
+      scalacOptions ++= sharedScalacOptions ++ optimizerFlags,
       Compile / scalaSource := baseDirectory.value,
     )
 
@@ -273,7 +279,7 @@ lazy val benchOptimizer =
     .in(file("bench-sources/optimizer"))
     .settings(
       scalaVersion := compilerVersion,
-      scalacOptions ++= sharedScalacOptions ++ Seq("-opt", "-opt-inline:**,!java.**"),
+      scalacOptions ++= sharedScalacOptions ++ optimizerFlags,
       Compile / scalaSource := baseDirectory.value,
     )
 
