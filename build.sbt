@@ -264,7 +264,7 @@ lazy val benchAreWeFastYet =
     .in(file("bench-sources/areWeFastYet"))
     .settings(
       scalaVersion := compilerVersion,
-      scalacOptions ++= sharedScalacOptions,
+      scalacOptions ++= sharedScalacOptions ++ Seq("-opt", "-opt-inline:**,!java.**"),
       Compile / scalaSource := baseDirectory.value,
     )
 
@@ -273,7 +273,7 @@ lazy val benchOptimizer =
     .in(file("bench-sources/optimizer"))
     .settings(
       scalaVersion := compilerVersion,
-      scalacOptions ++= sharedScalacOptions,
+      scalacOptions ++= sharedScalacOptions ++ Seq("-opt", "-opt-inline:**,!java.**"),
       Compile / scalaSource := baseDirectory.value,
     )
 
