@@ -34,23 +34,16 @@ object KmeansBenchmark {
     mutable.ArrayBuffer.from((0 until k).map(_ => points(rand.nextInt(points.length))))
   }
 
-  // The loops in this file are written with index-based `while` on purpose: with
-  // `foreach`/`for` the JIT sometimes fails to inline the closure through the
-  // generic `IterableOnceOps.foreach`, leaving the benchmark 2-3x slower for the
-  // whole JVM lifetime depending on compile-queue timing.
   def findClosest(p: Point, means: scala.collection.Seq[Point]): Point = {
     scala.Predef.assert(means.size > 0)
     var minDistance = p.squareDistance(means(0))
     var closest     = means(0)
-    var i           = 0
-    while (i < means.length) {
-      val mean     = means(i)
+    for (mean <- means) {
       val distance = p.squareDistance(mean)
       if (distance < minDistance) {
         minDistance = distance
         closest = mean
       }
-      i += 1
     }
     closest
   }
@@ -71,13 +64,10 @@ object KmeansBenchmark {
       var x = 0.0
       var y = 0.0
       var z = 0.0
-      var i = 0
-      while (i < points.length) {
-        val p = points(i)
+      points.foreach { p =>
         x += p.x
         y += p.y
         z += p.z
-        i += 1
       }
       new Point(x / points.length, y / points.length, z / points.length)
     }
@@ -124,13 +114,10 @@ object KmeansBenchmark {
     val means = initializeMeans(k, points)
     val result = kMeans(points, means, eta)
     var sum = 0d
-    var i   = 0
-    while (i < result.length) {
-      val p = result(i)
+    result.foreach { p =>
       sum += p.x
       sum += p.y
       sum += p.z
-      i += 1
     }
     sum == 71.5437923802926D
   }
