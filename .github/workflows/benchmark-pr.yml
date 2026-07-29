@@ -182,8 +182,12 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        version: ${{ fromJSON(needs.publish-pr.outputs.versions_json) }}
+        # Matrix jobs are created in dimension order with the last dimension
+        # varying fastest, and max-parallel: 1 runs them in creation order.
+        # Listing `run` before `version` interleaves versions within each run
+        # (v1 r1, v2 r1, v1 r2, ...) instead of grouping all runs per version.
         run: ${{ fromJSON(needs.publish-pr.outputs.runs_array) }}
+        version: ${{ fromJSON(needs.publish-pr.outputs.versions_json) }}
     uses: ./.github/workflows/benchmark.yml
     with:
       versions: ${{ matrix.version }}
