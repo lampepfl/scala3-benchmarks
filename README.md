@@ -116,12 +116,6 @@ Benchmarks should:
 - not require complex setup
 - Ideally not require external dependencies
 
-Potential future benchmarks:
-
-- [quicklens](https://github.com/softwaremill/quicklens)  (waiting 3.8)
-- advent of code solutions (various authors, various sizes)
-
-
 To add a new benchmark:
 
 1. Add a `.scala` file to `bench-sources/small/`, or create a new SBT subproject in `bench-sources/` for multi-file benchmarks
