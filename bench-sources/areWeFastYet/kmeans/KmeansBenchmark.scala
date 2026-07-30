@@ -15,7 +15,7 @@ class Point(val x: Double, val y: Double, val z: Double) {
 
 object KmeansBenchmark {
 
-  def generatePoints(k: Int, num: Int): scala.collection.Seq[Point] = {
+  def generatePoints(k: Int, num: Int): mutable.ArrayBuffer[Point] = {
     val randx = new Random(1)
     val randy = new Random(3)
     val randz = new Random(5)
@@ -29,12 +29,12 @@ object KmeansBenchmark {
     mutable.ArrayBuffer.from(points)
   }
 
-  def initializeMeans(k: Int, points: scala.collection.Seq[Point]): scala.collection.Seq[Point] = {
+  def initializeMeans(k: Int, points: mutable.ArrayBuffer[Point]): mutable.ArrayBuffer[Point] = {
     val rand = new Random(7)
     mutable.ArrayBuffer.from((0 until k).map(_ => points(rand.nextInt(points.length))))
   }
 
-  def findClosest(p: Point, means: scala.collection.Seq[Point]): Point = {
+  def findClosest(p: Point, means: mutable.ArrayBuffer[Point]): Point = {
     scala.Predef.assert(means.size > 0)
     var minDistance = p.squareDistance(means(0))
     var closest     = means(0)
@@ -49,16 +49,16 @@ object KmeansBenchmark {
   }
 
   def classify(
-      points: scala.collection.Seq[Point],
-      means: scala.collection.Seq[Point]
-  ): scala.collection.Map[Point, scala.collection.Seq[Point]] = {
+      points: mutable.ArrayBuffer[Point],
+      means: mutable.ArrayBuffer[Point]
+  ): Map[Point, mutable.ArrayBuffer[Point]] = {
     val grouped = points.groupBy(p => findClosest(p, means))
     means.foldLeft(grouped) { (map, mean) =>
-      if (map.contains(mean)) map else map.updated(mean, Seq())
+      if (map.contains(mean)) map else map.updated(mean, mutable.ArrayBuffer.empty[Point])
     }
   }
 
-  def findAverage(oldMean: Point, points: scala.collection.Seq[Point]): Point =
+  def findAverage(oldMean: Point, points: mutable.ArrayBuffer[Point]): Point =
     if (points.length == 0) oldMean
     else {
       var x = 0.0
@@ -73,15 +73,15 @@ object KmeansBenchmark {
     }
 
   def update(
-      classified: scala.collection.Map[Point, scala.collection.Seq[Point]],
-      oldMeans: scala.collection.Seq[Point]
-  ): scala.collection.Seq[Point] = {
+      classified: Map[Point, mutable.ArrayBuffer[Point]],
+      oldMeans: mutable.ArrayBuffer[Point]
+  ): mutable.ArrayBuffer[Point] = {
     oldMeans.map(mean => findAverage(mean, classified(mean)))
   }
 
   def converged(eta: Double)(
-      oldMeans: scala.collection.Seq[Point],
-      newMeans: scala.collection.Seq[Point]
+      oldMeans: mutable.ArrayBuffer[Point],
+      newMeans: mutable.ArrayBuffer[Point]
   ): Boolean = {
     (oldMeans zip newMeans)
       .map({
@@ -92,10 +92,10 @@ object KmeansBenchmark {
   }
 
   final def kMeans(
-      points: scala.collection.Seq[Point],
-      means: scala.collection.Seq[Point],
+      points: mutable.ArrayBuffer[Point],
+      means: mutable.ArrayBuffer[Point],
       eta: Double
-    ): scala.collection.Seq[Point] = {
+    ): mutable.ArrayBuffer[Point] = {
     val classifiedPoints = classify(points, means)
 
     val newMeans = update(classifiedPoints, means)
