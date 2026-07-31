@@ -1,0 +1,46 @@
+name: CI PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "Dotty PR number"
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Checkout dotty PR
+        uses: actions/checkout@v6
+        with:
+          repository: scala/scala3
+          ref: refs/pull/${{ inputs.pr }}/head
+          fetch-depth: 0
+          path: dotty
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: sbt
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
+
+      - name: Publish dotty PR locally
+        working-directory: dotty
+        env:
+          BENCHMARKBUILD: "yes"
+        run: |
+          sbt --no-colors clean community-build/prepareCommunityBuild
+          VERSION=$(cat community-build/scala3-bootstrapped.version)
+          echo "COMPILER_VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "Compiler version: $VERSION"
+
+      - name: Compile all projects
+        run: sbt --no-colors -Dcompiler.version=$COMPILER_VERSION compile
