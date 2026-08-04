@@ -5,7 +5,7 @@ import org.openjdk.jmh.annotations.{Benchmark, Warmup}
 
 class CompilationBenchmarksBig36Weekly extends CompilationBenchmarks:
   
-  @Warmup(iterations = 60)
+  @Warmup(iterations = 40)
   @Benchmark
   def indigo =
     assert(Config.indigo.sources.size == 223)
