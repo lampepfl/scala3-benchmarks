@@ -5,6 +5,7 @@ import org.openjdk.jmh.annotations.{Benchmark, Warmup}
 
 class CompilationBenchmarksBigNightly extends CompilationBenchmarks:
 
+  @Warmup(iterations = 130)
   @Benchmark
   def caskApp =
     assert(Config.caskApp.sources.size == 1)
@@ -16,12 +17,13 @@ class CompilationBenchmarksBigNightly extends CompilationBenchmarks:
     assert(Config.dottyUtil.sources.size == 34)
     DottyCompiler.compile(Config.dottyUtil.sources, Config.dottyUtil.options, outDir)
 
+  @Warmup(iterations = 140)
   @Benchmark
   def fansi =
     assert(Config.fansi.sources.size == 2)
     DottyCompiler.compile(Config.fansi.sources, Config.fansi.options, outDir)
 
-  @Warmup(iterations = 120)
+  @Warmup(iterations = 60)
   @Benchmark
   def re2s =
     assert(Config.re2s.sources.size == 17)
@@ -33,18 +35,19 @@ class CompilationBenchmarksBigNightly extends CompilationBenchmarks:
     assert(Config.parallelCollections.sources.size == 86)
     DottyCompiler.compile(Config.parallelCollections.sources, Config.parallelCollections.options, outDir)
 
+  @Warmup(iterations = 130)
   @Benchmark
   def scalaToday =
     assert(Config.scalaToday.sources.size == 9)
     DottyCompiler.compile(Config.scalaToday.sources, Config.scalaToday.options, outDir)
 
-  @Warmup(iterations = 80)
+  @Warmup(iterations = 40)
   @Benchmark
   def scalaYaml =
     assert(Config.scalaYaml.sources.size == 57)
     DottyCompiler.compile(Config.scalaYaml.sources, Config.scalaYaml.options, outDir)
 
-  @Warmup(iterations = 170)
+  @Warmup(iterations = 100)
   @Benchmark
   def sourcecode =
     assert(Config.sourcecode.sources.size == 20)
@@ -56,6 +59,7 @@ class CompilationBenchmarksBigNightly extends CompilationBenchmarks:
     assert(Config.tastyQuery.sources.size == 49)
     DottyCompiler.compile(Config.tastyQuery.sources, Config.tastyQuery.options, outDir)
 
+  @Warmup(iterations = 130)
   @Benchmark
   def tictactoe =
     assert(Config.tictactoe.sources.size == 16)

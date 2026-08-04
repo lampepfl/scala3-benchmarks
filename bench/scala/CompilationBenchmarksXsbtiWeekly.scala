@@ -6,7 +6,9 @@ import bench.compilers.XsbtiCompiler
 
 class CompilationBenchmarksXsbtiWeekly extends CompilationBenchmarks:
 
-  @Benchmark def xsbtiHelloWorld =
+  @Warmup(iterations = 130)
+  @Benchmark
+  def xsbtiHelloWorld =
     assert(Config.helloWorld.sources.size == 1)
     XsbtiCompiler.compile(Config.helloWorld.sources, Config.helloWorld.options, outDir)
 
