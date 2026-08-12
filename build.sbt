@@ -12,10 +12,11 @@ ThisBuild / resolvers += Resolver.scalaNightlyRepository
 lazy val bench =
   project
     .in(file("bench"))
-    .dependsOn(benchAreWeFastYet, benchOptimizer, benchScalaYaml, benchParserCombinators, benchFansi)
+    .dependsOn(benchAreWeFastYet, benchOptimizer, benchScalaYaml, benchParserCombinators, benchFansi, benchScalaSteward)
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions,
+      evictionErrorLevel := Level.Warn,
       libraryDependencies ++= Seq(
         "org.scala-lang" %% "scala3-compiler" % compilerVersion,
         "org.scala-lang" % "scala3-sbt-bridge" % compilerVersion,
@@ -65,6 +66,44 @@ lazy val benchScalaz =
         "-language:implicitConversions",
       ),
       Compile / scalaSource := baseDirectory.value,
+    )
+
+lazy val benchScalaSteward =
+  project
+    .in(file("bench-sources/scalaSteward"))
+    .settings(
+      scalaVersion := compilerVersion,
+      scalacOptions ++= sharedScalacOptions ++ Seq("-nowarn"),
+      evictionErrorLevel := Level.Warn,
+      libraryDependencies ++= Seq(
+        "org.bouncycastle" % "bcprov-jdk15to18" % "1.85.2",
+        "com.github.pathikrit" %% "better-files" % "3.9.2",
+        "org.typelevel" %% "cats-core" % "2.13.0",
+        "org.typelevel" %% "cats-effect" % "3.7.0",
+        "org.typelevel" %% "cats-parse" % "1.1.0",
+        "io.circe" %% "circe-config" % "0.10.2",
+        "io.circe" %% "circe-generic" % "0.14.16",
+        "io.circe" %% "circe-parser" % "0.14.16",
+        "io.circe" %% "circe-refined" % "0.15.1",
+        "commons-io" % "commons-io" % "2.22.0",
+        ("io.get-coursier" %% "coursier" % "2.1.24").cross(CrossVersion.for3Use2_13),
+        ("io.get-coursier" %% "coursier-sbt-maven-repository" % "2.1.24").cross(CrossVersion.for3Use2_13),
+        "com.github.alonsodomin.cron4s" %% "cron4s-core" % "0.8.2",
+        "com.monovore" %% "decline" % "2.6.2",
+        "co.fs2" %% "fs2-core" % "3.13.0",
+        "co.fs2" %% "fs2-io" % "3.13.0",
+        "org.http4s" %% "http4s-circe" % "1.0.0-M47",
+        "org.http4s" %% "http4s-client" % "1.0.0-M47",
+        "org.http4s" %% "http4s-core" % "1.0.0-M47",
+        "org.http4s" %% "http4s-jdk-http-client" % "1.0.0-M10",
+        "io.jsonwebtoken" % "jjwt-api" % "0.13.0",
+        "org.typelevel" %% "log4cats-slf4j" % "2.8.0",
+        "dev.optics" %% "monocle-core" % "3.3.0",
+        "eu.timepit" %% "refined" % "0.11.4",
+        "com.github.cb372" %% "scalacache-caffeine" % "1.0.0-M6",
+        "org.tomlj" % "tomlj" % "1.1.1",
+      ),
+      Compile / scalaSource := baseDirectory.value / "modules" / "core" / "src" / "main" / "scala",
     )
 
 lazy val benchRe2s =
@@ -352,6 +391,7 @@ def benchmarkConfigs = Def.task {
     bigBenchmarkConfig(benchScalaToday).value,
     bigBenchmarkConfig(benchScalaYaml, includeTests = true).value,
     bigBenchmarkConfig(benchScalaz).value,
+    bigBenchmarkConfig(benchScalaSteward).value,
     bigBenchmarkConfig(benchSourcecode, includeTests = true).value,
     bigBenchmarkConfig(benchTastyQuery).value,
     bigBenchmarkConfig(benchTictactoe, includeTests = true).value,
