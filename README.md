@@ -157,12 +157,11 @@ Async-profiler options reference [async-profiler/docs/ProfilerOptions.md](https:
 
 ## Benchmarking Local Changes
 
-To benchmark local changes to the compiler, you can publish a local snapshot of the compiler and run the benchmarks against it:
+To benchmark local changes to the compiler, you can publish a local snapshot of the compiler and run the benchmarks against it.
 
-```bash
-# Run from the root of the scala/scala3 repository
-sbt community-build/prepareCommunityBuild
-```
+The simplest way is to commit your changes, close SBT, then run `BENCHMARKBUILD=yes sbt clean community-build/prepareCommunityBuild` from the root of the scala/scala3 repository.
+
+Otherwise, without committing, you can run the `community-build/prepareCommunityBuild` task from `sbt`, but it will reuse the current compiler version number locally.
 
 The version of the published snapshot is written to the `community-build/scala3-bootstrapped.version` file.
 
