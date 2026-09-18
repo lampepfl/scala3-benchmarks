@@ -230,7 +230,7 @@ class LayerRenderer(
           setupShader(currentProgram)
           currentProgram
         } catch {
-          case _: Throwable =>
+          case _: Exception =>
             throw new Exception(
               s"Missing entity shader '${d.shaderId}'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
             )

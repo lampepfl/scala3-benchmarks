@@ -237,7 +237,7 @@ final class RendererInitialiser(
           false
         }
       } catch {
-        case _: Throwable => false
+        case _: Exception => false
       }
 
     val tests = List(

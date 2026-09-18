@@ -12,3 +12,6 @@ results
 # Visualizer
 visualizer/node_modules
 visualizer/dist
+
+# macOS
+.DS_Store

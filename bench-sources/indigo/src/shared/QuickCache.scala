@@ -27,7 +27,7 @@ final class QuickCache[A](private val cache: scalajs.js.Dictionary[A]):
     else
       try cache(key.toString)
       catch {
-        case _: Throwable =>
+        case _: Exception =>
           add(key, value)
       }
 
