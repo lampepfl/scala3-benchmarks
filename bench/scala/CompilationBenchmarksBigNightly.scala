@@ -41,11 +41,11 @@ class CompilationBenchmarksBigNightly extends CompilationBenchmarks:
     assert(Config.scalaToday.sources.size == 9)
     DottyCompiler.compile(Config.scalaToday.sources, Config.scalaToday.options, outDir)
 
-  @Warmup(iterations = 50)
+/*  @Warmup(iterations = 50)
   @Benchmark
   def scalaSteward =
     assert(Config.scalaSteward.sources.size == 186)
-    DottyCompiler.compile(Config.scalaSteward.sources, Config.scalaSteward.options, outDir)
+    DottyCompiler.compile(Config.scalaSteward.sources, Config.scalaSteward.options, outDir)*/
 
   @Warmup(iterations = 40)
   @Benchmark

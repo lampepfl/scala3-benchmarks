@@ -12,7 +12,7 @@ ThisBuild / resolvers += Resolver.scalaNightlyRepository
 lazy val bench =
   project
     .in(file("bench"))
-    .dependsOn(benchAreWeFastYet, benchOptimizer, benchScalaYaml, benchParserCombinators, benchFansi, benchScalaSteward)
+    .dependsOn(benchAreWeFastYet, benchOptimizer, benchScalaYaml, benchParserCombinators, benchFansi/*, benchScalaSteward*/)
     .settings(
       scalaVersion := compilerVersion,
       scalacOptions ++= sharedScalacOptions,
@@ -68,7 +68,7 @@ lazy val benchScalaz =
       Compile / scalaSource := baseDirectory.value,
     )
 
-lazy val benchScalaSteward =
+/*lazy val benchScalaSteward =
   project
     .in(file("bench-sources/scalaSteward"))
     .settings(
@@ -104,7 +104,7 @@ lazy val benchScalaSteward =
         "org.tomlj" % "tomlj" % "1.1.1",
       ),
       Compile / scalaSource := baseDirectory.value / "modules" / "core" / "src" / "main" / "scala",
-    )
+    )*/
 
 lazy val benchRe2s =
   project
@@ -391,7 +391,7 @@ def benchmarkConfigs = Def.task {
     bigBenchmarkConfig(benchScalaToday).value,
     bigBenchmarkConfig(benchScalaYaml, includeTests = true).value,
     bigBenchmarkConfig(benchScalaz).value,
-    bigBenchmarkConfig(benchScalaSteward).value,
+    //bigBenchmarkConfig(benchScalaSteward).value,
     bigBenchmarkConfig(benchSourcecode, includeTests = true).value,
     bigBenchmarkConfig(benchTastyQuery).value,
     bigBenchmarkConfig(benchTictactoe, includeTests = true).value,
