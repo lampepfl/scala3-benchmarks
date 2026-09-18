@@ -26,6 +26,7 @@ Sources are vendored (copied directly into this repository) and fixed to compile
 | [scala-parser-combinators](https://github.com/scala/scala-parser-combinators) | 2.4.0 | 2'325 | junit | yes |
 | [scala.today](https://github.com/VirtusLab/scala.today) | 2dd97e7 | 1'103 | tapir, ox, magnum, etc. | no |
 | [scala-yaml](https://github.com/VirtusLab/scala-yaml) | 0.3.1 | 6'473 | pprint, munit | yes |
+| [scala-steward](https://github.com/scala-steward-org/scala-steward) | 31cfd84 | 14'960 | cats-effect, fs2, http4s, circe, coursier | no |
 | [scalaz](https://github.com/scalaz/scalaz) | v7.2.36 | 27'757| none | no |
 | [sourcecode](https://github.com/com-lihaoyi/sourcecode) | 0.4.4 | 638 | none | yes |
 | [tasty-query](https://github.com/scalacenter/tasty-query) | v1.6.1 | 13'482 | none | no |

@@ -7,7 +7,7 @@ target
 .scala-build
 out
 results
-sbt
+/sbt
 
 # Visualizer
 visualizer/node_modules
