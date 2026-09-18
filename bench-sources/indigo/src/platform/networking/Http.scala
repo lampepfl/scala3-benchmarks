@@ -68,7 +68,7 @@ object Http {
       }
 
     } catch {
-      case _: Throwable =>
+      case _: Exception =>
         globalEventStream.pushGlobalEvent(HttpError)
     }
 

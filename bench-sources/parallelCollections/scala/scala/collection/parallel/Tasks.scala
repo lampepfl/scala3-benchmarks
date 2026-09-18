@@ -55,7 +55,7 @@ trait Task[R, +Tp] {
         signalAbort()
       }
     } catch {
-      case thr: Throwable =>
+      case thr: Exception =>
         result = result // ensure that effects of `leaf` are visible
       throwable = thr
       signalAbort()

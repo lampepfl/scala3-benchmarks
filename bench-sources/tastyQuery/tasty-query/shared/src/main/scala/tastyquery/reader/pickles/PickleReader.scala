@@ -296,7 +296,7 @@ private[pickles] class PickleReader {
         val tpe =
           try at(infoRef)(readTypeMappable())
           catch
-            case t: Throwable =>
+            case t: Exception =>
               throw new Scala2PickleFormatException(s"error while unpickling the type of $sym", t)
 
         sym match

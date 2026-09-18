@@ -35,7 +35,7 @@ object WebSockets:
           }
       }
     catch {
-      case e: Throwable =>
+      case e: Exception =>
         globalEventStream.pushGlobalEvent(WebSocketEvent.Error(event.giveId, e.getMessage))
     }
 
@@ -96,7 +96,7 @@ object WebSockets:
 
       Option(socket)
     } catch {
-      case e: Throwable =>
+      case e: Exception =>
         IndigoLogger.info("Error trying to set up a websocket: " + e.getMessage)
         None
     }
