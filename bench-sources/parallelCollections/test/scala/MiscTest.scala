@@ -86,7 +86,7 @@ class MiscTest {
         assert(ex.getSuppressed.forall(_.isInstanceOf[MultipleOf37Exception]))
         assert(ex.i == 37)
         assert(ex.getSuppressed.map(_.asInstanceOf[MultipleOf37Exception].i).forall(_ % 37 == 0))
-      case _: Throwable =>
+      case _: Exception =>
         assert(false)
     }
     class MultipleOf37Exception(val i: Int) extends RuntimeException
