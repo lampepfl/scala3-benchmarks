@@ -55,6 +55,16 @@ The remaining benchmarks target specific compiler aspects (pattern matching, imp
 sbt -Dcompiler.version=3.3.4 "clean; bench / Jmh / run -gc true -foe true"
 ```
 
+### In-memory output
+
+By default each compilation writes its class and TASTy files to `out/`. Set `BENCH_OUTPUT=memory` to write them to an in-memory `VirtualDirectory` instead, so that file system writes, and anything that reacts to them (antivirus scanning, indexing, backup), are not part of the measurement:
+
+```bash
+BENCH_OUTPUT=memory sbt -Dcompiler.version=3.3.4 "clean; bench / Jmh / run -gc true -foe true"
+```
+
+This applies to the `DottyCompiler` benchmarks, which then also skip resetting `out/` (an `rm -rf` and `mkdir -p`) before each iteration; the `xsbti` benchmarks still write to `out/`. The output is still produced and held in memory, so allocation per operation rises slightly (about 3 MB per compilation of `re2s`).
+
 ## Structure of this Repository
 
 ```

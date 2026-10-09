@@ -29,9 +29,12 @@ abstract class CompilationBenchmarks:
 
   val outDir = "out"
 
+  /** Whether compilations write to `outDir`. If not (`BENCH_OUTPUT=memory`), the per-iteration reset is skipped. */
+  protected def writesOutput: Boolean = !bench.compilers.DottyCompiler.inMemory
+
   @Setup(Level.Iteration)
   def setup(): Unit =
-    removeAndCreateDir(outDir)
+    if writesOutput then removeAndCreateDir(outDir)
 
   /** Removes and creates a directory. */
   def removeAndCreateDir(dir: String) =

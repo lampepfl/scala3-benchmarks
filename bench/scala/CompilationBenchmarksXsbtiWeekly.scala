@@ -6,6 +6,9 @@ import bench.compilers.XsbtiCompiler
 
 class CompilationBenchmarksXsbtiWeekly extends CompilationBenchmarks:
 
+  // XsbtiCompiler always writes to outDir.
+  override protected def writesOutput: Boolean = true
+
   @Warmup(iterations = 130)
   @Benchmark
   def xsbtiHelloWorld =
