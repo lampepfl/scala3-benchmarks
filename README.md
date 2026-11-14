@@ -44,6 +44,7 @@ The remaining benchmarks target specific compiler aspects (pattern matching, imp
 - [Are We Fast Yet?](bench-sources/areWeFastYet): classic benchmark suite ported to Scala, including Bounce, Brainfuck, CD, DeltaBlue, GCBench, Json, Kmeans, List, Mandelbrot, NBody, Permute, Queens, Richards, and Tracer.
 - [Optimizer](bench-sources/optimizer): small benchmarks used to track the effect of the Scala 3 optimizer.
 - [Librairies](bench/scala/RuntimeBenchmarksLibsWeekly.scala): runtime benchmarks using libraries such as scala-yaml and scala-parser-combinators.
+- [Tuples](bench/scala/RuntimeBenchmarksTuplesWeekly.scala): generic tuple operations from `scala.runtime.Tuples` (cons, concat, map, zip, …) on tuples of sizes 0 to 50, and generic algorithms written on top of them (reverse, flatMap, merge sort). Ported from the [`bench-run`](https://github.com/scala/scala3/tree/main/bench-run) benchmarks of the Scala 3 repository.
 
 ## Quick Start
 

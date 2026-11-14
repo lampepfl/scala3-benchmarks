@@ -38,4 +38,8 @@ export const benchmarkCategories: BenchmarkCategory[] = [
     name: "Runtime – Are We Fast Yet?",
     suites: ["RuntimeBenchmarksAwfy"],
   },
+  {
+    name: "Runtime – Tuples",
+    suites: ["RuntimeBenchmarksTuples"],
+  },
 ];
