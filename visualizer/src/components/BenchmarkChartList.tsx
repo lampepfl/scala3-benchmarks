@@ -16,10 +16,9 @@ export default function BenchmarkChartList({
   colorMode,
 }: BenchmarkChartListProps) {
   const startDate = periodStart(config.period);
-  const categories = benchmarkCategories.filter((c) =>
-    config.categories.includes(c.name),
+  const categories = benchmarkCategories.filter(
+    (c) => c.name === config.category,
   );
-  if (categories.length === 0) return <p>Select at least one category.</p>;
   return (
     <Stack direction="vertical" gap="normal">
       {categories.map((category) => {

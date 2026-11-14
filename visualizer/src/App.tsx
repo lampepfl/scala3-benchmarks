@@ -14,6 +14,7 @@ import { DEFAULT_CONFIG } from "./types";
 import { fetchDataIndex, fetchAllBenchmarks, fetchComparisonData } from "./api";
 import type { DataIndex } from "./api";
 import { useHashRouter } from "./hooks/useHashRouter";
+import { benchmarkCategories } from "./benchmarkCategories";
 import ConfigPanel from "./components/ConfigPanel";
 import BenchmarkChartList from "./components/BenchmarkChartList";
 import VersionSelector from "./components/VersionSelector";
@@ -38,7 +39,13 @@ function loadColorMode(): ColorMode {
 function loadConfig(): Config {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return { ...DEFAULT_CONFIG, ...JSON.parse(stored) };
+    if (stored) {
+      const config: Config = { ...DEFAULT_CONFIG, ...JSON.parse(stored) };
+      // Fall back to the default if the stored category no longer exists.
+      if (!benchmarkCategories.some((c) => c.name === config.category))
+        config.category = DEFAULT_CONFIG.category;
+      return config;
+    }
   } catch {
     // ignore
   }

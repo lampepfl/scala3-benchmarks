@@ -3,7 +3,7 @@ import type { Config } from "../types";
 import { PERIODS } from "../types";
 import SelectorOption from "./SelectorOption";
 import DisplayOptions from "./DisplayOptions";
-import CategorySelector from "./CategorySelector";
+import { benchmarkCategories } from "../benchmarkCategories";
 
 interface ConfigPanelProps {
   config: Config;
@@ -29,9 +29,11 @@ export default function ConfigPanel({
         selected={config.metric}
         onSelectedChange={(v) => onConfigChange({ ...config, metric: v })}
       />
-      <CategorySelector
-        selected={config.categories}
-        onChange={(categories) => onConfigChange({ ...config, categories })}
+      <SelectorOption
+        label="Category"
+        items={benchmarkCategories.map((c) => c.name)}
+        selected={config.category}
+        onSelectedChange={(v) => onConfigChange({ ...config, category: v })}
       />
       <SelectorOption
         label="Period"
