@@ -4,12 +4,15 @@ import Plotly from "plotly.js-dist-min";
 import type { AggregatedRow, Config } from "../types";
 import { plotlyColors } from "../plotlyTheme";
 import { useIsMobile } from "../hooks/useIsMobile";
+import { extractDate } from "../dates";
 
 const Plot = createPlotlyComponent(Plotly);
 
 interface BenchmarkChartProps {
   title: string;
   data: AggregatedRow[];
+  /** First date (YYYY-MM-DD) to display; earlier rows still feed the moving average. */
+  startDate: string;
   config: Config;
   colorMode: "day" | "night";
 }
@@ -23,13 +26,6 @@ function computeMovingAverage(values: number[], windowSize = 10): number[] {
     }
     return sum / (i - start + 1);
   });
-}
-
-function extractDate(version: string): string {
-  const match = version.match(/(\d{8})/);
-  if (!match) return version.slice(0, 10);
-  const d = match[1];
-  return `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`;
 }
 
 /** Extract commit hash from nightly version like "3.8.3-RC1-bin-20260206-7d9042f-NIGHTLY" */
@@ -46,6 +42,7 @@ const PLOT_CONFIG = { responsive: true } as const;
 export default memo(function BenchmarkChart({
   title,
   data,
+  startDate,
   config,
   colorMode,
 }: BenchmarkChartProps) {
@@ -54,9 +51,24 @@ export default memo(function BenchmarkChart({
     () => [...data].sort((a, b) => extractDate(a.version).localeCompare(extractDate(b.version))),
     [data],
   );
-  const versions = useMemo(() => sorted.map((r) => r.version), [sorted]);
-  const dates = useMemo(() => sorted.map((r) => extractDate(r.version)), [sorted]);
-  const avgs = useMemo(() => sorted.map((r) => r.avg), [sorted]);
+  // Computed over the full history, so that it does not restart at the
+  // beginning of the displayed period.
+  const movingAvgs = useMemo(
+    () => computeMovingAverage(sorted.map((r) => r.avg)),
+    [sorted],
+  );
+  const firstShown = useMemo(() => {
+    const i = sorted.findIndex((r) => extractDate(r.version) >= startDate);
+    return i === -1 ? sorted.length : i;
+  }, [sorted, startDate]);
+  const shown = useMemo(() => sorted.slice(firstShown), [sorted, firstShown]);
+  const shownMovingAvgs = useMemo(
+    () => movingAvgs.slice(firstShown),
+    [movingAvgs, firstShown],
+  );
+  const versions = useMemo(() => shown.map((r) => r.version), [shown]);
+  const dates = useMemo(() => shown.map((r) => extractDate(r.version)), [shown]);
+  const avgs = useMemo(() => shown.map((r) => r.avg), [shown]);
 
   // Plotly pads the x autorange by about 5% on each side for traces with
   // markers or error bars. Clip it to the data plus a small margin, so that
@@ -75,7 +87,7 @@ export default memo(function BenchmarkChart({
     const scatterTrace: any = {
       x: dates,
       y: avgs,
-      customdata: sorted.map((r) => [r.version, r.count]),
+      customdata: shown.map((r) => [r.version, r.count]),
       hovertemplate: "<b>%{customdata[0]}</b><br>avg: %{y}<br>count: %{customdata[1]}<extra></extra>",
       mode: "markers",
       type: "scatter",
@@ -85,8 +97,8 @@ export default memo(function BenchmarkChart({
     if (config.errorBars) {
       scatterTrace.error_y = {
         type: "data",
-        array: sorted.map((r) => r.max - r.avg),
-        arrayminus: sorted.map((r) => r.avg - r.min),
+        array: shown.map((r) => r.max - r.avg),
+        arrayminus: shown.map((r) => r.avg - r.min),
         visible: true,
       };
     }
@@ -96,7 +108,7 @@ export default memo(function BenchmarkChart({
     if (config.movingAverage) {
       result.push({
         x: dates,
-        y: computeMovingAverage(avgs),
+        y: shownMovingAvgs,
         mode: "lines" as const,
         type: "scatter" as const,
         name: "Moving average",
@@ -104,7 +116,7 @@ export default memo(function BenchmarkChart({
     }
 
     return result;
-  }, [sorted, dates, avgs, config.errorBars, config.movingAverage]);
+  }, [shown, dates, avgs, shownMovingAvgs, config.errorBars, config.movingAverage]);
 
   const layout = useMemo(() => {
     const colors = plotlyColors(colorMode);

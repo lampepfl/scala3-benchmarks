@@ -1,5 +1,6 @@
 import { Stack } from "@primer/react";
 import type { Config } from "../types";
+import { PERIODS } from "../types";
 import SelectorOption from "./SelectorOption";
 import DisplayOptions from "./DisplayOptions";
 
@@ -26,6 +27,15 @@ export default function ConfigPanel({
         items={metrics}
         selected={config.metric}
         onSelectedChange={(v) => onConfigChange({ ...config, metric: v })}
+      />
+      <SelectorOption
+        label="Period"
+        items={PERIODS.map((p) => p.label)}
+        selected={PERIODS.find((p) => p.id === config.period)?.label ?? ""}
+        onSelectedChange={(label) => {
+          const period = PERIODS.find((p) => p.label === label);
+          if (period) onConfigChange({ ...config, period: period.id });
+        }}
       />
       <DisplayOptions
         yAxisAtZero={config.yAxisAtZero}

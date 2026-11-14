@@ -2,6 +2,7 @@ import { Heading, Stack } from "@primer/react";
 import type { AllBenchmarks, AggregatedRow, Config } from "../types";
 import { benchmarkCategories, suiteBase } from "../benchmarkCategories";
 import BenchmarkChart from "./BenchmarkChart";
+import { extractDate, periodStart } from "../dates";
 
 interface BenchmarkChartListProps {
   data: AllBenchmarks;
@@ -14,6 +15,7 @@ export default function BenchmarkChartList({
   config,
   colorMode,
 }: BenchmarkChartListProps) {
+  const startDate = periodStart(config.period);
   return (
     <Stack direction="vertical" gap="normal">
       {benchmarkCategories.map((category) => {
@@ -39,12 +41,18 @@ export default function BenchmarkChartList({
           }
         }
 
-        if (merged.size === 0) return null;
+        // Skip benchmarks with no data in the selected period (e.g. benchmarks
+        // that were removed or renamed).
+        const allBenchmarks = [...merged.entries()]
+          .filter(([, { rows }]) =>
+            rows.some((r) => extractDate(r.version) >= startDate),
+          )
+          // Sort benchmarks alphabetically by name
+          .sort(([, a], [, b]) =>
+            a.benchmarkName.localeCompare(b.benchmarkName),
+          );
 
-        // Sort benchmarks alphabetically by name
-        const allBenchmarks = [...merged.entries()].sort(
-          ([, a], [, b]) => a.benchmarkName.localeCompare(b.benchmarkName),
-        );
+        if (allBenchmarks.length === 0) return null;
 
         return (
           <div key={category.name}>
@@ -59,6 +67,7 @@ export default function BenchmarkChartList({
                 <BenchmarkChart
                   title={benchmarkName}
                   data={rows}
+                  startDate={startDate}
                   config={config}
                   colorMode={colorMode}
                 />
