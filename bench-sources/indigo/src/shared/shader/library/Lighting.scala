@@ -114,8 +114,8 @@ object Lighting:
       def light: Unit =
         if (env.LIGHT_ACTIVE == 1) { // light is active
 
-          var lightResult: vec4    = vec4(0.0)
-          var specularResult: vec4 = vec4(0.0)
+          var lightResult: vec4    = vec4(0.0f)
+          var specularResult: vec4 = vec4(0.0f)
 
           // 0 = ambient, 1 = direction, 2 = point, 3 = spot
           env.LIGHT_TYPE match
