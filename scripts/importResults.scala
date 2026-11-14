@@ -1,7 +1,7 @@
-//> using scala 3.8.1
+//> using scala 3.10.1
 //> using jvm temurin:25
-//> using dep "com.lihaoyi::os-lib:0.11.8"
-//> using dep "com.lihaoyi::upickle:4.4.2"
+//> using dep "com.lihaoyi::os-lib:0.11.10"
+//> using dep "com.lihaoyi::upickle:4.4.3"
 //> using dep "com.github.tototoshi::scala-csv:2.0.0"
 
 import java.time.{Instant, ZoneId}

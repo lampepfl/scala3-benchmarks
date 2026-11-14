@@ -1,4 +1,4 @@
-//> using scala 3.8.1
+//> using scala 3.10.1
 //> using jvm temurin:25
 
 @main def run(): Unit =
