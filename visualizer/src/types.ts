@@ -21,8 +21,8 @@ export interface Config {
   hideOutliers: boolean;
   metric: string;
   period: Period;
-  /** Names of the benchmark categories to display. */
-  categories: string[];
+  /** Name of the benchmark category to display. */
+  category: string;
 }
 
 export const DEFAULT_CONFIG: Config = {
@@ -32,7 +32,7 @@ export const DEFAULT_CONFIG: Config = {
   hideOutliers: true,
   metric: "time",
   period: "4m",
-  categories: ["Compilation – Big"],
+  category: "Compilation – Big",
 };
 
 /** Map from benchmark name to its data rows */
