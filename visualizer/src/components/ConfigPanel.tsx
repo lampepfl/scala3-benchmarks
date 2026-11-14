@@ -43,9 +43,8 @@ export default function ConfigPanel({
         }}
       />
       <DisplayOptions
-        yAxisAtZero={config.yAxisAtZero}
-        movingAverage={config.movingAverage}
-        errorBars={config.errorBars}
+        keys={["yAxisAtZero", "movingAverage", "errorBars"]}
+        config={config}
         onChange={(key, value) =>
           onConfigChange({ ...config, [key]: value })
         }

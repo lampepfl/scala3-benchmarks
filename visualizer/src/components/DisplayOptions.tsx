@@ -1,40 +1,44 @@
 import { ActionList, ActionMenu } from "@primer/react";
+import type { Config } from "../types";
+
+/** Keys of the boolean (on/off) options in the config. */
+export type DisplayOptionKey = {
+  [K in keyof Config]: Config[K] extends boolean ? K : never;
+}[keyof Config];
+
+const LABELS: Record<DisplayOptionKey, string> = {
+  yAxisAtZero: "Y-axis at 0",
+  movingAverage: "Moving average",
+  errorBars: "Error bars",
+  hideOutliers: "Hide outliers",
+};
 
 interface DisplayOptionsProps {
-  yAxisAtZero: boolean;
-  movingAverage: boolean;
-  errorBars: boolean;
-  onChange: (key: "yAxisAtZero" | "movingAverage" | "errorBars", value: boolean) => void;
+  /** Options to list, in order. */
+  keys: DisplayOptionKey[];
+  config: Config;
+  onChange: (key: DisplayOptionKey, value: boolean) => void;
 }
 
-const OPTIONS: { key: "yAxisAtZero" | "movingAverage" | "errorBars"; label: string }[] = [
-  { key: "yAxisAtZero", label: "Y-axis at 0" },
-  { key: "movingAverage", label: "Moving average" },
-  { key: "errorBars", label: "Error bars" },
-];
-
 export default function DisplayOptions({
-  yAxisAtZero,
-  movingAverage,
-  errorBars,
+  keys,
+  config,
   onChange,
 }: DisplayOptionsProps) {
-  const values: Record<string, boolean> = { yAxisAtZero, movingAverage, errorBars };
-
   return (
     <ActionMenu>
       <ActionMenu.Button size="small">Display options</ActionMenu.Button>
       <ActionMenu.Overlay>
         <ActionList selectionVariant="multiple" role="menu">
-          {OPTIONS.map((opt) => (
+          {keys.map((key) => (
             <ActionList.Item
-              key={opt.key}
+              key={key}
               role="menuitemcheckbox"
-              selected={values[opt.key]}
-              aria-checked={values[opt.key]}
-              onSelect={() => onChange(opt.key, !values[opt.key])}
+              selected={config[key]}
+              aria-checked={config[key]}
+              onSelect={() => onChange(key, !config[key])}
             >
-              {opt.label}
+              {LABELS[key]}
             </ActionList.Item>
           ))}
         </ActionList>
