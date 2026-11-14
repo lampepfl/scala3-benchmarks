@@ -37,7 +37,8 @@ function extractCommitHash(version: string): string | null {
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 const PLOT_STYLE = { width: "100%", height: 400 } as const;
-const PLOT_CONFIG = { responsive: true } as const;
+// Plotly 4 shows an "Upload to Cloud" modebar button by default.
+const PLOT_CONFIG = { responsive: true, showSendToCloud: false } as const;
 
 export default memo(function BenchmarkChart({
   title,
