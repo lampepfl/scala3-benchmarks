@@ -6,11 +6,19 @@ export interface AggregatedRow {
   max: number;
 }
 
+export type Period = "4m" | "all";
+
+export const PERIODS: { id: Period; label: string }[] = [
+  { id: "4m", label: "Last 4 months" },
+  { id: "all", label: "All" },
+];
+
 export interface Config {
   yAxisAtZero: boolean;
   movingAverage: boolean;
   errorBars: boolean;
   metric: string;
+  period: Period;
 }
 
 export const DEFAULT_CONFIG: Config = {
@@ -18,6 +26,7 @@ export const DEFAULT_CONFIG: Config = {
   movingAverage: true,
   errorBars: true,
   metric: "time",
+  period: "4m",
 };
 
 /** Map from benchmark name to its data rows */
