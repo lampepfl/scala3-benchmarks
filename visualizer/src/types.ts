@@ -19,6 +19,8 @@ export interface Config {
   errorBars: boolean;
   metric: string;
   period: Period;
+  /** Names of the benchmark categories to display. */
+  categories: string[];
 }
 
 export const DEFAULT_CONFIG: Config = {
@@ -27,6 +29,7 @@ export const DEFAULT_CONFIG: Config = {
   errorBars: true,
   metric: "time",
   period: "4m",
+  categories: ["Compilation – Big"],
 };
 
 /** Map from benchmark name to its data rows */

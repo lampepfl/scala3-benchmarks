@@ -3,6 +3,7 @@ import type { Config } from "../types";
 import { PERIODS } from "../types";
 import SelectorOption from "./SelectorOption";
 import DisplayOptions from "./DisplayOptions";
+import CategorySelector from "./CategorySelector";
 
 interface ConfigPanelProps {
   config: Config;
@@ -27,6 +28,10 @@ export default function ConfigPanel({
         items={metrics}
         selected={config.metric}
         onSelectedChange={(v) => onConfigChange({ ...config, metric: v })}
+      />
+      <CategorySelector
+        selected={config.categories}
+        onChange={(categories) => onConfigChange({ ...config, categories })}
       />
       <SelectorOption
         label="Period"
