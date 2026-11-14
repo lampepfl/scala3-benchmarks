@@ -54,7 +54,7 @@ object CameraHelper:
               bounds._4
             )
 
-    if flipY then mat.scale(1.0, -1.0, 1.0) else mat
+    if flipY then mat.scale(1.0f, -1.0f, 1.0f) else mat
 
   def zoom(x: Float, y: Float, width: Float, height: Float, zoom: Float): (Float, Float, Float, Float) =
     val newWidth: Float  = width / zoom

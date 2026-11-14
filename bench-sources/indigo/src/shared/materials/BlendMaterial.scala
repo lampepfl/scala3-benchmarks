@@ -74,9 +74,9 @@ object BlendMaterial {
     lazy val toShaderData: ShaderData = {
       val overlayType: Float =
         overlay match {
-          case _: Fill.Color          => 0.0
-          case _: Fill.LinearGradient => 1.0
-          case _: Fill.RadialGradient => 2.0
+          case _: Fill.Color          => 0.0f
+          case _: Fill.LinearGradient => 1.0f
+          case _: Fill.RadialGradient => 2.0f
         }
 
       ShaderData(

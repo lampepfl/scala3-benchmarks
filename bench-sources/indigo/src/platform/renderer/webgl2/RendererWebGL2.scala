@@ -459,10 +459,10 @@ final class RendererWebGL2(
 
       orthographicProjectionMatrix =
         CheapMatrix4.orthographic(actualWidth.toFloat / magnification, actualHeight.toFloat / magnification)
-      defaultLayerProjectionMatrix = orthographicProjectionMatrix.scale(1.0, -1.0, 1.0).toJSArray
+      defaultLayerProjectionMatrix = orthographicProjectionMatrix.scale(1.0f, -1.0f, 1.0f).toJSArray
       orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).toJSArray
       orthographicProjectionMatrixNoMagFlipped =
-        CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).scale(1.0, -1.0, 1.0).toJSArray
+        CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).scale(1.0f, -1.0f, 1.0f).toJSArray
 
       layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)

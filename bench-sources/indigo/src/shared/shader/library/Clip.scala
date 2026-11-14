@@ -104,8 +104,8 @@ object Clip:
             y = mod(currentFrame, env.CLIP_SHEET_WRAP_AT)
 
           case _ =>
-            x = 0.0
-            y = 0.0
+            x = 0.0f
+            y = 0.0f
 
         env.UV = env.UV + vec2(x, y);
         v
