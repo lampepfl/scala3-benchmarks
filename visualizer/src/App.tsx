@@ -104,12 +104,8 @@ export default function App() {
         if (!active) return;
         setIndex(idx);
         // Validate/fix config against what's actually available
-        const minorVersion = pickDefault(config.minorVersion, idx.versions);
-        const metric = pickDefault(
-          config.metric,
-          idx.metrics[minorVersion] ?? [],
-        );
-        patchConfig(setConfig, { minorVersion, metric });
+        const metric = pickDefault(config.metric, idx.metrics);
+        patchConfig(setConfig, { metric });
       })
       .catch((e) => {
         if (!active) return;
@@ -123,11 +119,11 @@ export default function App() {
 
   // Fetch aggregated benchmark CSVs when config or index changes (time series view)
   useEffect(() => {
-    if (!index || !config.minorVersion || !config.metric) return;
+    if (!index || !config.metric) return;
     let active = true;
     setLoading(true);
     setError(null);
-    fetchAllBenchmarks(config.minorVersion, config.metric, index)
+    fetchAllBenchmarks(config.metric, index)
       .then((result) => {
         if (!active) return;
         setData(result);
@@ -141,7 +137,7 @@ export default function App() {
     return () => {
       active = false;
     };
-  }, [index, config.minorVersion, config.metric]);
+  }, [index, config.metric]);
 
   // Fetch raw comparison data when in compare mode and versions change
   useEffect(() => {
@@ -166,8 +162,7 @@ export default function App() {
   }, [route.view, route.compareVersions, index]);
 
   // Derive available options from the index
-  const versions = index?.versions ?? [];
-  const metrics = index?.metrics[config.minorVersion] ?? [];
+  const metrics = index?.metrics ?? [];
   const rawVersions = index?.rawVersions ?? [];
 
   const isCompare = route.view === "compare";
@@ -229,7 +224,6 @@ export default function App() {
             <ConfigPanel
               config={config}
               onConfigChange={handleConfigChange}
-              versions={versions}
               metrics={metrics}
             />
           )}

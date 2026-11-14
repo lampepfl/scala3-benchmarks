@@ -14,13 +14,11 @@ const RAW_PREFIX = `raw/${MACHINE}/${JVM}/`;
 
 /**
  * Parsed representation of the data directory tree.
- * Path structure: aggregated/<machine>/<jvm>/<version>/<metric>/<suite>/<benchmark>.csv
+ * Path structure: aggregated/<machine>/<jvm>/<metric>/<suite>/<benchmark>.csv
  */
 export interface DataIndex {
-  versions: string[];
-  /** version → metrics */
-  metrics: Record<string, string[]>;
-  /** version/metric → suite → benchmark files */
+  metrics: string[];
+  /** metric → suite → benchmark files */
   suites: Record<string, Record<string, string[]>>;
   /** patchVersion/version → CSV filenames (from raw/) */
   rawFiles: Record<string, string[]>;
@@ -46,17 +44,15 @@ export async function fetchDataIndex(): Promise<DataIndex> {
     )
     .map((e) => e.path.replace(AGGREGATED_PREFIX, "").split("/"));
 
-  const versionSet = new Set<string>();
-  const metricSets: Record<string, Set<string>> = {};
+  const metricSet = new Set<string>();
   const suitesMap: Record<string, Record<string, string[]>> = {};
 
   for (const parts of paths) {
-    if (parts.length !== 4) continue;
-    const [version, metric, suite, file] = parts;
+    if (parts.length !== 3) continue;
+    const [metric, suite, file] = parts;
 
-    versionSet.add(version);
-    (metricSets[version] ??= new Set()).add(metric);
-    ((suitesMap[`${version}/${metric}`] ??= {})[suite] ??= []).push(file);
+    metricSet.add(metric);
+    ((suitesMap[metric] ??= {})[suite] ??= []).push(file);
   }
 
   // Parse raw/ paths: raw/<machine>/<jvm>/<patchVersion>/<version>/<file>.csv
@@ -92,10 +88,7 @@ export async function fetchDataIndex(): Promise<DataIndex> {
   const toSorted = (s: Set<string>) => [...s].sort(compareNatural);
 
   return {
-    versions: toSorted(versionSet),
-    metrics: Object.fromEntries(
-      Object.entries(metricSets).map(([k, v]) => [k, toSorted(v)]),
-    ),
+    metrics: toSorted(metricSet),
     suites: suitesMap,
     rawFiles: rawFilesMap,
     rawVersions: toSorted(rawVersionSet),
@@ -104,12 +97,11 @@ export async function fetchDataIndex(): Promise<DataIndex> {
 }
 
 export async function fetchBenchmarkCsv(
-  version: string,
   metric: string,
   suite: string,
   file: string,
 ): Promise<AggregatedRow[]> {
-  const path = `${AGGREGATED_PREFIX}${version}/${metric}/${suite}/${file}`;
+  const path = `${AGGREGATED_PREFIX}${metric}/${suite}/${file}`;
   const response = await fetch(`${DATA_BASE}/${path}`);
   if (!response.ok) return [];
   const text = await response.text();
@@ -123,11 +115,10 @@ export async function fetchBenchmarkCsv(
 }
 
 export async function fetchAllBenchmarks(
-  version: string,
   metric: string,
   index: DataIndex,
 ): Promise<AllBenchmarks> {
-  const suitesForKey = index.suites[`${version}/${metric}`];
+  const suitesForKey = index.suites[metric];
   if (!suitesForKey) return new Map();
 
   const result: AllBenchmarks = new Map();
@@ -139,7 +130,7 @@ export async function fetchAllBenchmarks(
       await Promise.all(
         files.map(async (file) => {
           const benchmarkName = file.replace(/\.csv$/, "");
-          const data = await fetchBenchmarkCsv(version, metric, suite, file);
+          const data = await fetchBenchmarkCsv(metric, suite, file);
           if (data.length > 0) {
             suiteBenchmarks.set(benchmarkName, data);
           }

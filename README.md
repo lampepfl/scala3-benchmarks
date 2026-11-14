@@ -103,9 +103,9 @@ Columns:
 
 ### Aggregated Data
 
-`aggregated/<machine>/<jvm>/<patch_version>/<metric>/<suite>/<benchmark>.csv`
+`aggregated/<machine>/<jvm>/<metric>/<suite>/<benchmark>.csv`
 
-Pre-computed summaries derived from raw data, organized per metric, suite, and benchmark for direct use by the visualiser. Each `<metric>` is one of `time`, `allocs`, `gc`, or `comp`. The `<suite>` corresponds to the benchmark suite class name (e.g. `CompilationBenchmarksSmallNightly`).
+Pre-computed summaries derived from raw data, organized per metric, suite, and benchmark for direct use by the visualiser. Each `<metric>` is one of `time`, `allocs`, `gc`, or `comp`. The `<suite>` corresponds to the benchmark suite class name (e.g. `CompilationBenchmarksSmallNightly`). Only nightly versions are aggregated. Each file holds the full history of a benchmark across all nightly versions, one row per version, sorted by version with numeric components compared numerically (so `3.9.0-…` comes before `3.10.0-…`).
 
 Columns:
 

@@ -11,7 +11,6 @@ export interface Config {
   movingAverage: boolean;
   errorBars: boolean;
   metric: string;
-  minorVersion: string;
 }
 
 export const DEFAULT_CONFIG: Config = {
@@ -19,7 +18,6 @@ export const DEFAULT_CONFIG: Config = {
   movingAverage: true,
   errorBars: true,
   metric: "time",
-  minorVersion: "",
 };
 
 /** Map from benchmark name to its data rows */
