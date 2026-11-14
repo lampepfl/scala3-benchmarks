@@ -81,7 +81,7 @@ jobs:
         run: echo '${{ toJSON(inputs) }}'
 
       - name: Checkout dotty PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: scala/scala3
           ref: refs/pull/${{ inputs.pr }}/head
@@ -92,8 +92,9 @@ jobs:
         uses: coursier/setup-action@v3
         with:
           # Pinned: newer cs versions' default launcher needs AVX/BMI, which this
-          # runner lacks; the fixed -compat launcher (coursier/coursier#3600) is
-          # not downloadable via setup-action yet.
+          # runner lacks. setup-action v3.1.0+ can install the -compat launcher
+          # (coursier/coursier#3600) with `launcher: compat`, but that has not
+          # been tested on this runner yet.
           version: "2.1.17"
           jvm: "temurin:25"
 
