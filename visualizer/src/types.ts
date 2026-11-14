@@ -17,6 +17,8 @@ export interface Config {
   yAxisAtZero: boolean;
   movingAverage: boolean;
   errorBars: boolean;
+  /** Compare view: clip the y axis to exclude extreme outliers. */
+  hideOutliers: boolean;
   metric: string;
   period: Period;
   /** Names of the benchmark categories to display. */
@@ -27,6 +29,7 @@ export const DEFAULT_CONFIG: Config = {
   yAxisAtZero: false,
   movingAverage: true,
   errorBars: true,
+  hideOutliers: true,
   metric: "time",
   period: "4m",
   categories: ["Compilation – Big"],

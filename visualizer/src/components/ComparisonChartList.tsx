@@ -7,6 +7,7 @@ interface ComparisonChartListProps {
   data: ComparisonData;
   versions: string[];
   loading: boolean;
+  hideOutliers: boolean;
   colorMode: "day" | "night";
 }
 
@@ -14,6 +15,7 @@ export default function ComparisonChartList({
   data,
   versions,
   loading,
+  hideOutliers,
   colorMode,
 }: ComparisonChartListProps) {
   if (loading) {
@@ -68,6 +70,7 @@ export default function ComparisonChartList({
             <ComparisonChart
               versionData={mergedVersionData}
               versions={versions}
+              hideOutliers={hideOutliers}
               colorMode={colorMode}
             />
           </div>

@@ -4,6 +4,7 @@ import Plotly from "plotly.js-dist-min";
 import type { RawMeasurements } from "../types";
 import { plotlyColors } from "../plotlyTheme";
 import { useIsMobile } from "../hooks/useIsMobile";
+import { farOutFences } from "../outliers";
 
 const Plot = createPlotlyComponent(Plotly);
 
@@ -12,6 +13,8 @@ interface ComparisonChartProps {
   versionData: Map<string, RawMeasurements>;
   /** Ordered list of versions (first is the reference) */
   versions: string[];
+  /** Clip the y axis to exclude extreme outliers. */
+  hideOutliers: boolean;
   colorMode: "day" | "night";
 }
 
@@ -29,12 +32,18 @@ const PLOT_CONFIG = { responsive: true } as const;
 export default memo(function ComparisonChart({
   versionData,
   versions,
+  hideOutliers,
   colorMode,
 }: ComparisonChartProps) {
   const isMobile = useIsMobile();
-  const traces = useMemo(() => {
+  const { traces, yClip } = useMemo(() => {
+    // Outliers are detected per (version, benchmark) box; the y axis can then
+    // be clipped to the range of all other points.
+    let inlierMin = Infinity;
+    let inlierMax = -Infinity;
+
     const refData = versionData.get(versions[0]);
-    if (!refData) return [];
+    if (!refData) return { traces: [], yClip: null };
 
     // Compute reference medians
     const refMedians = new Map<string, number>();
@@ -57,6 +66,13 @@ export default memo(function ComparisonChart({
         if (!refMedian) continue;
         const times = data.get(bench) ?? [];
         const normalized = times.map((t) => t / refMedian);
+        const [lo, hi] = farOutFences(normalized);
+        for (const v of normalized) {
+          if (v >= lo && v <= hi) {
+            inlierMin = Math.min(inlierMin, v);
+            inlierMax = Math.max(inlierMax, v);
+          }
+        }
         x = x.concat(Array(normalized.length).fill(bench));
         y = y.concat(normalized);
       }
@@ -72,11 +88,28 @@ export default memo(function ComparisonChart({
         boxvisible: false,
       });
     }
-    return traces;
+    if (inlierMin > inlierMax) return { traces, yClip: null };
+    const pad = Math.max((inlierMax - inlierMin) * 0.05, 0.01);
+    const min = inlierMin - pad;
+    const max = inlierMax + pad;
+    // A point outside its own box's fences can still lie within the range of
+    // other boxes, so only count the points the clipped axis actually hides.
+    const hidden = traces.reduce(
+      (n, t) => n + t.y.filter((v: number) => v < min || v > max).length,
+      0,
+    );
+    return { traces, yClip: hidden > 0 ? { min, max, hidden } : null };
   }, [versionData, versions]);
 
   const layout = useMemo(() => {
     const { font, grid, background, colorway } = plotlyColors(colorMode);
+
+    // Plotly's autorange always covers every point, whatever `boxpoints` is,
+    // so hiding outliers means clipping the autorange to the other points.
+    // Clipping (rather than a fixed range) also applies to Autoscale and
+    // double-click resets.
+    const clip = hideOutliers ? yClip : null;
+    const yTitle = "Relative to first version";
 
     return {
       paper_bgcolor: background,
@@ -84,7 +117,14 @@ export default memo(function ComparisonChart({
       font: { color: font },
       colorway,
       yaxis: {
-        title: { text: "Relative to first version" },
+        title: {
+          text: clip
+            ? `${yTitle} (${clip.hidden} outlier${clip.hidden === 1 ? "" : "s"} hidden)`
+            : yTitle,
+        },
+        autorangeoptions: clip
+          ? { clipmin: clip.min, clipmax: clip.max }
+          : undefined,
         zeroline: false,
         gridcolor: grid,
         linecolor: grid,
@@ -120,7 +160,7 @@ export default memo(function ComparisonChart({
         : { t: 60, b: 100, l: 60, r: 30 },
       dragmode: !isMobile && ("zoom" as const),
     };
-  }, [colorMode, isMobile]);
+  }, [colorMode, isMobile, hideOutliers, yClip]);
 
   return (
     <Plot

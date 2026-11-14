@@ -18,6 +18,7 @@ import ConfigPanel from "./components/ConfigPanel";
 import BenchmarkChartList from "./components/BenchmarkChartList";
 import VersionSelector from "./components/VersionSelector";
 import ComparisonChartList from "./components/ComparisonChartList";
+import DisplayOptions from "./components/DisplayOptions";
 
 const STORAGE_KEY = "visualizer-config";
 const THEME_KEY = "visualizer-color-mode";
@@ -234,6 +235,15 @@ export default function App() {
 
           {isCompare ? (
             <>
+              <Stack direction="horizontal" gap="condensed" className="mb-3">
+                <DisplayOptions
+                  keys={["hideOutliers"]}
+                  config={config}
+                  onChange={(key, value) =>
+                    handleConfigChange({ ...config, [key]: value })
+                  }
+                />
+              </Stack>
               <VersionSelector
                 availableVersions={rawVersions}
                 selectedVersions={route.compareVersions}
@@ -251,6 +261,7 @@ export default function App() {
                   data={compareData}
                   versions={route.compareVersions}
                   loading={compareLoading}
+                  hideOutliers={config.hideOutliers}
                   colorMode={colorMode}
                 />
               )}
