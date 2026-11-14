@@ -27,7 +27,8 @@ function median(arr: number[]): number {
 }
 
 const PLOT_STYLE = { width: "100%", height: 500 } as const;
-const PLOT_CONFIG = { responsive: true } as const;
+// Plotly 4 shows an "Upload to Cloud" modebar button by default.
+const PLOT_CONFIG = { responsive: true, showSendToCloud: false } as const;
 
 export default memo(function ComparisonChart({
   versionData,
