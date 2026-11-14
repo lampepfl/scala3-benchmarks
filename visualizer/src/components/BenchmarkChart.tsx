@@ -38,6 +38,8 @@ function extractCommitHash(version: string): string | null {
   return match ? match[1] : null;
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 const PLOT_STYLE = { width: "100%", height: 400 } as const;
 const PLOT_CONFIG = { responsive: true } as const;
 
@@ -55,6 +57,18 @@ export default memo(function BenchmarkChart({
   const versions = useMemo(() => sorted.map((r) => r.version), [sorted]);
   const dates = useMemo(() => sorted.map((r) => extractDate(r.version)), [sorted]);
   const avgs = useMemo(() => sorted.map((r) => r.avg), [sorted]);
+
+  // Plotly pads the x autorange by about 5% on each side for traces with
+  // markers or error bars. Clip it to the data plus a small margin, so that
+  // the points at both ends stay fully visible. Clipping (rather than a fixed
+  // range) also applies to the Autoscale button and double-click resets.
+  const xAutorangeOptions = useMemo(() => {
+    const first = Date.parse(dates[0]);
+    const last = Date.parse(dates[dates.length - 1]);
+    if (!Number.isFinite(first) || !Number.isFinite(last)) return undefined;
+    const pad = Math.max((last - first) * 0.01, DAY_MS);
+    return { clipmin: first - pad, clipmax: last + pad };
+  }, [dates]);
 
   const traces = useMemo(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -115,6 +129,7 @@ export default memo(function BenchmarkChart({
         title: { text: "Version" },
         type: "date" as const,
         tickformat: "%b %d, %Y",
+        autorangeoptions: xAutorangeOptions,
         zeroline: false,
         automargin: false,
         gridcolor: colors.grid,
@@ -143,7 +158,7 @@ export default memo(function BenchmarkChart({
         : { t: 30, b: 60, l: 60, r: 30 },
       dragmode: !isMobile && ("zoom" as const),
     };
-  }, [title, config.metric, config.yAxisAtZero, colorMode, isMobile]);
+  }, [title, config.metric, config.yAxisAtZero, colorMode, isMobile, xAutorangeOptions]);
 
   const handleClick = useCallback(
     (event: Plotly.PlotMouseEvent) => {
