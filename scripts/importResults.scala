@@ -80,7 +80,7 @@ def appendStats(file: os.Path, version: String, stats: Stats): Unit =
       combinedStats.toMap + ("version" -> version)
 
   // Write back all rows (others + updatedRow) sorted by version
-  val allRows = (others :+ updatedRow).sortBy(_("version"))
+  val allRows = (others :+ updatedRow).sortBy(_("version"))(using naturalOrdering)
   os.makeDir.all(file / os.up) // Ensure parent directory exists
   val writer = CSVWriter.open(file.toIO)
   val header = Seq("version", "count", "min", "avg", "max")
@@ -88,6 +88,19 @@ def appendStats(file: os.Path, version: String, stats: Stats): Unit =
   for row <- allRows do
     writer.writeRow(header.map(h => row(h)))
   writer.close()
+
+/** Compares digit runs numerically, so that "3.9.0-..." sorts before "3.10.0-...". */
+val naturalOrdering: Ordering[String] =
+  val chunks = "\\d+|\\D+".r
+  (a, b) =>
+    val as = chunks.findAllIn(a).toSeq
+    val bs = chunks.findAllIn(b).toSeq
+    as.zip(bs)
+      .map: (x, y) =>
+        if x.head.isDigit && y.head.isDigit then BigInt(x).compare(BigInt(y))
+        else x.compare(y)
+      .find(_ != 0)
+      .getOrElse(as.length.compare(bs.length))
 
 def formatSigFigs(d: Double, sigFigs: Int = 4): String =
   if d == 0.0 then "0"
@@ -175,7 +188,7 @@ def importResults(
 
     // Only aggregate NIGHTLY versions
     if version.endsWith("-NIGHTLY") then
-      val aggregatePath = dataRepoPath / "aggregated" / machine / jvm / patchVersion
+      val aggregatePath = dataRepoPath / "aggregated" / machine / jvm
       val timeStats = metricStats(bench.primaryMetric)
       appendStats(aggregatePath / "time" / suite / s"$shortBenchmark.csv", version, timeStats)
       appendStats(aggregatePath / "allocs" / suite / s"$shortBenchmark.csv", version, allocsStats)
