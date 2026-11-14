@@ -43,14 +43,15 @@ jobs:
         id: timestamp
         run: echo "ts=$(date +'%Y%m%d-%H%M%S')" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup Coursier
         uses: coursier/setup-action@v3
         with:
           # Pinned: newer cs versions' default launcher needs AVX/BMI, which this
-          # runner lacks; the fixed -compat launcher (coursier/coursier#3600) is
-          # not downloadable via setup-action yet.
+          # runner lacks. setup-action v3.1.0+ can install the -compat launcher
+          # (coursier/coursier#3600) with `launcher: compat`, but that has not
+          # been tested on this runner yet.
           version: "2.1.17"
           apps: scala-cli:1.12.3
           jvm: "temurin:25"
@@ -88,7 +89,7 @@ jobs:
           exit 1
 
       - name: Checkout data repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: lampepfl/scala3-benchmarks-data
           path: data-repo
@@ -131,7 +132,7 @@ jobs:
           fi
 
       - name: Upload results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: benchmark-results-${{ inputs.versions }}-${{ steps.timestamp.outputs.ts }}
           path: results/
