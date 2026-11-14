@@ -16,9 +16,13 @@ export default function BenchmarkChartList({
   colorMode,
 }: BenchmarkChartListProps) {
   const startDate = periodStart(config.period);
+  const categories = benchmarkCategories.filter((c) =>
+    config.categories.includes(c.name),
+  );
+  if (categories.length === 0) return <p>Select at least one category.</p>;
   return (
     <Stack direction="vertical" gap="normal">
-      {benchmarkCategories.map((category) => {
+      {categories.map((category) => {
         // Collect benchmarks from all suites in this category, merged per
         // (base suite, benchmark) so that history split across Nightly and
         // Weekly variants joins up, while a same-named benchmark in a
