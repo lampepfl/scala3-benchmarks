@@ -1,7 +1,4 @@
-import { useState } from "react";
-import { SelectPanel, Button } from "@primer/react";
-import { TriangleDownIcon } from "@primer/octicons-react";
-import type { SelectPanelItemInput } from "@primer/react";
+import { ActionList, ActionMenu } from "@primer/react";
 
 interface SelectorOptionProps {
   label: string;
@@ -10,47 +7,34 @@ interface SelectorOptionProps {
   onSelectedChange: (value: string) => void;
 }
 
+/** Dropdown to pick one of a few items (no filter field). */
 export default function SelectorOption({
   label,
   items,
   selected,
   onSelectedChange,
 }: SelectorOptionProps) {
-  const [open, setOpen] = useState(false);
-  const [filter, setFilter] = useState("");
-
-  const panelItems: SelectPanelItemInput[] = items
-    .filter((name) => name.toLowerCase().includes(filter.toLowerCase()))
-    .map((name) => ({
-    text: name,
-    id: name,
-  }));
-
-  const selectedItem = panelItems.find((item) => item.id === selected);
-
   return (
-    <SelectPanel
-      title={`Select ${label}`}
-      renderAnchor={({ ...anchorProps }) => (
-        <Button {...anchorProps} size="small" trailingAction={TriangleDownIcon}>
-          <span className="color-fg-muted">{label}:</span>{" "}
-          <span className="color-fg-default">{selected || "..."}</span>
-        </Button>
-      )}
-      open={open}
-      onOpenChange={(newOpen) => {
-        setOpen(newOpen);
-        if (!newOpen) setFilter("");
-      }}
-      onFilterChange={(value) => setFilter(value)}
-      items={panelItems}
-      selected={selectedItem}
-      onSelectedChange={(item: SelectPanelItemInput | undefined) => {
-        if (item && typeof item.id === "string") {
-          onSelectedChange(item.id);
-        }
-        setOpen(false);
-      }}
-    />
+    <ActionMenu>
+      <ActionMenu.Button size="small">
+        <span className="color-fg-muted">{label}:</span>{" "}
+        <span className="color-fg-default">{selected || "..."}</span>
+      </ActionMenu.Button>
+      <ActionMenu.Overlay>
+        <ActionList selectionVariant="single" role="menu" aria-label={label}>
+          {items.map((item) => (
+            <ActionList.Item
+              key={item}
+              role="menuitemradio"
+              selected={item === selected}
+              aria-checked={item === selected}
+              onSelect={() => onSelectedChange(item)}
+            >
+              {item}
+            </ActionList.Item>
+          ))}
+        </ActionList>
+      </ActionMenu.Overlay>
+    </ActionMenu>
   );
 }
